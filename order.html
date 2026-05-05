@@ -21,13 +21,10 @@
         messagingSenderId: "975523910853",
         appId: "1:975523910853:web:af7350de88ce5d9e668cac"
       };
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
     } catch (e) {
-      console.error("Firebase gagal diinisialisasi:", e);
-      alert("Koneksi ke server gagal. Pastikan kamu membuka halaman ini melalui hosting (bukan file://) dan cek koneksi internet.");
+      console.error("Firebase gagal:", e);
     }
   </script>
 
@@ -35,1426 +32,752 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #faf8f5;
-      --bg2: #f3efe9;
-      --bg3: #ede8e0;
-      --surface: #ffffff;
-      --accent: #c8956c;
-      --accent-dark: #a8734d;
-      --accent-light: #f0ddd0;
-      --text: #2c2018;
-      --text2: #6b5744;
-      --text3: #9c8575;
-      --border: #e8e0d8;
-      --shadow: rgba(44, 32, 24, 0.08);
-      --shadow-md: rgba(44, 32, 24, 0.14);
-      --shadow-lg: rgba(44, 32, 24, 0.22);
-      --radius: 18px;
-      --radius-sm: 10px;
-      --radius-lg: 28px;
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      --status-wait-bg: #fff8e6;
-      --status-wait-text: #92620a;
-      --status-wait-border: #fde9a2;
-      --status-proc-bg: #e8f0fe;
-      --status-proc-text: #1a47a0;
-      --status-proc-border: #b6d0fb;
-      --status-ready-bg: #e6f9ef;
-      --status-ready-text: #0d6b35;
-      --status-ready-border: #a0e4bf;
-      --status-done-bg: #f0ece8;
-      --status-done-text: #7a6555;
-      --status-done-border: #d8cfc7;
+      --bg: #faf8f5; --bg2: #f3efe9; --bg3: #ede8e0;
+      --surface: #ffffff; --accent: #c8956c; --accent-dark: #a8734d;
+      --accent-light: #f0ddd0; --text: #2c2018; --text2: #6b5744;
+      --text3: #9c8575; --border: #e8e0d8;
+      --shadow: rgba(44,32,24,0.08); --shadow-md: rgba(44,32,24,0.14); --shadow-lg: rgba(44,32,24,0.22);
+      --radius: 18px; --radius-sm: 10px; --radius-lg: 28px;
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --ready-bg: #e6f9ef; --ready-text: #0d6b35; --ready-border: #a0e4bf;
     }
-
     [data-theme="dark"] {
-      --bg: #1a1410;
-      --bg2: #221c16;
-      --bg3: #2a221a;
-      --surface: #2e251c;
-      --accent: #d4a07a;
-      --accent-dark: #c8956c;
-      --accent-light: #3d2e20;
-      --text: #f0e8df;
-      --text2: #c4a98a;
-      --text3: #8a7060;
-      --border: #3a2e24;
-      --shadow: rgba(0,0,0,0.25);
-      --shadow-md: rgba(0,0,0,0.38);
-      --shadow-lg: rgba(0,0,0,0.55);
-      --status-wait-bg: #342810;
-      --status-wait-text: #f0c060;
-      --status-wait-border: #5a4010;
-      --status-proc-bg: #101e38;
-      --status-proc-text: #7aabf8;
-      --status-proc-border: #1c3870;
-      --status-ready-bg: #0a2418;
-      --status-ready-text: #5acd8a;
-      --status-ready-border: #145830;
-      --status-done-bg: #221c18;
-      --status-done-text: #8a7060;
-      --status-done-border: #3a3028;
+      --bg: #1a1410; --bg2: #221c16; --bg3: #2a221a; --surface: #2e251c;
+      --accent: #d4a07a; --accent-dark: #c8956c; --accent-light: #3d2e20;
+      --text: #f0e8df; --text2: #c4a98a; --text3: #8a7060; --border: #3a2e24;
+      --shadow: rgba(0,0,0,0.25); --shadow-md: rgba(0,0,0,0.38); --shadow-lg: rgba(0,0,0,0.55);
+      --ready-bg: #0a2418; --ready-text: #5acd8a; --ready-border: #145830;
     }
 
     html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background var(--transition), color var(--transition); }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background var(--transition), color var(--transition);
-    }
-
-    /* ── HEADER ── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-    }
-
-    .header-inner {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 0 20px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-decoration: none;
-      letter-spacing: -0.02em;
-    }
-
-    .logo span {
-      color: var(--text);
-      font-style: italic;
-      font-weight: 400;
-      font-size: 0.85em;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-back {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 100px;
-      background: var(--surface);
-      color: var(--text2);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all var(--transition);
-    }
-
-    .btn-back:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: 0 4px 12px var(--shadow-md);
-    }
-
+    /* HEADER */
+    header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+    .header-inner { max-width: 640px; margin: 0 auto; padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; }
+    .logo span { color: var(--text); font-style: italic; font-weight: 400; font-size: 0.85em; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .btn-back { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 100px; background: var(--surface); color: var(--text2); font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all var(--transition); }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
     .btn-back svg { width: 14px; height: 14px; }
-
-    .btn-theme {
-      width: 36px;
-      height: 36px;
-      border: 1.5px solid var(--border);
-      border-radius: 50%;
-      background: var(--surface);
-      color: var(--text2);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all var(--transition);
-    }
-
+    .btn-theme { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
     .btn-theme:hover { border-color: var(--accent); color: var(--accent); }
     .btn-theme svg { width: 16px; height: 16px; }
 
-    /* ── MAIN ── */
-    .main {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 36px 20px 80px;
-    }
+    /* REALTIME PILL */
+    .realtime-pill { display: flex; align-items: center; gap: 5px; padding: 4px 11px; background: var(--ready-bg); border: 1px solid var(--ready-border); border-radius: 100px; font-size: 0.7rem; font-weight: 600; color: var(--ready-text); }
+    .realtime-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ready-text); animation: rtpulse 1.8s ease infinite; }
+    @keyframes rtpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
 
-    /* ── LOADING ── */
-    .loading-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 20px;
-      gap: 20px;
-    }
+    /* MAIN */
+    .main { max-width: 640px; margin: 0 auto; padding: 28px 20px 80px; }
 
-    .loading-ring {
-      width: 52px;
-      height: 52px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-    }
-
+    /* LOADING */
+    .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 20px; }
+    .loading-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 0.88rem; color: var(--text3); font-style: italic; }
 
-    .loading-text {
-      font-size: 0.88rem;
-      color: var(--text3);
-      font-style: italic;
-    }
-
-    /* ── ERROR ── */
-    .error-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 20px;
-      gap: 16px;
-      text-align: center;
-    }
-
-    .error-icon {
-      width: 72px;
-      height: 72px;
-      background: var(--bg2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* ERROR */
+    .error-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 16px; text-align: center; }
+    .error-icon { width: 72px; height: 72px; background: var(--bg2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .error-icon svg { width: 32px; height: 32px; color: var(--text3); }
+    .error-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .error-sub { font-size: 0.88rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
 
-    .error-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text);
-    }
+    /* ORDER CARD */
+    .order-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: 0 4px 24px var(--shadow); overflow: hidden; animation: fadeUp 0.4s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-    .error-sub {
-      font-size: 0.88rem;
-      color: var(--text3);
-      line-height: 1.7;
-      max-width: 280px;
-    }
+    /* ORDER HEAD */
+    .order-head { padding: 28px 28px 24px; background: linear-gradient(135deg, var(--bg2) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .order-head::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:var(--accent); opacity:0.05; }
+    .order-id-label { font-size: 0.7rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .order-id-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: 0.02em; }
+    .order-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .order-customer { font-size: 0.88rem; color: var(--text2); font-weight: 500; }
+    .order-customer strong { color: var(--text); }
 
-    /* ── ORDER CARD ── */
-    .order-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 24px var(--shadow);
-      overflow: hidden;
-      animation: fadeUp 0.4s ease;
-    }
+    /* STATUS BADGE */
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 1.5px solid transparent; transition: all var(--transition); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .status-MENUNGGU { background: #fff8e6; color: #92620a; border-color: #fde9a2; }
+    .status-MENUNGGU .status-dot { background: #92620a; animation: pulse 1.6s ease infinite; }
+    .status-DIPROSES { background: #e8f0fe; color: #1a47a0; border-color: #b6d0fb; }
+    .status-DIPROSES .status-dot { background: #1a47a0; animation: pulse 1.2s ease infinite; }
+    .status-SIAP { background: var(--ready-bg); color: var(--ready-text); border-color: var(--ready-border); }
+    .status-SIAP .status-dot { background: var(--ready-text); animation: pulse 1s ease infinite; }
+    .status-SELESAI { background: #f0ece8; color: #7a6555; border-color: #d8cfc7; }
+    .status-SELESAI .status-dot { background: #7a6555; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── ORDER HEADER ── */
-    .order-head {
-      padding: 28px 28px 24px;
-      background: linear-gradient(135deg, var(--bg2) 0%, var(--bg) 100%);
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .order-head::before {
-      content: '';
-      position: absolute;
-      top: -30px;
-      right: -30px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.05;
-    }
-
-    .order-head::after {
-      content: '';
-      position: absolute;
-      bottom: -20px;
-      left: 40px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.04;
-    }
-
-    .order-id-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-
-    .order-id-value {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 16px;
-      letter-spacing: 0.02em;
-    }
-
-    .order-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .order-customer {
-      font-size: 0.88rem;
-      color: var(--text2);
-      font-weight: 500;
-    }
-
-    .order-customer strong {
-      color: var(--text);
-    }
-
-    /* ── STATUS BADGE ── */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 14px;
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      border: 1.5px solid transparent;
-      transition: all var(--transition);
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-    }
-
-    .status-MENUNGGU {
-      background: var(--status-wait-bg);
-      color: var(--status-wait-text);
-      border-color: var(--status-wait-border);
-    }
-
-    .status-MENUNGGU .status-dot {
-      background: var(--status-wait-text);
-      animation: pulse 1.6s ease infinite;
-    }
-
-    .status-DIPROSES {
-      background: var(--status-proc-bg);
-      color: var(--status-proc-text);
-      border-color: var(--status-proc-border);
-    }
-
-    .status-DIPROSES .status-dot {
-      background: var(--status-proc-text);
-      animation: pulse 1.2s ease infinite;
-    }
-
-    .status-SIAP {
-      background: var(--status-ready-bg);
-      color: var(--status-ready-text);
-      border-color: var(--status-ready-border);
-    }
-
-    .status-SIAP .status-dot {
-      background: var(--status-ready-text);
-    }
-
-    .status-SELESAI {
-      background: var(--status-done-bg);
-      color: var(--status-done-text);
-      border-color: var(--status-done-border);
-    }
-
-    .status-SELESAI .status-dot {
-      background: var(--status-done-text);
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    /* ── PROGRESS TRACKER ── */
-    .progress-section {
-      padding: 24px 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .progress-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 18px;
-    }
-
-    .progress-steps {
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      position: relative;
-    }
-
-    .step-circle {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-      transition: all var(--transition);
-      flex-shrink: 0;
-    }
-
+    /* PROGRESS */
+    .progress-section { padding: 24px 28px; border-bottom: 1px solid var(--border); }
+    .progress-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 18px; }
+    .progress-steps { display: flex; align-items: center; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+    .step-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; transition: all var(--transition); flex-shrink: 0; }
     .step-circle svg { width: 14px; height: 14px; color: var(--text3); }
-
-    .step-circle.active {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
+    .step-circle.active { border-color: var(--accent); background: var(--accent-light); }
     .step-circle.active svg { color: var(--accent); }
-
-    .step-circle.done {
-      border-color: var(--accent);
-      background: var(--accent);
-    }
-
+    .step-circle.done { border-color: var(--accent); background: var(--accent); }
     .step-circle.done svg { color: white; }
-
-    .step-label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: var(--text3);
-      text-align: center;
-      line-height: 1.3;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
+    .step-label { font-size: 0.65rem; font-weight: 600; color: var(--text3); text-align: center; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
     .step.active-step .step-label { color: var(--accent); }
     .step.done-step .step-label { color: var(--text2); }
+    .step-connector { flex: 1; height: 2px; background: var(--border); margin-bottom: 26px; position: relative; overflow: hidden; }
+    .step-connector.filled { background: var(--accent); }
+    .step-connector.filling::after { content:''; position:absolute; inset:0; background:var(--accent); animation:fillLine 0.6s ease forwards; }
+    @keyframes fillLine { from{width:0%} to{width:100%} }
 
-    .step-connector {
-      flex: 1;
-      height: 2px;
-      background: var(--border);
-      margin-bottom: 26px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .step-connector.filled {
-      background: var(--accent);
-    }
-
-    .step-connector.filling::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--accent);
-      animation: fillLine 0.6s ease forwards;
-    }
-
-    @keyframes fillLine {
-      from { width: 0%; }
-      to { width: 100%; }
-    }
-
-    /* ── ITEMS SECTION ── */
-    .items-section {
-      padding: 22px 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 14px;
-    }
-
-    .order-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    /* ITEMS */
+    .items-section { padding: 22px 28px; border-bottom: 1px solid var(--border); }
+    .section-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .order-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .order-item:last-child { border-bottom: none; }
-
-    .item-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .item-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--bg2);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-icon { width: 40px; height: 40px; background: var(--bg2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .item-icon svg { width: 36px; height: 36px; }
+    .item-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .item-qty { font-size: 0.78rem; color: var(--text3); margin-top: 2px; }
+    .item-subtotal { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
 
-    .item-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .item-qty {
-      font-size: 0.78rem;
-      color: var(--text3);
-      margin-top: 2px;
-    }
-
-    .item-subtotal {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-align: right;
-    }
-
-    /* ── TOTAL SECTION ── */
-    .total-section {
-      padding: 18px 28px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .total-row-label {
-      font-size: 0.85rem;
-      color: var(--text3);
-    }
-
-    .total-row-value {
-      font-size: 0.85rem;
-      color: var(--text2);
-    }
-
+    /* TOTAL */
+    .total-section { padding: 18px 28px 22px; border-bottom: 1px solid var(--border); }
+    .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .total-row-label { font-size: 0.85rem; color: var(--text3); }
+    .total-row-value { font-size: 0.85rem; color: var(--text2); }
     .total-row.discount .total-row-value { color: #2e8b57; font-weight: 600; }
+    .total-final { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 14px; border-top: 1.5px dashed var(--border); }
+    .total-final-label { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .total-final-amount { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
 
-    .total-final {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      padding-top: 14px;
-      border-top: 1.5px dashed var(--border);
-    }
-
-    .total-final-label {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .total-final-amount {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* ── PICKUP ── */
-    .pickup-section {
-      padding: 18px 28px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pickup-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg2);
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-    }
-
-    .pickup-icon {
-      width: 38px;
-      height: 38px;
-      background: var(--accent-light);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
+    /* PICKUP */
+    .pickup-section { padding: 18px 28px 22px; border-bottom: 1px solid var(--border); }
+    .pickup-row { display: flex; align-items: center; gap: 12px; background: var(--bg2); border-radius: var(--radius-sm); padding: 14px 16px; }
+    .pickup-icon { width: 38px; height: 38px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .pickup-icon svg { width: 18px; height: 18px; color: var(--accent); }
+    .pickup-info-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+    .pickup-info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
 
-    .pickup-info {}
-
-    .pickup-info-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 3px;
-    }
-
-    .pickup-info-value {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    /* ── QR SECTION ── */
+    /* ─── QR SECTION (SIAP DIAMBIL) ─── */
     .qr-section {
-      padding: 28px 28px 32px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      background: linear-gradient(180deg, var(--ready-bg) 0%, var(--bg) 100%);
+      border-top: 2px solid var(--ready-border);
+      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes qrReveal { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+
+    .qr-hero {
+      width: 100%;
+      padding: 28px 28px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      gap: 10px;
     }
 
-    .qr-label {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      text-align: center;
-    }
-
-    .qr-sub {
-      font-size: 0.82rem;
-      color: var(--text3);
-      text-align: center;
-      line-height: 1.6;
-      max-width: 260px;
-    }
-
-    .qr-wrap {
-      background: white;
-      padding: 14px;
-      border-radius: var(--radius);
-      box-shadow: 0 8px 32px var(--shadow-md);
-      border: 1px solid var(--border);
-    }
-
-    .qr-wrap img {
-      display: block;
-      width: 180px;
-      height: 180px;
-      border-radius: 6px;
-    }
-
-    .qr-badge {
+    .qr-ready-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 6px 16px;
-      background: var(--accent-light);
-      color: var(--accent);
+      background: var(--ready-bg);
+      color: var(--ready-text);
+      border: 1.5px solid var(--ready-border);
       border-radius: 100px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
+    }
+    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ready-text); animation: pulse 1s ease infinite; }
+
+    .qr-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
+    .qr-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 260px; }
+
+    /* Tap to Fullscreen */
+    .qr-tap-wrap {
+      position: relative;
+      cursor: pointer;
+      margin: 20px 0 0;
+      user-select: none;
+    }
+    .qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
+
+    .qr-frame {
+      background: white;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px var(--shadow-md), 0 0 0 1px var(--border);
+      position: relative;
+    }
+    .qr-frame img { display: block; width: 220px; height: 220px; border-radius: 6px; }
+
+    .qr-tap-hint {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
     }
 
-    .qr-badge svg { width: 13px; height: 13px; }
+    .qr-instructions {
+      width: 100%;
+      padding: 32px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-    /* ── REFRESH INFO ── */
-    .refresh-bar {
+    .qr-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .qr-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .qr-step-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .qr-step-text strong { color: var(--text); }
+
+    /* SELESAI SCREEN */
+    .done-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 28px 32px;
+      gap: 16px;
+      text-align: center;
+      background: linear-gradient(180deg, #e6f9ef 0%, var(--bg) 100%);
+      border-top: 2px solid #a0e4bf;
+    }
+    .done-icon-wrap { width: 80px; height: 80px; border-radius: 50%; background: #e6f9ef; border: 3px solid #a0e4bf; display: flex; align-items: center; justify-content: center; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+    .done-icon-wrap svg { width: 36px; height: 36px; color: #0d6b35; }
+    .done-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .done-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.6; max-width: 260px; }
+    .done-rating { display: flex; gap: 8px; margin-top: 6px; }
+    .star-btn { width: 40px; height: 40px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--surface); font-size: 1.3rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .star-btn:hover, .star-btn.active { background: #fff8e6; border-color: #f5c842; transform: scale(1.15); }
+    .done-rating-label { font-size: 0.75rem; color: var(--text3); margin-bottom: 4px; }
+
+    /* REALTIME STATUS BAR */
+    .realtime-bar {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 14px 20px;
+      padding: 12px 20px;
       background: var(--bg2);
       border-radius: var(--radius-sm);
-      margin-top: 20px;
+      margin-top: 16px;
       font-size: 0.78rem;
       color: var(--text3);
     }
+    .realtime-bar-dot { width: 7px; height: 7px; border-radius: 50%; background: #27ae60; animation: rtpulse 1.8s ease infinite; }
 
-    .refresh-bar svg { width: 14px; height: 14px; }
-
-    .refresh-countdown {
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* ── TOAST ── */
-    #toast-container {
+    /* FULLSCREEN QR OVERLAY */
+    .qr-fullscreen {
       position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999;
-      display: flex;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      display: none;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      pointer-events: none;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      animation: fsIn 0.25s ease;
     }
+    @keyframes fsIn { from{opacity:0} to{opacity:1} }
+    .qr-fullscreen.open { display: flex; }
+    .qr-fs-label { color: white; font-size: 0.88rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.7; }
+    .qr-fs-frame { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+    .qr-fs-frame img { display: block; width: min(300px, 80vw); height: min(300px, 80vw); border-radius: 8px; }
+    .qr-fs-close { color: white; font-size: 0.82rem; opacity: 0.6; cursor: pointer; padding: 10px 24px; border: 1px solid rgba(255,255,255,0.25); border-radius: 100px; background: transparent; font-family: 'Inter', sans-serif; transition: opacity 0.2s; }
+    .qr-fs-close:hover { opacity: 1; }
+    .qr-fs-id { color: white; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; opacity: 0.9; }
 
-    .toast {
-      background: var(--text);
-      color: var(--bg);
-      padding: 11px 22px;
-      border-radius: 100px;
-      font-size: 0.83rem;
-      font-weight: 500;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.4s forwards;
-      white-space: nowrap;
+    /* STATUS CHANGED FLASH */
+    @keyframes statusFlash {
+      0%   { background: var(--accent-light); }
+      50%  { background: var(--ready-bg); }
+      100% { background: var(--surface); }
     }
+    .status-changed { animation: statusFlash 1.2s ease; }
 
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* TOAST */
+    #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
+    .toast { padding: 11px 22px; border-radius: 100px; font-size: 0.83rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: toastIn 0.3s ease, toastOut 0.3s ease 2.4s forwards; white-space: nowrap; }
+    .toast.default { background: var(--text); color: var(--bg); }
+    .toast.success { background: #0d6b35; color: white; }
+    .toast.info { background: #1a47a0; color: white; }
+    @keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-8px)} }
 
-    @keyframes toastOut {
-      from { opacity: 1; }
-      to { opacity: 0; transform: translateY(-8px); }
-    }
-
-    /* ── SCROLLBAR ── */
+    /* SCROLLBAR */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-    /* ── QR POPUP MODAL ── */
-    .qr-popup-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(44, 32, 24, 0.55);
-      backdrop-filter: blur(6px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      animation: fadeInOverlay 0.3s ease;
-    }
-
-    @keyframes fadeInOverlay {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .qr-popup-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      box-shadow: 0 24px 64px var(--shadow-lg);
-      width: 100%;
-      max-width: 360px;
-      overflow: hidden;
-      animation: popupSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes popupSlideUp {
-      from { opacity: 0; transform: translateY(30px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .qr-popup-header {
-      background: linear-gradient(135deg, var(--status-ready-bg), var(--bg2));
-      border-bottom: 1px solid var(--status-ready-border);
-      padding: 28px 24px 20px;
-      text-align: center;
-      position: relative;
-    }
-
-    .qr-popup-icon {
-      width: 64px;
-      height: 64px;
-      background: var(--status-ready-bg);
-      border: 2px solid var(--status-ready-border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-    }
-
-    .qr-popup-icon svg { width: 28px; height: 28px; color: var(--status-ready-text); }
-
-    .qr-popup-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .qr-popup-subtitle {
-      font-size: 0.82rem;
-      color: var(--text3);
-      line-height: 1.5;
-    }
-
-    .qr-popup-body {
-      padding: 22px 24px;
-    }
-
-    .qr-popup-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .qr-popup-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .qr-popup-step-num {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: white;
-      font-size: 0.75rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .qr-popup-step-text {
-      font-size: 0.85rem;
-      color: var(--text2);
-      line-height: 1.5;
-    }
-
-    .qr-popup-step-text strong { color: var(--text); }
-
-    .qr-popup-btn {
-      width: 100%;
-      padding: 13px 20px;
-      background: var(--accent);
-      border: none;
-      border-radius: var(--radius-sm);
-      color: white;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background var(--transition), transform var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .qr-popup-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
-    .qr-popup-btn:active { transform: scale(0.98); }
-    .qr-popup-btn svg { width: 16px; height: 16px; }
-
-    .qr-popup-dismiss {
-      display: block;
-      text-align: center;
-      margin-top: 12px;
-      font-size: 0.78rem;
-      color: var(--text3);
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-family: 'Inter', sans-serif;
-      padding: 4px;
-      transition: color var(--transition);
-    }
-
-    .qr-popup-dismiss:hover { color: var(--text2); }
-
-    .qr-popup-pulse {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--status-ready-text);
-      animation: pulse 1.2s ease infinite;
-      margin-right: 6px;
-    }
-
-    /* ── MOBILE ── */
+    /* MOBILE */
     @media (max-width: 520px) {
-      .main { padding: 24px 14px 60px; }
+      .main { padding: 20px 14px 60px; }
       .order-head { padding: 22px 20px 18px; }
       .progress-section { padding: 20px; }
       .items-section { padding: 18px 20px; }
       .total-section { padding: 14px 20px 18px; }
       .pickup-section { padding: 14px 20px 18px; }
-      .qr-section { padding: 24px 20px 28px; }
+      .qr-hero { padding: 24px 20px 0; }
+      .qr-instructions { padding: 28px 20px 22px; }
+      .done-section { padding: 28px 20px 24px; }
       .step-label { font-size: 0.58rem; }
       .order-id-value { font-size: 1.1rem; }
+      .qr-frame img { width: 200px; height: 200px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ══ HEADER ══ -->
-  <header>
-    <div class="header-inner">
-      <a class="logo" href="index.html">MinBite</a>
-      <div class="header-right">
-        <a class="btn-back" href="index.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          Kembali
-        </a>
-        <button class="btn-theme" onclick="toggleTheme()" title="Toggle tema">
-          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-          </svg>
-          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">MinBite</a>
+    <div class="header-right">
+      <div class="realtime-pill" id="realtimePill" style="display:none">
+        <div class="realtime-dot"></div>
+        Live
       </div>
-    </div>
-  </header>
-
-  <!-- ══ MAIN CONTENT ══ -->
-  <main class="main">
-    <div id="stateLoading" class="loading-wrap">
-      <div class="loading-ring"></div>
-      <span class="loading-text">Mengambil data pesanan...</span>
-    </div>
-
-    <div id="stateError" style="display:none">
-      <div class="error-wrap">
-        <div class="error-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div class="error-title">Pesanan Tidak Ditemukan</div>
-        <div class="error-sub" id="errorMsg">ID pesanan tidak valid atau pesanan tidak ada di sistem kami.</div>
-        <a class="btn-back" href="index.html" style="margin-top:8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          Ke Halaman Utama
-        </a>
-      </div>
-    </div>
-
-    <div id="stateOrder" style="display:none">
-      <div class="order-card">
-
-        <!-- ORDER HEAD -->
-        <div class="order-head">
-          <div class="order-id-label">ID Pesanan</div>
-          <div class="order-id-value" id="oId"></div>
-          <div class="order-meta">
-            <div class="order-customer">Untuk: <strong id="oName"></strong></div>
-            <div class="status-badge" id="oStatusBadge">
-              <span class="status-dot"></span>
-              <span id="oStatusText"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- PROGRESS TRACKER -->
-        <div class="progress-section">
-          <div class="progress-label">Status Pesanan</div>
-          <div class="progress-steps">
-            <div class="step" id="step-0">
-              <div class="step-circle" id="sc-0">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                </svg>
-              </div>
-              <div class="step-label">Menunggu</div>
-            </div>
-            <div class="step-connector" id="conn-0"></div>
-            <div class="step" id="step-1">
-              <div class="step-circle" id="sc-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
-                </svg>
-              </div>
-              <div class="step-label">Diproses</div>
-            </div>
-            <div class="step-connector" id="conn-1"></div>
-            <div class="step" id="step-2">
-              <div class="step-circle" id="sc-2">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-                </svg>
-              </div>
-              <div class="step-label">Siap Diambil</div>
-            </div>
-            <div class="step-connector" id="conn-2"></div>
-            <div class="step" id="step-3">
-              <div class="step-circle" id="sc-3">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </div>
-              <div class="step-label">Selesai</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ITEMS -->
-        <div class="items-section">
-          <div class="section-label">Item Pesanan</div>
-          <div id="oItems"></div>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="total-section" id="oTotalSection"></div>
-
-        <!-- PICKUP -->
-        <div class="pickup-section">
-          <div class="pickup-row">
-            <div class="pickup-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <div class="pickup-info">
-              <div class="pickup-info-label">Waktu Pengambilan</div>
-              <div class="pickup-info-value" id="oPickup"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- QR CODE (shown only when SIAP DIAMBIL) -->
-        <div class="qr-section" id="qrSection" style="display:none">
-          <div class="qr-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/>
-            </svg>
-            Siap Diambil
-          </div>
-          <div class="qr-label">Tunjukkan QR ini ke penjual</div>
-          <div class="qr-wrap">
-            <img id="qrImage" src="" alt="QR Code" />
-          </div>
-          <div class="qr-sub">Pesananmu sudah siap! Tunjukkan QR ini ke penjual — penjual tinggal scan untuk lihat detail pesananmu.</div>
-        </div>
-
-      </div>
-
-      <!-- REFRESH BAR -->
-      <div class="refresh-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      <a class="btn-back" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali
+      </a>
+      <button class="btn-theme" onclick="toggleTheme()" title="Toggle tema">
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
-        Otomatis refresh dalam <span class="refresh-countdown" id="refreshCount">15</span> detik
-      </div>
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
     </div>
-  </main>
+  </div>
+</header>
 
-  <!-- ══ QR POPUP MODAL ══ -->
-  <div id="qrPopupOverlay" class="qr-popup-overlay" style="display:none">
-    <div class="qr-popup-card">
-      <div class="qr-popup-header">
-        <div class="qr-popup-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-            <rect x="3" y="14" width="7" height="7"/>
-            <path d="M14 14h3v3h-3z"/><path d="M17 17h3v3h-3z"/><path d="M14 17h.01"/>
-          </svg>
-        </div>
-        <div class="qr-popup-title">🎉 Pesananmu Siap Diambil!</div>
-        <div class="qr-popup-subtitle">
-          <span class="qr-popup-pulse"></span>
-          Tunjukkan QR ini ke penjual saat ambil pesanan
-        </div>
+<main class="main">
+  <div id="stateLoading" class="loading-wrap">
+    <div class="loading-ring"></div>
+    <span class="loading-text">Menghubungkan ke server...</span>
+  </div>
+
+  <div id="stateError" style="display:none">
+    <div class="error-wrap">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
       </div>
-      <div class="qr-popup-body">
-        <div class="qr-popup-steps">
-          <div class="qr-popup-step">
-            <div class="qr-popup-step-num">1</div>
-            <div class="qr-popup-step-text">Pesananmu sedang <strong>diproses</strong> oleh penjual — tunggu sebentar ya!</div>
-          </div>
-          <div class="qr-popup-step">
-            <div class="qr-popup-step-num">2</div>
-            <div class="qr-popup-step-text"><strong>Scroll ke bawah</strong> untuk melihat QR Code yang muncul di halaman ini.</div>
-          </div>
-          <div class="qr-popup-step">
-            <div class="qr-popup-step-num">3</div>
-            <div class="qr-popup-step-text">Saat mengambil pesanan, <strong>tunjukkan QR Code</strong> tersebut kepada penjual.</div>
-          </div>
-        </div>
-        <button class="qr-popup-btn" onclick="closeQrPopup(true)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Oke, Saya Mengerti!
-        </button>
-        <button class="qr-popup-dismiss" onclick="closeQrPopup(false)">Tutup</button>
-      </div>
+      <div class="error-title">Pesanan Tidak Ditemukan</div>
+      <div class="error-sub" id="errorMsg">ID pesanan tidak valid atau pesanan tidak ada.</div>
+      <a class="btn-back" href="index.html" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Ke Halaman Utama
+      </a>
     </div>
   </div>
 
-  <div id="toast-container"></div>
+  <div id="stateOrder" style="display:none">
+    <div class="order-card">
 
-  <script>
-    // ── THEME ──
-    (function () {
-      const t = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', t);
-      document.getElementById('iconSun').style.display = t === 'dark' ? 'block' : 'none';
-      document.getElementById('iconMoon').style.display = t === 'light' ? 'block' : 'none';
-    })();
+      <!-- ORDER HEAD -->
+      <div class="order-head">
+        <div class="order-id-label">ID Pesanan</div>
+        <div class="order-id-value" id="oId"></div>
+        <div class="order-meta">
+          <div class="order-customer">Untuk: <strong id="oName"></strong></div>
+          <div class="status-badge" id="oStatusBadge">
+            <span class="status-dot"></span>
+            <span id="oStatusText"></span>
+          </div>
+        </div>
+      </div>
 
-    function toggleTheme() {
-      const cur = document.documentElement.getAttribute('data-theme');
-      const next = cur === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('iconSun').style.display = next === 'dark' ? 'block' : 'none';
-      document.getElementById('iconMoon').style.display = next === 'light' ? 'block' : 'none';
-    }
-
-    // ── UTILS ──
-    function fmt(n) {
-      return 'Rp' + Number(n).toLocaleString('id-ID');
-    }
-
-    function showToast(msg) {
-      const c = document.getElementById('toast-container');
-      const el = document.createElement('div');
-      el.className = 'toast';
-      el.textContent = msg;
-      c.appendChild(el);
-      setTimeout(() => el.remove(), 2800);
-    }
-
-    function getOrderId() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('id') || '';
-    }
-
-    // ── STATUS MAP ──
-    const STATUS_MAP = {
-      'MENUNGGU':     { step: 0, label: 'Menunggu', cls: 'status-MENUNGGU' },
-      'DIPROSES':     { step: 1, label: 'Diproses', cls: 'status-DIPROSES' },
-      'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil', cls: 'status-SIAP' },
-      'SELESAI':      { step: 3, label: 'Selesai', cls: 'status-SELESAI' }
-    };
-
-    // ── ITEM ICONS ──
-    function getItemIcon(name) {
-      const n = (name || '').toLowerCase();
-      if (n.includes('oreo') || n.includes('bola')) {
-        return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="rb" cx="35%" cy="28%" r="65%">
-              <stop offset="0%" stop-color="#6b4c34"/>
-              <stop offset="45%" stop-color="#3b2a1f"/>
-              <stop offset="100%" stop-color="#22140a"/>
-            </radialGradient>
-          </defs>
-          <circle cx="40" cy="40" r="22" fill="url(#rb)"/>
-          <ellipse cx="33" cy="32" rx="6" ry="5" fill="#8c6045" opacity="0.45"/>
-          <ellipse cx="31" cy="30" rx="3" ry="2" fill="#c09070" opacity="0.28"/>
-          <circle cx="37" cy="28" r="1.4" fill="#f5f0eb"/>
-          <circle cx="45" cy="26" r="1" fill="#f5f0eb"/>
-          <circle cx="50" cy="32" r="1.2" fill="#f5f0eb"/>
-        </svg>`;
-      }
-      if (n.includes('thai') || n.includes('tea')) {
-        return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="rtea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#d2691e"/>
-              <stop offset="100%" stop-color="#a0430a"/>
-            </linearGradient>
-            <clipPath id="rc"><rect x="24" y="14" width="32" height="52" rx="8"/></clipPath>
-          </defs>
-          <rect x="24" y="14" width="32" height="52" rx="8" fill="rgba(200,180,160,0.18)" stroke="rgba(200,160,120,0.4)" stroke-width="1.5"/>
-          <rect x="24" y="36" width="32" height="30" fill="url(#rtea)" clip-path="url(#rc)"/>
-          <rect x="24" y="28" width="32" height="12" fill="#f5e6c8" clip-path="url(#rc)"/>
-          <rect x="50" y="12" width="5" height="34" rx="2.5" fill="#e06030"/>
-          <rect x="51" y="12" width="1.8" height="34" rx="0.9" fill="white" opacity="0.28"/>
-        </svg>`;
-      }
-      return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-        <rect x="20" y="20" width="40" height="40" rx="10" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="8" fill="var(--accent)" opacity="0.5"/>
-      </svg>`;
-    }
-
-    // ── RENDER ORDER ──
-    function renderOrder(data) {
-      // Show state
-      document.getElementById('stateLoading').style.display = 'none';
-      document.getElementById('stateError').style.display = 'none';
-      document.getElementById('stateOrder').style.display = 'block';
-
-      // ID & Name
-      document.getElementById('oId').textContent = data.id || 'N/A';
-      document.getElementById('oName').textContent = data.name || '-';
-
-      // Status badge
-      const rawStatus = (data.status || 'MENUNGGU').toUpperCase().trim();
-      const statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU' };
-      const badge = document.getElementById('oStatusBadge');
-      badge.className = 'status-badge ' + statusInfo.cls;
-      document.getElementById('oStatusText').textContent = statusInfo.label;
-
-      // Progress steps
-      const steps = ['MENUNGGU', 'DIPROSES', 'SIAP DIAMBIL', 'SELESAI'];
-      const activeIdx = steps.indexOf(rawStatus);
-
-      for (let i = 0; i < 4; i++) {
-        const circle = document.getElementById('sc-' + i);
-        const stepEl = document.getElementById('step-' + i);
-        circle.classList.remove('done', 'active');
-        stepEl.classList.remove('done-step', 'active-step');
-
-        if (i < activeIdx) {
-          circle.classList.add('done');
-          stepEl.classList.add('done-step');
-        } else if (i === activeIdx) {
-          circle.classList.add('active');
-          stepEl.classList.add('active-step');
-        }
-      }
-
-      for (let i = 0; i < 3; i++) {
-        const conn = document.getElementById('conn-' + i);
-        conn.classList.remove('filled', 'filling');
-        if (i < activeIdx) conn.classList.add('filled');
-        else if (i === activeIdx - 1) conn.classList.add('filling');
-      }
-
-      // Items
-      const items = data.items || [];
-      let itemsHTML = '';
-      items.forEach(function (item) {
-        const sub = (item.price || 0) * (item.qty || 1);
-        itemsHTML += `
-          <div class="order-item">
-            <div class="item-left">
-              <div class="item-icon">${getItemIcon(item.name)}</div>
-              <div>
-                <div class="item-name">${item.name || '-'}</div>
-                <div class="item-qty">${item.qty || 1} pcs &times; ${fmt(item.price || 0)}</div>
-              </div>
+      <!-- PROGRESS -->
+      <div class="progress-section">
+        <div class="progress-label">Progress Pesanan</div>
+        <div class="progress-steps">
+          <div class="step" id="step-0">
+            <div class="step-circle" id="sc-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             </div>
-            <div class="item-subtotal">${fmt(sub)}</div>
-          </div>`;
-      });
-      document.getElementById('oItems').innerHTML = itemsHTML || '<div style="color:var(--text3);font-size:0.85rem;padding:8px 0">Tidak ada item</div>';
+            <div class="step-label">Menunggu</div>
+          </div>
+          <div class="step-connector" id="conn-0"></div>
+          <div class="step" id="step-1">
+            <div class="step-circle" id="sc-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            </div>
+            <div class="step-label">Diproses</div>
+          </div>
+          <div class="step-connector" id="conn-1"></div>
+          <div class="step" id="step-2">
+            <div class="step-circle" id="sc-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/></svg>
+            </div>
+            <div class="step-label">Siap Diambil</div>
+          </div>
+          <div class="step-connector" id="conn-2"></div>
+          <div class="step" id="step-3">
+            <div class="step-circle" id="sc-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="step-label">Selesai</div>
+          </div>
+        </div>
+      </div>
 
-      // Total
-      const subtotal = data.subtotal || data.items && data.items.reduce(function (s, it) { return s + (it.price || 0) * (it.qty || 1); }, 0) || 0;
-      const discount = data.discount || 0;
-      const total = data.total || (subtotal - discount);
-      let totalHTML = '';
-      if (subtotal && subtotal !== total) {
-        totalHTML += `<div class="total-row"><span class="total-row-label">Subtotal</span><span class="total-row-value">${fmt(subtotal)}</span></div>`;
-      }
-      if (discount > 0) {
-        totalHTML += `<div class="total-row discount"><span class="total-row-label">Diskon Promo</span><span class="total-row-value">- ${fmt(discount)}</span></div>`;
-      }
-      totalHTML += `<div class="total-final"><span class="total-final-label">Total</span><span class="total-final-amount">${fmt(total)}</span></div>`;
-      document.getElementById('oTotalSection').innerHTML = totalHTML;
+      <!-- ITEMS -->
+      <div class="items-section">
+        <div class="section-label">Item Pesanan</div>
+        <div id="oItems"></div>
+      </div>
 
-      // Pickup
-      document.getElementById('oPickup').textContent = data.pickup || '-';
+      <!-- TOTAL -->
+      <div class="total-section" id="oTotalSection"></div>
 
-      // QR Code — hanya tampil saat status SIAP DIAMBIL
-      const qrSection = document.getElementById('qrSection');
-      const normalizedStatus = rawStatus.replace(/\s+/g, ' ').trim();
-      if (normalizedStatus === 'SIAP DIAMBIL') {
-        const orderId = data.id || getOrderId();
-        // URL absolut agar bisa dibuka HP penjual setelah di-scan
-        const absoluteUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId;
-        const qrData = encodeURIComponent(absoluteUrl);
-        const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + qrData;
-        document.getElementById('qrImage').src = qrUrl;
-        qrSection.style.display = 'flex';
-        // Tampilkan popup hanya sekali per sesi
-        if (!sessionStorage.getItem('qrPopupShown_' + orderId)) {
-          setTimeout(function() { showQrPopup(); }, 600);
+      <!-- PICKUP -->
+      <div class="pickup-section">
+        <div class="pickup-row">
+          <div class="pickup-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="pickup-info">
+            <div class="pickup-info-label">Waktu Pengambilan</div>
+            <div class="pickup-info-value" id="oPickup"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR SECTION (Siap Diambil) -->
+      <div class="qr-section" id="qrSection">
+        <div class="qr-hero">
+          <div class="qr-ready-badge">
+            <div class="qr-ready-dot"></div>
+            Pesananmu Siap Diambil!
+          </div>
+          <div class="qr-title">Tunjukkan QR ini ke Penjual</div>
+          <div class="qr-subtitle">Tap QR untuk tampilan penuh — biar penjual gampang scan!</div>
+
+          <div class="qr-tap-wrap" onclick="openFullscreenQR()" title="Tap untuk fullscreen">
+            <div class="qr-frame">
+              <img id="qrImage" src="" alt="QR Code" />
+            </div>
+            <div class="qr-tap-hint">⛶ Tap untuk perbesar</div>
+          </div>
+        </div>
+
+        <div class="qr-instructions">
+          <div class="qr-step">
+            <div class="qr-step-num">1</div>
+            <div class="qr-step-text"><strong>Tap QR di atas</strong> untuk tampilan penuh — layarmu jadi lebih terang & mudah di-scan.</div>
+          </div>
+          <div class="qr-step">
+            <div class="qr-step-num">2</div>
+            <div class="qr-step-text">Tunjukkan ke penjual, lalu <strong>penjual tinggal scan</strong> — otomatis pesananmu selesai!</div>
+          </div>
+          <div class="qr-step">
+            <div class="qr-step-num">3</div>
+            <div class="qr-step-text">Halaman ini akan <strong>update otomatis</strong> saat pesanan sudah diambil. Enjoy! 🎉</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SELESAI SCREEN -->
+      <div class="done-section" id="doneSection">
+        <div class="done-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="done-title">Pesanan Selesai! 🎉</div>
+        <div class="done-sub">Terima kasih sudah pesan di MinBite. Selamat menikmati!</div>
+        <div>
+          <div class="done-rating-label">Gimana pengalaman kamu?</div>
+          <div class="done-rating" id="ratingWrap">
+            <button class="star-btn" onclick="rate(1)">😔</button>
+            <button class="star-btn" onclick="rate(2)">😐</button>
+            <button class="star-btn" onclick="rate(3)">😊</button>
+            <button class="star-btn" onclick="rate(4)">😁</button>
+            <button class="star-btn" onclick="rate(5)">🤩</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /order-card -->
+
+    <!-- REALTIME STATUS BAR -->
+    <div class="realtime-bar">
+      <div class="realtime-bar-dot"></div>
+      Status pesanan dipantau <strong>secara realtime</strong> — otomatis update
+    </div>
+
+  </div><!-- /stateOrder -->
+</main>
+
+<!-- FULLSCREEN QR -->
+<div class="qr-fullscreen" id="qrFullscreen" onclick="closeFullscreenQR()">
+  <div class="qr-fs-label">Tunjukkan ke Penjual</div>
+  <div class="qr-fs-id" id="qrFsId"></div>
+  <div class="qr-fs-frame" onclick="event.stopPropagation()">
+    <img id="qrFullImg" src="" alt="QR Fullscreen" />
+  </div>
+  <button class="qr-fs-close" onclick="closeFullscreenQR()">✕ Tutup</button>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+  // ── THEME ──
+  (function() {
+    var t = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('iconSun').style.display = t === 'dark' ? 'block' : 'none';
+    document.getElementById('iconMoon').style.display = t === 'light' ? 'block' : 'none';
+  })();
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('iconSun').style.display = next === 'dark' ? 'block' : 'none';
+    document.getElementById('iconMoon').style.display = next === 'light' ? 'block' : 'none';
+  }
+
+  // ── UTILS ──
+  function fmt(n) { return 'Rp' + Number(n).toLocaleString('id-ID'); }
+
+  function showToast(msg, type) {
+    var c = document.getElementById('toast-container');
+    var el = document.createElement('div');
+    el.className = 'toast ' + (type || 'default');
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(function() { el.remove(); }, 2800);
+  }
+
+  function getOrderId() {
+    return new URLSearchParams(window.location.search).get('id') || '';
+  }
+
+  // ── STATUS MAP ──
+  var STATUS_MAP = {
+    'MENUNGGU':     { step: 0, label: 'Menunggu',      cls: 'status-MENUNGGU' },
+    'DIPROSES':     { step: 1, label: 'Diproses',      cls: 'status-DIPROSES' },
+    'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil',  cls: 'status-SIAP' },
+    'SELESAI':      { step: 3, label: 'Selesai',        cls: 'status-SELESAI' }
+  };
+
+  // ── ITEM ICONS ──
+  function getItemIcon(name) {
+    var n = (name || '').toLowerCase();
+    if (n.includes('oreo') || n.includes('bola')) {
+      return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="rb" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#6b4c34"/><stop offset="45%" stop-color="#3b2a1f"/><stop offset="100%" stop-color="#22140a"/></radialGradient></defs><circle cx="40" cy="40" r="22" fill="url(#rb)"/><ellipse cx="33" cy="32" rx="6" ry="5" fill="#8c6045" opacity="0.45"/><ellipse cx="31" cy="30" rx="3" ry="2" fill="#c09070" opacity="0.28"/><circle cx="37" cy="28" r="1.4" fill="#f5f0eb"/><circle cx="45" cy="26" r="1" fill="#f5f0eb"/><circle cx="50" cy="32" r="1.2" fill="#f5f0eb"/></svg>`;
+    }
+    if (n.includes('thai') || n.includes('tea')) {
+      return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="rtea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d2691e"/><stop offset="100%" stop-color="#a0430a"/></linearGradient><clipPath id="rc"><rect x="24" y="14" width="32" height="52" rx="8"/></clipPath></defs><rect x="24" y="14" width="32" height="52" rx="8" fill="rgba(200,180,160,0.18)" stroke="rgba(200,160,120,0.4)" stroke-width="1.5"/><rect x="24" y="36" width="32" height="30" fill="url(#rtea)" clip-path="url(#rc)"/><rect x="24" y="28" width="32" height="12" fill="#f5e6c8" clip-path="url(#rc)"/><rect x="50" y="12" width="5" height="34" rx="2.5" fill="#e06030"/><rect x="51" y="12" width="1.8" height="34" rx="0.9" fill="white" opacity="0.28"/></svg>`;
+    }
+    return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="40" height="40" rx="10" fill="var(--accent-light)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="40" cy="40" r="8" fill="var(--accent)" opacity="0.5"/></svg>`;
+  }
+
+  // ── QR FULLSCREEN ──
+  var currentQrUrl = '';
+  function openFullscreenQR() {
+    if (!currentQrUrl) return;
+    document.getElementById('qrFullImg').src = currentQrUrl;
+    document.getElementById('qrFsId').textContent = getOrderId();
+    document.getElementById('qrFullscreen').classList.add('open');
+    // Brightness up
+    if (navigator.maxTouchPoints > 0 && screen.orientation) {
+      try { screen.orientation.lock('portrait'); } catch(e) {}
+    }
+  }
+  function closeFullscreenQR() {
+    document.getElementById('qrFullscreen').classList.remove('open');
+  }
+
+  // ── RATING ──
+  var rated = false;
+  function rate(score) {
+    if (rated) return;
+    rated = true;
+    var btns = document.querySelectorAll('.star-btn');
+    btns.forEach(function(b, i) { if (i < score) b.classList.add('active'); });
+    var labels = ['Wah, sayang sekali 😔', 'Biasa aja 😐', 'Lumayan 😊', 'Asyik! 😁', 'Luar biasa! 🤩'];
+    showToast('Rating diterima: ' + labels[score - 1], 'success');
+  }
+
+  // ── RENDER ORDER ──
+  var prevStatus = null;
+  function renderOrder(data) {
+    document.getElementById('stateLoading').style.display = 'none';
+    document.getElementById('stateError').style.display = 'none';
+    document.getElementById('stateOrder').style.display = 'block';
+    document.getElementById('realtimePill').style.display = 'flex';
+
+    var rawStatus = (data.status || 'MENUNGGU').toUpperCase().trim();
+
+    // Status changed notification
+    if (prevStatus !== null && prevStatus !== rawStatus) {
+      var msgs = {
+        'DIPROSES':     '👨‍🍳 Pesananmu sedang diproses!',
+        'SIAP DIAMBIL': '🎉 Pesananmu siap diambil!',
+        'SELESAI':      '✅ Pesanan selesai. Terima kasih!'
+      };
+      if (msgs[rawStatus]) {
+        showToast(msgs[rawStatus], rawStatus === 'SELESAI' ? 'success' : 'info');
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        // Flash card
+        var card = document.querySelector('.order-card');
+        card.classList.remove('status-changed');
+        void card.offsetWidth;
+        card.classList.add('status-changed');
+        setTimeout(function() { card.classList.remove('status-changed'); }, 1200);
+        // Auto scroll to QR if siap
+        if (rawStatus === 'SIAP DIAMBIL') {
+          setTimeout(function() {
+            document.getElementById('qrSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 400);
         }
-      } else {
-        qrSection.style.display = 'none';
       }
     }
+    prevStatus = rawStatus;
 
-    // ── FETCH ORDER ──
-    function showError(msg) {
-      document.getElementById('stateLoading').style.display = 'none';
-      document.getElementById('stateOrder').style.display = 'none';
-      document.getElementById('stateError').style.display = 'block';
-      document.getElementById('errorMsg').textContent = msg || 'ID pesanan tidak valid atau pesanan tidak ada.';
+    // ID & Name
+    document.getElementById('oId').textContent = data.id || 'N/A';
+    document.getElementById('oName').textContent = data.name || '-';
+
+    // Status badge
+    var statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU' };
+    var badge = document.getElementById('oStatusBadge');
+    badge.className = 'status-badge ' + statusInfo.cls;
+    document.getElementById('oStatusText').textContent = statusInfo.label;
+
+    // Progress
+    var steps = ['MENUNGGU', 'DIPROSES', 'SIAP DIAMBIL', 'SELESAI'];
+    var activeIdx = steps.indexOf(rawStatus);
+    for (var i = 0; i < 4; i++) {
+      var circle = document.getElementById('sc-' + i);
+      var stepEl = document.getElementById('step-' + i);
+      circle.classList.remove('done', 'active');
+      stepEl.classList.remove('done-step', 'active-step');
+      if (i < activeIdx) { circle.classList.add('done'); stepEl.classList.add('done-step'); }
+      else if (i === activeIdx) { circle.classList.add('active'); stepEl.classList.add('active-step'); }
+    }
+    for (var j = 0; j < 3; j++) {
+      var conn = document.getElementById('conn-' + j);
+      conn.classList.remove('filled', 'filling');
+      if (j < activeIdx) conn.classList.add('filled');
+      else if (j === activeIdx - 1) conn.classList.add('filling');
     }
 
-    var orderId = getOrderId();
-    var refreshInterval = null;
-    var countdownInterval = null;
-    var refreshSec = 15;
+    // Items
+    var items = data.items || [];
+    var itemsHTML = '';
+    items.forEach(function(item) {
+      var sub = (item.price || 0) * (item.qty || 1);
+      itemsHTML += `<div class="order-item">
+        <div class="item-left">
+          <div class="item-icon">${getItemIcon(item.name)}</div>
+          <div>
+            <div class="item-name">${item.name || '-'}</div>
+            <div class="item-qty">${item.qty || 1} pcs &times; ${fmt(item.price || 0)}</div>
+          </div>
+        </div>
+        <div class="item-subtotal">${fmt(sub)}</div>
+      </div>`;
+    });
+    document.getElementById('oItems').innerHTML = itemsHTML || '<div style="color:var(--text3);font-size:0.85rem;padding:8px 0">Tidak ada item</div>';
 
-    function startCountdown() {
-      refreshSec = 15;
-      document.getElementById('refreshCount').textContent = refreshSec;
-      if (countdownInterval) clearInterval(countdownInterval);
-      countdownInterval = setInterval(function () {
-        refreshSec -= 1;
-        var el = document.getElementById('refreshCount');
-        if (el) el.textContent = refreshSec;
-        if (refreshSec <= 0) {
-          refreshSec = 15;
-          if (el) el.textContent = refreshSec;
-        }
-      }, 1000);
+    // Total
+    var subtotal = data.subtotal || (items.reduce(function(s, it) { return s + (it.price || 0) * (it.qty || 1); }, 0));
+    var discount = data.discount || 0;
+    var total = data.total || (subtotal - discount);
+    var totalHTML = '';
+    if (subtotal && subtotal !== total) totalHTML += `<div class="total-row"><span class="total-row-label">Subtotal</span><span class="total-row-value">${fmt(subtotal)}</span></div>`;
+    if (discount > 0) totalHTML += `<div class="total-row discount"><span class="total-row-label">Diskon Promo</span><span class="total-row-value">- ${fmt(discount)}</span></div>`;
+    totalHTML += `<div class="total-final"><span class="total-final-label">Total</span><span class="total-final-amount">${fmt(total)}</span></div>`;
+    document.getElementById('oTotalSection').innerHTML = totalHTML;
+
+    // Pickup
+    document.getElementById('oPickup').textContent = data.pickup || '-';
+
+    // QR / Done sections
+    var qrSection = document.getElementById('qrSection');
+    var doneSection = document.getElementById('doneSection');
+    var normalized = rawStatus.replace(/\s+/g, ' ').trim();
+
+    if (normalized === 'SIAP DIAMBIL') {
+      var orderId = data.id || getOrderId();
+      var absoluteUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId;
+      var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' + encodeURIComponent(absoluteUrl);
+      document.getElementById('qrImage').src = qrUrl;
+      currentQrUrl = qrUrl;
+      qrSection.style.display = 'flex';
+      doneSection.style.display = 'none';
+    } else if (normalized === 'SELESAI') {
+      qrSection.style.display = 'none';
+      doneSection.style.display = 'flex';
+    } else {
+      qrSection.style.display = 'none';
+      doneSection.style.display = 'none';
     }
+  }
 
-    async function fetchOrder(silent) {
-      if (!orderId) {
-        showError('Tidak ada ID pesanan di URL. Pastikan link yang kamu buka sudah benar.');
+  function showError(msg) {
+    document.getElementById('stateLoading').style.display = 'none';
+    document.getElementById('stateOrder').style.display = 'none';
+    document.getElementById('stateError').style.display = 'block';
+    document.getElementById('errorMsg').textContent = msg || 'ID pesanan tidak valid.';
+  }
+
+  // ── REALTIME LISTENER ──
+  var orderId = getOrderId();
+  var unsubscribe = null;
+
+  function startRealtimeListener() {
+    if (!orderId) {
+      showError('Tidak ada ID pesanan di URL. Pastikan link yang kamu buka sudah benar.');
+      return;
+    }
+    if (!db) { showError('Koneksi ke server gagal.'); return; }
+
+    unsubscribe = db.collection('orders').doc(orderId).onSnapshot(function(snap) {
+      if (!snap.exists) {
+        showError('Pesanan dengan ID "' + orderId + '" tidak ditemukan.');
         return;
       }
-
-      if (!silent) {
-        document.getElementById('stateLoading').style.display = 'flex';
-        document.getElementById('stateError').style.display = 'none';
-        document.getElementById('stateOrder').style.display = 'none';
-      }
-
-      try {
-        var docRef = db.collection('orders').doc(orderId);
-        var snap = await docRef.get();
-
-        if (!snap.exists) {
-          showError('Pesanan dengan ID "' + orderId + '" tidak ditemukan. Pastikan ID pesanan sudah benar.');
-          return;
-        }
-
-        var data = snap.data();
-        renderOrder(data);
-        if (silent) showToast('Data pesanan diperbarui');
-      } catch (err) {
-        console.error(err);
-        if (!silent) showError('Gagal mengambil data. Periksa koneksi internet kamu.');
-        else showToast('Gagal memperbarui data. Mencoba lagi nanti...');
-      }
-    }
-
-    function startAutoRefresh() {
-      if (refreshInterval) clearInterval(refreshInterval);
-      startCountdown();
-      refreshInterval = setInterval(function () {
-        fetchOrder(true);
-        startCountdown();
-      }, 15000);
-    }
-
-    // ── QR POPUP ──
-    function showQrPopup() {
-      document.getElementById('qrPopupOverlay').style.display = 'flex';
-    }
-
-    function closeQrPopup(scrollToQr) {
-      const overlay = document.getElementById('qrPopupOverlay');
-      overlay.style.animation = 'none';
-      overlay.style.opacity = '0';
-      overlay.style.transition = 'opacity 0.25s ease';
-      setTimeout(function() {
-        overlay.style.display = 'none';
-        overlay.style.opacity = '';
-        overlay.style.transition = '';
-      }, 250);
-      sessionStorage.setItem('qrPopupShown_' + orderId, '1');
-      if (scrollToQr) {
-        setTimeout(function() {
-          const qr = document.getElementById('qrSection');
-          if (qr) qr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-      }
-    }
-
-    // Tutup popup kalau klik di luar card
-    document.getElementById('qrPopupOverlay').addEventListener('click', function(e) {
-      if (e.target === this) closeQrPopup(false);
+      renderOrder(snap.data());
+    }, function(err) {
+      console.error(err);
+      showError('Gagal memuat data. Cek koneksi internet kamu.');
     });
+  }
 
-    // ── INIT ──
-    fetchOrder(false);
-    startAutoRefresh();
-  </script>
+  startRealtimeListener();
+</script>
 </body>
 </html>
