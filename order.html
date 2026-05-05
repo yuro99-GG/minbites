@@ -498,6 +498,106 @@
     .waiting-tip-text { font-size: 0.8rem; color: var(--text2); line-height: 1.4; }
     .waiting-tip-text strong { color: var(--text); }
 
+    /* ─── DIPROSES QR SECTION ─── */
+    .diproses-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      background: linear-gradient(180deg, #e8f0fe 0%, var(--bg) 100%);
+      border-top: 2px solid #b6d0fb;
+      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    [data-theme="dark"] .diproses-section {
+      background: linear-gradient(180deg, #0d1a3a 0%, var(--bg) 100%);
+      border-top-color: #2a4a8a;
+    }
+    .diproses-hero {
+      width: 100%;
+      padding: 28px 28px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .diproses-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: #e8f0fe;
+      color: #1a47a0;
+      border: 1.5px solid #b6d0fb;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    [data-theme="dark"] .diproses-badge {
+      background: #0d1a3a;
+      color: #7aacfb;
+      border-color: #2a4a8a;
+    }
+    .diproses-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #1a47a0; animation: pulse 1.2s ease infinite; }
+    [data-theme="dark"] .diproses-badge-dot { background: #7aacfb; }
+    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
+    .diproses-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 270px; }
+    .diproses-qr-tap-wrap {
+      position: relative;
+      cursor: pointer;
+      margin: 20px 0 0;
+      user-select: none;
+    }
+    .diproses-qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
+    .diproses-qr-frame {
+      background: white;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(26,71,160,0.15), 0 0 0 1px #b6d0fb;
+    }
+    .diproses-qr-frame img { display: block; width: 200px; height: 200px; border-radius: 6px; }
+    .diproses-qr-tap-hint {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a47a0;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+    }
+    .diproses-info-wrap {
+      width: 100%;
+      padding: 32px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .diproses-info-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid #b6d0fb;
+      border-radius: var(--radius-sm);
+    }
+    .diproses-info-icon { width: 26px; height: 26px; border-radius: 50%; background: #e8f0fe; color: #1a47a0; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    [data-theme="dark"] .diproses-info-icon { background: #0d1a3a; color: #7aacfb; }
+    .diproses-info-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .diproses-info-text strong { color: var(--text); }
+    @media (max-width: 520px) {
+      .diproses-hero { padding: 22px 16px 0; }
+      .diproses-info-wrap { padding: 26px 16px 22px; }
+      .diproses-qr-frame img { width: 180px; height: 180px; }
+    }
+
     /* SCROLLBAR */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
@@ -681,6 +781,40 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- DIPROSES SECTION -->
+      <div class="diproses-section" id="diprosesSection">
+        <div class="diproses-hero">
+          <div class="diproses-badge">
+            <div class="diproses-badge-dot"></div>
+            Sedang Diproses
+          </div>
+          <div class="diproses-title">Pesananmu Sedang Dibuat 👨‍🍳</div>
+          <div class="diproses-subtitle">Sambil tunggu, simpan QR ini — kamu akan butuh saat ambil pesanan!</div>
+
+          <div class="diproses-qr-tap-wrap" id="diprosesQrWrap" onclick="openFullscreenQR()" title="Tap untuk fullscreen">
+            <div class="diproses-qr-frame">
+              <img id="diprosesQrImage" src="" alt="QR Code" />
+            </div>
+            <div class="diproses-qr-tap-hint">⛶ Tap untuk perbesar</div>
+          </div>
+        </div>
+
+        <div class="diproses-info-wrap">
+          <div class="diproses-info-note">
+            <div class="diproses-info-icon">ℹ️</div>
+            <div class="diproses-info-text">QR ini adalah <strong>bukti pesananmu</strong>. Simpan halaman ini & tunjukkan ke penjual saat mengambil nanti.</div>
+          </div>
+          <div class="diproses-info-note">
+            <div class="diproses-info-icon">🔔</div>
+            <div class="diproses-info-text">Halaman ini <strong>update otomatis</strong> — saat pesanan siap, status langsung berubah tanpa perlu refresh!</div>
+          </div>
+          <div class="diproses-info-note">
+            <div class="diproses-info-icon">⏱️</div>
+            <div class="diproses-info-text">Biasanya selesai dalam <strong>beberapa menit</strong>. Santai dulu ya! ☕</div>
+          </div>
+        </div>
       </div>
 
       <!-- ITEMS (hidden) -->
@@ -958,12 +1092,14 @@
 
     // QR / Done / Waiting sections
     var waitingSection = document.getElementById('waitingSection');
+    var diprosesSection = document.getElementById('diprosesSection');
     var qrSection = document.getElementById('qrSection');
     var doneSection = document.getElementById('doneSection');
     var normalized = rawStatus.replace(/\s+/g, ' ').trim();
 
     if (normalized === 'MENUNGGU') {
       waitingSection.style.display = 'flex';
+      diprosesSection.style.display = 'none';
       qrSection.style.display = 'none';
       doneSection.style.display = 'none';
       // Start elapsed timer
@@ -978,6 +1114,17 @@
           else el.textContent = Math.floor(sec/3600) + ' jam ' + Math.floor((sec%3600)/60) + ' menit';
         }, 1000);
       }
+    } else if (normalized === 'DIPROSES') {
+      var orderId2 = data.id || getOrderId();
+      var absoluteUrl2 = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId2;
+      var qrUrl2 = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' + encodeURIComponent(absoluteUrl2);
+      document.getElementById('diprosesQrImage').src = qrUrl2;
+      currentQrUrl = qrUrl2;
+      waitingSection.style.display = 'none';
+      if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
+      diprosesSection.style.display = 'flex';
+      qrSection.style.display = 'none';
+      doneSection.style.display = 'none';
     } else if (normalized === 'SIAP DIAMBIL') {
       var orderId = data.id || getOrderId();
       var absoluteUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId;
@@ -986,15 +1133,18 @@
       currentQrUrl = qrUrl;
       waitingSection.style.display = 'none';
       if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
+      diprosesSection.style.display = 'none';
       qrSection.style.display = 'flex';
       doneSection.style.display = 'none';
     } else if (normalized === 'SELESAI') {
       waitingSection.style.display = 'none';
       if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
+      diprosesSection.style.display = 'none';
       qrSection.style.display = 'none';
       doneSection.style.display = 'flex';
     } else {
       waitingSection.style.display = 'none';
+      diprosesSection.style.display = 'none';
       qrSection.style.display = 'none';
       doneSection.style.display = 'none';
     }
