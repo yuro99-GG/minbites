@@ -1872,17 +1872,74 @@
       // ── VALIDASI JURUSAN ──
       if (!jurusan) { highlightError('fJurusan', 'Pilih jurusan terlebih dahulu'); return; }
 
-      // ── VALIDASI NO. WHATSAPP ──
+      // ── VALIDASI NO. WHATSAPP (ADVANCED) ──
       if (!noWA) { highlightError('fWA', 'Nomor WhatsApp tidak boleh kosong'); return; }
-      const waCleaned = noWA.replace(/[\s\-().]/g, '');
-      const waRegex = /^(08|\+628|628)\d{8,11}$/;
-      if (!waRegex.test(waCleaned)) {
-        highlightError('fWA', 'No. WA tidak valid — gunakan format 08xxxx (10-13 digit)');
+      const waCleaned = noWA.replace(/[\s\-().+]/g, '');
+
+      // Normalize to 08xxx
+      let waNorm = waCleaned;
+      if (waNorm.startsWith('628')) waNorm = '0' + waNorm.slice(2);
+      if (waNorm.startsWith('+628')) waNorm = '0' + waNorm.slice(3);
+
+      // Format dasar
+      if (!/^08\d{8,11}$/.test(waNorm)) {
+        highlightError('fWA', 'Format nomor tidak valid — gunakan 08xxxx (10–13 digit)');
         return;
       }
-      // Cegah nomor palsu: semua digit sama atau sekuensial
-      const digits = waCleaned.replace(/\D/g, '');
-      if (/^(\d)\1{7,}/.test(digits.slice(2))) { highlightError('fWA', 'No. WA tidak valid'); return; }
+
+      // Validasi prefix operator Indonesia yang dikenal
+      const validPrefixes = [
+        // Telkomsel
+        '0811','0812','0813','0821','0822','0823','0851','0852','0853',
+        // Indosat
+        '0814','0815','0816','0855','0856','0857','0858',
+        // XL
+        '0817','0818','0819','0859','0877','0878',
+        // Axis
+        '0831','0832','0833','0838',
+        // Three (Tri)
+        '0895','0896','0897','0898','0899',
+        // Smartfren
+        '0881','0882','0883','0884','0885','0886','0887','0888','0889',
+      ];
+      const prefix4 = waNorm.slice(0, 4);
+      if (!validPrefixes.includes(prefix4)) {
+        highlightError('fWA', 'Prefix nomor tidak dikenal — pastikan nomor WA aktif');
+        return;
+      }
+
+      // Ambil digit setelah "08"
+      const waDigits = waNorm.slice(2);
+
+      // Semua digit sama (08888888888)
+      if (/^(\d)\1+$/.test(waDigits)) {
+        highlightError('fWA', 'Nomor tidak valid (semua digit sama)');
+        return;
+      }
+
+      // Digit berurutan naik (0812345678)
+      const isAsc = waDigits.split('').every((d, i, a) => i === 0 || +d === +a[i-1] + 1);
+      if (isAsc) { highlightError('fWA', 'Nomor terdeteksi palsu (digit berurutan)'); return; }
+
+      // Digit berurutan turun (0898765432)
+      const isDesc = waDigits.split('').every((d, i, a) => i === 0 || +d === +a[i-1] - 1);
+      if (isDesc) { highlightError('fWA', 'Nomor terdeteksi palsu (digit berurutan menurun)'); return; }
+
+      // Pola palsu terkenal
+      const fakePatterns = ['12345678','87654321','00000000','11111111','22222222','33333333',
+                            '123123123','456789','987654','111222333','123456789'];
+      if (fakePatterns.some(p => waDigits.includes(p))) {
+        highlightError('fWA', 'Nomor terdeteksi sebagai nomor tes/palsu');
+        return;
+      }
+
+      // Cek repetisi blok (08121212121 atau 08123123123)
+      const half = Math.floor(waDigits.length / 2);
+      const block = waDigits.slice(0, half);
+      if (waDigits.startsWith(block.repeat(2))) {
+        highlightError('fWA', 'Nomor terdeteksi palsu (pola berulang)');
+        return;
+      }
 
       // ── VALIDASI WAKTU AMBIL ──
       if (!waktu) { highlightError('fWaktu', 'Waktu ambil tidak boleh kosong'); return; }
@@ -1912,7 +1969,7 @@
         name: nama,
         kelas,
         jurusan,
-        phone: noWA,
+        phone: waNorm,
         items: cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
         subtotal,
         discount: discAmt,
@@ -2058,4 +2115,4 @@
     observer.observe(checkoutModal, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
-                </html>
+  </html>
