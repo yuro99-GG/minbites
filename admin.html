@@ -28,6 +28,7 @@
       alert("Koneksi ke server gagal. Pastikan kamu membuka halaman ini melalui hosting.");
     }
   </script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -281,6 +282,206 @@
       .header-inner { padding: 0 14px; }
       .promo-add-row { grid-template-columns: 1fr; }
     }
+
+    /* ── QR SCAN BUTTON ── */
+    .btn-scan {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 16px; border-radius: 100px;
+      background: var(--accent); border: none; color: white;
+      font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all var(--transition); white-space: nowrap;
+      box-shadow: 0 2px 10px rgba(200,149,108,0.35);
+    }
+    .btn-scan:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(200,149,108,0.45); }
+    .btn-scan svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ── SCANNER MODAL ── */
+    #scannerModal {
+      position: fixed; inset: 0; background: rgba(10,8,6,0.92);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      z-index: 2000; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    #scannerModal.open { opacity: 1; pointer-events: all; }
+    .scanner-box {
+      width: 100%; max-width: 380px;
+      background: #1c1510; border-radius: 24px;
+      overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .scanner-header {
+      padding: 18px 20px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .scanner-title-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .scanner-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: #f0e8df; }
+    .scanner-subtitle { font-size: 0.7rem; color: rgba(240,232,223,0.4); }
+    .scanner-close {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.07); color: #f0e8df;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .scanner-close:hover { background: rgba(255,255,255,0.16); }
+    .scanner-close svg { width: 13px; height: 13px; }
+
+    /* hide default html5-qrcode UI noise */
+    #qr-reader { position: relative; }
+    #qr-reader img[alt="Info icon"] { display: none !important; }
+    #qr-reader__header_message { display: none !important; }
+    #qr-reader__status_span { display: none !important; }
+    #qr-reader__dashboard_section_csr span { display: none !important; }
+    #qr-reader select { display: none !important; }
+    #qr-reader video { width: 100% !important; display: block; }
+    #qr-reader__scan_region { position: relative; overflow: hidden; }
+    #qr-reader__scan_region::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(transparent 40%, rgba(200,149,108,0.06) 100%);
+      pointer-events: none;
+    }
+
+    /* Viewfinder overlay */
+    .scanner-viewfinder {
+      position: absolute; inset: 0; pointer-events: none;
+      display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+    .vf-frame {
+      width: 200px; height: 200px; position: relative;
+    }
+    .vf-corner {
+      position: absolute; width: 26px; height: 26px;
+      border-color: var(--accent); border-style: solid;
+    }
+    .vf-corner.tl { top:0; left:0; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+    .vf-corner.tr { top:0; right:0; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+    .vf-corner.bl { bottom:0; left:0; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+    .vf-corner.br { bottom:0; right:0; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+    .vf-scan-line {
+      position: absolute; left: 6px; right: 6px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scanLine 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    @keyframes scanLine {
+      0%   { top: 6px;   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: calc(100% - 8px); opacity: 0; }
+    }
+
+    .scanner-footer { padding: 14px 20px 18px; text-align: center; }
+    .scanner-hint { font-size: 0.75rem; color: rgba(240,232,223,0.4); line-height: 1.6; }
+    .scanner-status-text { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin-top: 6px; min-height: 20px; }
+
+    /* ── SCAN SUCCESS OVERLAY ── */
+    #scanSuccess {
+      position: fixed; inset: 0; z-index: 3000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    #scanSuccess.show { pointer-events: all; }
+
+    .success-backdrop {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(13,107,53,0.97) 0%, rgba(5,50,25,0.99) 100%);
+      opacity: 0; transition: opacity 0.35s ease;
+    }
+    #scanSuccess.show .success-backdrop { opacity: 1; }
+
+    /* Ripple rings */
+    .success-rings {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .success-ring {
+      position: absolute; border-radius: 50%;
+      border: 2px solid rgba(160, 228, 191, 0.25);
+      opacity: 0;
+    }
+    #scanSuccess.show .success-ring { animation: ringExpand 1.8s ease forwards; }
+    .success-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0.1s !important; }
+    .success-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: 0.3s !important; }
+    .success-ring:nth-child(3) { width: 300px; height: 300px; animation-delay: 0.5s !important; }
+    .success-ring:nth-child(4) { width: 420px; height: 420px; animation-delay: 0.7s !important; }
+    @keyframes ringExpand {
+      0%   { transform: scale(0.3); opacity: 0.8; }
+      100% { transform: scale(1);   opacity: 0; }
+    }
+
+    /* Confetti */
+    .confetti-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .confetti-particle {
+      position: absolute; top: -12px; opacity: 0;
+      border-radius: var(--cr, 2px);
+    }
+    #scanSuccess.show .confetti-particle {
+      animation: confettiFall var(--dur, 1.4s) cubic-bezier(0.25,0.46,0.45,0.94) var(--delay, 0s) forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(var(--spin, 540deg)) scale(0.6); opacity: 0; }
+    }
+
+    /* Content */
+    .success-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      transform: scale(0.4) translateY(30px); opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    #scanSuccess.show .success-content {
+      transform: scale(1) translateY(0); opacity: 1;
+    }
+    .success-check {
+      width: 96px; height: 96px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      border: 3px solid rgba(255,255,255,0.3);
+      box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+    }
+    #scanSuccess.show .success-check {
+      animation: checkGlow 0.6s ease 0.2s both, checkPulseOut 1.5s ease 0.5s forwards;
+    }
+    @keyframes checkGlow {
+      0%   { transform: scale(0.5); opacity: 0; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes checkPulseOut {
+      0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+      50%  { box-shadow: 0 0 0 24px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .success-check svg { width: 48px; height: 48px; color: white; }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700; color: white;
+      text-align: center; letter-spacing: -0.02em;
+    }
+    .success-order-id {
+      font-size: 0.9rem; color: rgba(160,228,191,0.85);
+      font-weight: 600; letter-spacing: 0.04em; text-align: center;
+      background: rgba(255,255,255,0.1); padding: 5px 18px;
+      border-radius: 100px; border: 1px solid rgba(255,255,255,0.15);
+    }
+    .success-sub {
+      font-size: 0.82rem; color: rgba(255,255,255,0.55); text-align: center;
+    }
+    .success-dismiss {
+      margin-top: 8px; padding: 9px 28px;
+      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25);
+      border-radius: 100px; color: white; font-family: 'Inter', sans-serif;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .success-dismiss:hover { background: rgba(255,255,255,0.25); }
   </style>
 </head>
 <body>
@@ -309,6 +510,15 @@
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite</a>
     <div class="header-right">
+      <button class="btn-scan" onclick="openScanner()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/>
+          <rect x="3" y="16" width="5" height="5" rx="1"/>
+          <path d="M16 16h2v2h-2z"/><path d="M16 20h2v2h-2z"/><path d="M20 16h2v2h-2z"/><path d="M20 20h2v2h-2z"/>
+          <path d="M3 9v2"/><path d="M9 3h2"/><path d="M3 13h2"/><path d="M13 3v2"/><path d="M21 9v2"/><path d="M9 21h2"/>
+        </svg>
+        Scan QR
+      </button>
       <div class="live-pill">
         <span class="live-dot"></span>
         Refresh: <strong id="refreshCountHeader" style="color:var(--accent);margin-left:3px;">10</strong>s
@@ -442,6 +652,62 @@
       <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
       <button class="btn" id="modalConfirmBtn" onclick="executeModalAction()">Konfirmasi</button>
     </div>
+  </div>
+</div>
+
+<!-- ── QR SCANNER MODAL ── -->
+<div id="scannerModal">
+  <div class="scanner-box">
+    <div class="scanner-header">
+      <div class="scanner-title-wrap">
+        <div class="scanner-title">Scan QR Pesanan</div>
+        <div class="scanner-subtitle">Hanya untuk konfirmasi pengambilan</div>
+      </div>
+      <button class="scanner-close" onclick="closeScanner()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div style="position:relative;">
+      <div id="qr-reader"></div>
+      <div class="scanner-viewfinder" id="scannerViewfinder">
+        <div class="vf-frame">
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="vf-scan-line"></div>
+        </div>
+      </div>
+    </div>
+    <div class="scanner-footer">
+      <div class="scanner-hint">Arahkan kamera ke QR Code pada halaman pesanan pelanggan</div>
+      <div class="scanner-status-text" id="scannerStatusText"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCAN SUCCESS OVERLAY ── -->
+<div id="scanSuccess">
+  <div class="confetti-wrap" id="confettiWrap"></div>
+  <div class="success-backdrop"></div>
+  <div class="success-rings">
+    <div class="success-ring"></div>
+    <div class="success-ring"></div>
+    <div class="success-ring"></div>
+    <div class="success-ring"></div>
+  </div>
+  <div class="success-content">
+    <div class="success-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <div class="success-title">Pesanan Selesai!</div>
+    <div class="success-order-id" id="scanSuccessId">MB-XXXXXX</div>
+    <div class="success-sub" id="scanSuccessName">Berhasil dikonfirmasi & ditandai SELESAI</div>
+    <button class="success-dismiss" onclick="hideScanSuccess()">Tutup</button>
   </div>
 </div>
 
@@ -852,4 +1118,4 @@ function getItemIconSVG(name){
 }
 </script>
 </body>
-</html>
+  </html>
