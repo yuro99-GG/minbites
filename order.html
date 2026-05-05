@@ -824,8 +824,8 @@
     }
 
     .qr-popup-header {
-      background: linear-gradient(135deg, var(--status-proc-bg), var(--bg2));
-      border-bottom: 1px solid var(--status-proc-border);
+      background: linear-gradient(135deg, var(--status-ready-bg), var(--bg2));
+      border-bottom: 1px solid var(--status-ready-border);
       padding: 28px 24px 20px;
       text-align: center;
       position: relative;
@@ -834,8 +834,8 @@
     .qr-popup-icon {
       width: 64px;
       height: 64px;
-      background: var(--status-proc-bg);
-      border: 2px solid var(--status-proc-border);
+      background: var(--status-ready-bg);
+      border: 2px solid var(--status-ready-border);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -843,7 +843,7 @@
       margin: 0 auto 14px;
     }
 
-    .qr-popup-icon svg { width: 28px; height: 28px; color: var(--status-proc-text); }
+    .qr-popup-icon svg { width: 28px; height: 28px; color: var(--status-ready-text); }
 
     .qr-popup-title {
       font-family: 'Playfair Display', serif;
@@ -942,7 +942,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--status-proc-text);
+      background: var(--status-ready-text);
       animation: pulse 1.2s ease infinite;
       margin-right: 6px;
     }
@@ -1095,19 +1095,19 @@
           </div>
         </div>
 
-        <!-- QR CODE (shown only when DIPROSES) -->
+        <!-- QR CODE (shown only when SIAP DIAMBIL) -->
         <div class="qr-section" id="qrSection" style="display:none">
           <div class="qr-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/>
             </svg>
-            Sedang Diproses
+            Siap Diambil
           </div>
           <div class="qr-label">Tunjukkan QR ini ke penjual</div>
           <div class="qr-wrap">
             <img id="qrImage" src="" alt="QR Code" />
           </div>
-          <div class="qr-sub">Tunjukkan QR code ini kepada penjual saat mengambil pesananmu.</div>
+          <div class="qr-sub">Pesananmu sudah siap! Tunjukkan QR ini ke penjual — penjual tinggal scan untuk lihat detail pesananmu.</div>
         </div>
 
       </div>
@@ -1134,10 +1134,10 @@
             <path d="M14 14h3v3h-3z"/><path d="M17 17h3v3h-3z"/><path d="M14 17h.01"/>
           </svg>
         </div>
-        <div class="qr-popup-title">🎉 Pesananmu Sedang Diproses!</div>
+        <div class="qr-popup-title">🎉 Pesananmu Siap Diambil!</div>
         <div class="qr-popup-subtitle">
           <span class="qr-popup-pulse"></span>
-          QR Code kamu sudah siap di bawah
+          Tunjukkan QR ini ke penjual saat ambil pesanan
         </div>
       </div>
       <div class="qr-popup-body">
@@ -1335,12 +1335,14 @@
       // Pickup
       document.getElementById('oPickup').textContent = data.pickup || '-';
 
-      // QR Code — hanya tampil saat status DIPROSES
+      // QR Code — hanya tampil saat status SIAP DIAMBIL
       const qrSection = document.getElementById('qrSection');
       const normalizedStatus = rawStatus.replace(/\s+/g, ' ').trim();
-      if (normalizedStatus === 'DIPROSES') {
+      if (normalizedStatus === 'SIAP DIAMBIL') {
         const orderId = data.id || getOrderId();
-        const qrData = encodeURIComponent('order.html?id=' + orderId);
+        // URL absolut agar bisa dibuka HP penjual setelah di-scan
+        const absoluteUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId;
+        const qrData = encodeURIComponent(absoluteUrl);
         const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + qrData;
         document.getElementById('qrImage').src = qrUrl;
         qrSection.style.display = 'flex';
