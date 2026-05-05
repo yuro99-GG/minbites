@@ -1095,6 +1095,185 @@ function deletePromo(code){
   showToast('Promo '+code+' dihapus');
 }
 
+/* ── QR SCANNER ── */
+var html5QrCodeScanner = null;
+var scannerActive = false;
+var scanCooldown = false;
+
+function openScanner() {
+  if (scannerActive) return;
+  var modal = document.getElementById('scannerModal');
+  modal.classList.add('open');
+  document.getElementById('scannerStatusText').textContent = 'Memulai kamera...';
+
+  // Pastikan elemen kosong
+  var reader = document.getElementById('qr-reader');
+  reader.innerHTML = '';
+
+  html5QrCodeScanner = new Html5Qrcode('qr-reader');
+  var config = { fps: 12, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
+
+  html5QrCodeScanner.start(
+    { facingMode: 'environment' },
+    config,
+    function(decodedText) { onScanSuccess(decodedText); },
+    function() { /* scan error diabaikan */ }
+  ).then(function() {
+    scannerActive = true;
+    document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code';
+  }).catch(function(err) {
+    console.error('Kamera gagal:', err);
+    document.getElementById('scannerStatusText').textContent = 'Kamera tidak bisa dibuka. Izinkan akses kamera.';
+  });
+}
+
+function closeScanner() {
+  var modal = document.getElementById('scannerModal');
+  modal.classList.remove('open');
+  if (html5QrCodeScanner && scannerActive) {
+    html5QrCodeScanner.stop().then(function() {
+      html5QrCodeScanner.clear();
+      html5QrCodeScanner = null;
+      scannerActive = false;
+    }).catch(function(e) {
+      console.warn('Stop kamera:', e);
+      html5QrCodeScanner = null;
+      scannerActive = false;
+    });
+  } else {
+    html5QrCodeScanner = null;
+    scannerActive = false;
+  }
+}
+
+async function onScanSuccess(rawText) {
+  if (scanCooldown) return;
+  scanCooldown = true;
+
+  // Ambil order ID dari teks QR
+  // Format QR dari order.html: bisa berupa plain order ID atau JSON/URL yg mengandung order ID
+  var orderId = rawText.trim();
+
+  // Coba parse jika JSON
+  try {
+    var parsed = JSON.parse(orderId);
+    if (parsed.orderId) orderId = parsed.orderId;
+    else if (parsed.id) orderId = parsed.id;
+  } catch(e) {
+    // Bukan JSON, coba ambil dari URL param
+    try {
+      var url = new URL(orderId);
+      var param = url.searchParams.get('orderId') || url.searchParams.get('id') || url.searchParams.get('order');
+      if (param) orderId = param;
+    } catch(e2) {
+      // Gunakan raw text langsung sebagai order ID
+    }
+  }
+
+  document.getElementById('scannerStatusText').textContent = 'Mencari pesanan: ' + orderId + '…';
+
+  // Cari di allOrders (in-memory)
+  var order = allOrders.find(function(o) {
+    return (o.id && o.id === orderId) || o._docId === orderId;
+  });
+
+  // Jika tidak ketemu in-memory, coba query Firestore langsung
+  if (!order) {
+    try {
+      // Coba by field "id"
+      var snap = await db.collection('orders').where('id','==',orderId).limit(1).get();
+      if (!snap.empty) {
+        var doc = snap.docs[0];
+        order = Object.assign({ _docId: doc.id }, doc.data());
+      } else {
+        // Coba by document ID
+        var docRef = await db.collection('orders').doc(orderId).get();
+        if (docRef.exists) {
+          order = Object.assign({ _docId: docRef.id }, docRef.data());
+        }
+      }
+    } catch(e) { console.warn('Firestore query gagal:', e); }
+  }
+
+  if (!order) {
+    document.getElementById('scannerStatusText').textContent = '❌ Pesanan tidak ditemukan!';
+    showToast('QR tidak dikenali: ' + orderId);
+    setTimeout(function() { scanCooldown = false; document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code'; }, 2500);
+    return;
+  }
+
+  var status = (order.status || 'MENUNGGU').toUpperCase().trim();
+
+  if (status === 'SELESAI') {
+    document.getElementById('scannerStatusText').textContent = '⚠️ Pesanan sudah selesai sebelumnya.';
+    showToast('Pesanan ini sudah SELESAI');
+    setTimeout(function() { scanCooldown = false; document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code'; }, 2500);
+    return;
+  }
+
+  // Update status ke SELESAI
+  try {
+    await db.collection('orders').doc(order._docId).update({ status: 'SELESAI' });
+    // Update local
+    var idx = allOrders.findIndex(function(o) { return o._docId === order._docId; });
+    if (idx !== -1) allOrders[idx].status = 'SELESAI';
+    else { order.status = 'SELESAI'; allOrders.push(order); }
+
+    addLog('complete', 'Scan QR: Pesanan <strong>' + escHtml(order.id || order._docId) + '</strong> (' + escHtml(order.name || 'Anonim') + ') → SELESAI.');
+    updateStats();
+    renderOrders();
+
+    closeScanner();
+    showScanSuccess(order);
+  } catch(e) {
+    console.error('Update gagal:', e);
+    document.getElementById('scannerStatusText').textContent = '❌ Gagal update. Coba lagi.';
+    setTimeout(function() { scanCooldown = false; }, 2000);
+  }
+}
+
+function showScanSuccess(order) {
+  document.getElementById('scanSuccessId').textContent = order.id || order._docId || 'N/A';
+  document.getElementById('scanSuccessName').textContent = (order.name || 'Anonim') + ' — ditandai SELESAI';
+  spawnConfetti();
+  document.getElementById('scanSuccess').classList.add('show');
+}
+
+function hideScanSuccess() {
+  document.getElementById('scanSuccess').classList.remove('show');
+  scanCooldown = false;
+  // Bersihkan confetti
+  setTimeout(function() {
+    var cw = document.getElementById('confettiWrap');
+    if (cw) cw.innerHTML = '';
+  }, 500);
+}
+
+function spawnConfetti() {
+  var cw = document.getElementById('confettiWrap');
+  if (!cw) return;
+  cw.innerHTML = '';
+  var colors = ['#c8956c','#f0ddd0','#0d6b35','#a0e4bf','#1a47a0','#b6d0fb','#ffffff','#fde9a2'];
+  for (var i = 0; i < 60; i++) {
+    var p = document.createElement('div');
+    p.className = 'confetti-particle';
+    var size = (Math.random() * 10 + 6) + 'px';
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    var left = (Math.random() * 100) + '%';
+    var dur = (Math.random() * 1.2 + 1.2) + 's';
+    var delay = (Math.random() * 0.8) + 's';
+    var spin = (Math.random() > 0.5 ? '' : '-') + (Math.floor(Math.random() * 540) + 180) + 'deg';
+    var isCircle = Math.random() > 0.5;
+    p.style.cssText = 'width:'+size+';height:'+size+';background:'+color+';left:'+left+';--dur:'+dur+';--delay:'+delay+';--spin:'+spin+';--cr:'+(isCircle?'50%':'2px')+';border-radius:var(--cr);';
+    cw.appendChild(p);
+  }
+}
+
+// Tutup scanner modal kalau klik di luar box
+document.getElementById('scannerModal').addEventListener('click', function(e) {
+  if (e.target === this) closeScanner();
+});
+
 /* TOAST */
 function showToast(msg){
   var c=document.getElementById('toast-container');
@@ -1118,4 +1297,4 @@ function getItemIconSVG(name){
 }
 </script>
 </body>
-  </html>
+        </html>
