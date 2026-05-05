@@ -689,6 +689,8 @@
 
     .form-input::placeholder { color: var(--text3); }
 
+    select.form-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c8575' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1499,13 +1501,24 @@
           </div>
           <div class="form-group">
             <label class="form-label">Kelas</label>
-            <input class="form-input" type="text" id="fKelas" placeholder="cth. XI"/>
+            <select class="form-input" id="fKelas">
+              <option value="">-- Pilih Kelas --</option>
+              <option value="X">X</option>
+              <option value="XI">XI</option>
+              <option value="XII">XII</option>
+            </select>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Jurusan</label>
-            <input class="form-input" type="text" id="fJurusan" placeholder="cth. IPA"/>
+            <select class="form-input" id="fJurusan">
+              <option value="">-- Pilih Jurusan --</option>
+              <option value="TKJ">TKJ</option>
+              <option value="DKV">DKV</option>
+              <option value="MP">MP</option>
+              <option value="AK">AK</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">No. WhatsApp</label>
@@ -1513,8 +1526,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Waktu Ambil <span style="color:var(--text3);font-weight:400;text-transform:none;font-size:0.72rem">(min. 12:00)</span></label>
-          <input class="form-input" type="time" id="fWaktu" min="12:00" value="12:00"/>
+          <label class="form-label">Waktu Ambil <span style="color:var(--text3);font-weight:400;text-transform:none;font-size:0.72rem">(12:00 – 16:00)</span></label>
+          <input class="form-input" type="time" id="fWaktu" min="12:00" max="16:00" value="12:00"/>
         </div>
         <div class="form-group">
           <label class="form-label">Kode Promo</label>
@@ -1819,6 +1832,26 @@
       showToast(msg);
     }
 
+    function playSuccessSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.13);
+          gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.13);
+          gain.gain.linearRampToValueAtTime(0.22, ctx.currentTime + i * 0.13 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.13 + 0.4);
+          osc.start(ctx.currentTime + i * 0.13);
+          osc.stop(ctx.currentTime + i * 0.13 + 0.4);
+        });
+      } catch(e) {}
+    }
+
     async function submitOrder() {
       const nama   = document.getElementById('fNama').value.trim();
       const kelas  = document.getElementById('fKelas').value.trim();
@@ -1834,12 +1867,10 @@
       if (/^(.)\1+$/.test(nama.replace(/\s/g,''))) { highlightError('fNama', 'Masukkan nama lengkap yang valid'); return; }
 
       // ── VALIDASI KELAS ──
-      if (!kelas) { highlightError('fKelas', 'Kelas tidak boleh kosong'); return; }
-      if (kelas.length < 2) { highlightError('fKelas', 'Format kelas tidak valid (cth. XI-1)'); return; }
+      if (!kelas) { highlightError('fKelas', 'Pilih kelas terlebih dahulu'); return; }
 
       // ── VALIDASI JURUSAN ──
-      if (!jurusan) { highlightError('fJurusan', 'Jurusan tidak boleh kosong'); return; }
-      if (jurusan.length < 2) { highlightError('fJurusan', 'Jurusan terlalu pendek'); return; }
+      if (!jurusan) { highlightError('fJurusan', 'Pilih jurusan terlebih dahulu'); return; }
 
       // ── VALIDASI NO. WHATSAPP ──
       if (!noWA) { highlightError('fWA', 'Nomor WhatsApp tidak boleh kosong'); return; }
@@ -1859,6 +1890,10 @@
       const totalMenit = jam * 60 + menit;
       if (totalMenit < 12 * 60) {
         highlightError('fWaktu', 'Waktu pengambilan minimal jam 12:00');
+        return;
+      }
+      if (totalMenit > 16 * 60) {
+        highlightError('fWaktu', 'Waktu pengambilan maksimal jam 16:00');
         return;
       }
 
@@ -1907,6 +1942,9 @@
         );
 
         window.open('https://wa.me/6285694458024?text=' + waMsg, '_blank');
+
+        // Play success sound
+        playSuccessSound();
 
         // Clear cart
         cart = [];
@@ -2020,4 +2058,4 @@
     observer.observe(checkoutModal, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
-  </html>
+                </html>
