@@ -711,6 +711,63 @@
   </div>
 </div>
 
+<!-- ── INVOICE MODAL (muncul setelah scan QR) ── -->
+<div class="modal-overlay" id="invoiceModal">
+  <div class="modal-card" style="max-width:460px;padding:0;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#1c1a16 0%,#2a241c 100%);padding:22px 24px 18px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#f0e8df;">Invoice Pesanan</div>
+        <button onclick="closeInvoiceModal()" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#f0e8df;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">✕</button>
+      </div>
+      <div style="font-size:0.7rem;color:rgba(240,232,223,0.45);">Konfirmasi sebelum menandai SELESAI</div>
+    </div>
+    <div style="padding:20px 24px;background:var(--surface);">
+      <!-- Order ID & Customer -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div>
+          <div style="font-size:0.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">ID Pesanan</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);" id="invOrderId">—</div>
+        </div>
+        <span class="status-badge status-SIAP" style="font-size:0.68rem;">Siap Diambil</span>
+      </div>
+      <!-- Customer Info -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <div style="font-size:0.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Nama</div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--text);" id="invName">—</div>
+          </div>
+          <div>
+            <div style="font-size:0.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Kelas</div>
+            <div style="font-size:0.85rem;color:var(--text2);" id="invKelas">—</div>
+          </div>
+          <div>
+            <div style="font-size:0.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">No. WA</div>
+            <div style="font-size:0.85rem;color:var(--text2);" id="invPhone">—</div>
+          </div>
+          <div>
+            <div style="font-size:0.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Waktu Ambil</div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--accent);" id="invPickup">—</div>
+          </div>
+        </div>
+      </div>
+      <!-- Items -->
+      <div style="font-size:0.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Item Pesanan</div>
+      <div id="invItems" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;"></div>
+      <!-- Total -->
+      <div style="border-top:1.5px dashed var(--border);padding-top:12px;" id="invTotal"></div>
+    </div>
+    <!-- Actions -->
+    <div style="padding:16px 24px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:10px;">
+      <button class="btn btn-secondary" onclick="closeInvoiceModal()" style="flex:1;justify-content:center;padding:10px;">Batal</button>
+      <button class="btn btn-complete" id="invConfirmBtn" onclick="confirmFromInvoice()" style="flex:2;justify-content:center;padding:10px;font-size:0.85rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+        Tandai SELESAI
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
 <script>
@@ -1096,183 +1153,236 @@ function deletePromo(code){
 }
 
 /* ── QR SCANNER ── */
-var html5QrCodeScanner = null;
-var scannerActive = false;
+var html5QrCode = null;
+var scannerOpen = false;
 var scanCooldown = false;
+var pendingInvoiceDocId = null;
 
 function openScanner() {
-  if (scannerActive) return;
-  var modal = document.getElementById('scannerModal');
-  modal.classList.add('open');
-  document.getElementById('scannerStatusText').textContent = 'Memulai kamera...';
-
-  // Pastikan elemen kosong
-  var reader = document.getElementById('qr-reader');
-  reader.innerHTML = '';
-
-  html5QrCodeScanner = new Html5Qrcode('qr-reader');
-  var config = { fps: 12, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
-
-  html5QrCodeScanner.start(
-    { facingMode: 'environment' },
-    config,
-    function(decodedText) { onScanSuccess(decodedText); },
-    function() { /* scan error diabaikan */ }
-  ).then(function() {
-    scannerActive = true;
-    document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code';
-  }).catch(function(err) {
-    console.error('Kamera gagal:', err);
-    document.getElementById('scannerStatusText').textContent = 'Kamera tidak bisa dibuka. Izinkan akses kamera.';
-  });
+  if (scannerOpen) return;
+  scannerOpen = true;
+  scanCooldown = false;
+  document.getElementById('scannerModal').classList.add('open');
+  document.getElementById('scannerStatusText').textContent = '';
+  startQrScanner();
 }
 
 function closeScanner() {
-  var modal = document.getElementById('scannerModal');
-  modal.classList.remove('open');
-  if (html5QrCodeScanner && scannerActive) {
-    html5QrCodeScanner.stop().then(function() {
-      html5QrCodeScanner.clear();
-      html5QrCodeScanner = null;
-      scannerActive = false;
-    }).catch(function(e) {
-      console.warn('Stop kamera:', e);
-      html5QrCodeScanner = null;
-      scannerActive = false;
-    });
-  } else {
-    html5QrCodeScanner = null;
-    scannerActive = false;
+  scannerOpen = false;
+  document.getElementById('scannerModal').classList.remove('open');
+  stopQrScanner();
+}
+
+function startQrScanner() {
+  if (!window.Html5Qrcode) { showToast('Library QR tidak tersedia'); return; }
+  html5QrCode = new Html5Qrcode('qr-reader');
+  html5QrCode.start(
+    { facingMode: 'environment' },
+    { fps: 10, qrbox: { width: 220, height: 220 } },
+    onQrScanSuccess,
+    function() {}
+  ).catch(function(err) {
+    document.getElementById('scannerStatusText').textContent = 'Kamera tidak bisa diakses.';
+    console.error(err);
+  });
+}
+
+function stopQrScanner() {
+  if (html5QrCode) {
+    html5QrCode.stop().catch(function(){});
+    html5QrCode = null;
   }
 }
 
-async function onScanSuccess(rawText) {
+async function onQrScanSuccess(decodedText) {
   if (scanCooldown) return;
   scanCooldown = true;
 
-  // Ambil order ID dari teks QR
-  // Format QR dari order.html: bisa berupa plain order ID atau JSON/URL yg mengandung order ID
-  var orderId = rawText.trim();
+  // Ekstrak order ID dari URL: ?id=MB-XXXX
+  var match = decodedText.match(/[?&]id=([^&]+)/);
+  if (!match) {
+    document.getElementById('scannerStatusText').textContent = '⚠️ QR tidak valid';
+    setTimeout(function() { scanCooldown = false; }, 2000);
+    return;
+  }
+  var orderId = decodeURIComponent(match[1]);
+  document.getElementById('scannerStatusText').textContent = '🔍 Mencari pesanan...';
 
-  // Coba parse jika JSON
   try {
-    var parsed = JSON.parse(orderId);
-    if (parsed.orderId) orderId = parsed.orderId;
-    else if (parsed.id) orderId = parsed.id;
-  } catch(e) {
-    // Bukan JSON, coba ambil dari URL param
-    try {
-      var url = new URL(orderId);
-      var param = url.searchParams.get('orderId') || url.searchParams.get('id') || url.searchParams.get('order');
-      if (param) orderId = param;
-    } catch(e2) {
-      // Gunakan raw text langsung sebagai order ID
+    var snap = await db.collection('orders').doc(orderId).get();
+    if (!snap.exists) {
+      document.getElementById('scannerStatusText').textContent = '❌ Pesanan tidak ditemukan';
+      setTimeout(function() { scanCooldown = false; }, 2500);
+      return;
     }
-  }
+    var data = snap.data();
+    var status = (data.status || '').toUpperCase().trim();
 
-  document.getElementById('scannerStatusText').textContent = 'Mencari pesanan: ' + orderId + '…';
+    if (status !== 'SIAP DIAMBIL') {
+      var hint = { MENUNGGU:'Pesanan belum diproses', DIPROSES:'Pesanan masih diproses', SELESAI:'Pesanan sudah selesai' };
+      document.getElementById('scannerStatusText').textContent = '⚠️ ' + (hint[status] || 'Status: ' + status);
+      setTimeout(function() { scanCooldown = false; }, 2500);
+      return;
+    }
 
-  // Cari di allOrders (in-memory)
-  var order = allOrders.find(function(o) {
-    return (o.id && o.id === orderId) || o._docId === orderId;
-  });
-
-  // Jika tidak ketemu in-memory, coba query Firestore langsung
-  if (!order) {
-    try {
-      // Coba by field "id"
-      var snap = await db.collection('orders').where('id','==',orderId).limit(1).get();
-      if (!snap.empty) {
-        var doc = snap.docs[0];
-        order = Object.assign({ _docId: doc.id }, doc.data());
-      } else {
-        // Coba by document ID
-        var docRef = await db.collection('orders').doc(orderId).get();
-        if (docRef.exists) {
-          order = Object.assign({ _docId: docRef.id }, docRef.data());
-        }
-      }
-    } catch(e) { console.warn('Firestore query gagal:', e); }
-  }
-
-  if (!order) {
-    document.getElementById('scannerStatusText').textContent = '❌ Pesanan tidak ditemukan!';
-    showToast('QR tidak dikenali: ' + orderId);
-    setTimeout(function() { scanCooldown = false; document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code'; }, 2500);
-    return;
-  }
-
-  var status = (order.status || 'MENUNGGU').toUpperCase().trim();
-
-  if (status === 'SELESAI') {
-    document.getElementById('scannerStatusText').textContent = '⚠️ Pesanan sudah selesai sebelumnya.';
-    showToast('Pesanan ini sudah SELESAI');
-    setTimeout(function() { scanCooldown = false; document.getElementById('scannerStatusText').textContent = 'Kamera aktif — arahkan ke QR Code'; }, 2500);
-    return;
-  }
-
-  // Update status ke SELESAI
-  try {
-    await db.collection('orders').doc(order._docId).update({ status: 'SELESAI' });
-    // Update local
-    var idx = allOrders.findIndex(function(o) { return o._docId === order._docId; });
-    if (idx !== -1) allOrders[idx].status = 'SELESAI';
-    else { order.status = 'SELESAI'; allOrders.push(order); }
-
-    addLog('complete', 'Scan QR: Pesanan <strong>' + escHtml(order.id || order._docId) + '</strong> (' + escHtml(order.name || 'Anonim') + ') → SELESAI.');
-    updateStats();
-    renderOrders();
+    // Temukan docId di allOrders atau gunakan orderId langsung
+    var found = allOrders.find(function(o) { return (o.id || o._docId) === orderId; });
+    pendingInvoiceDocId = found ? found._docId : orderId;
 
     closeScanner();
-    showScanSuccess(order);
-  } catch(e) {
-    console.error('Update gagal:', e);
-    document.getElementById('scannerStatusText').textContent = '❌ Gagal update. Coba lagi.';
+    showInvoiceModal(data, pendingInvoiceDocId);
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('scannerStatusText').textContent = '❌ Gagal memuat data';
     setTimeout(function() { scanCooldown = false; }, 2000);
   }
 }
 
-function showScanSuccess(order) {
-  document.getElementById('scanSuccessId').textContent = order.id || order._docId || 'N/A';
-  document.getElementById('scanSuccessName').textContent = (order.name || 'Anonim') + ' — ditandai SELESAI';
-  spawnConfetti();
+/* ── INVOICE MODAL ── */
+function showInvoiceModal(data, docId) {
+  pendingInvoiceDocId = docId;
+  var id = data.id || docId || '—';
+  document.getElementById('invOrderId').textContent = id;
+  document.getElementById('invName').textContent = data.name || '—';
+  document.getElementById('invKelas').textContent = [data.kelas, data.jurusan].filter(Boolean).join(' · ') || '—';
+  document.getElementById('invPhone').textContent = data.phone || '—';
+  document.getElementById('invPickup').textContent = data.pickup || '—';
+
+  var items = data.items || [];
+  document.getElementById('invItems').innerHTML = items.map(function(it) {
+    var sub = (it.price || 0) * (it.qty || 1);
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);">' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<div style="width:30px;height:30px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + getItemIconSVG(it.name) + '</div>' +
+        '<div>' +
+          '<div style="font-size:0.85rem;font-weight:600;color:var(--text);">' + escHtml(it.name || '—') + '</div>' +
+          '<div style="font-size:0.72rem;color:var(--text3);">x' + (it.qty || 1) + ' × ' + fmtRp(it.price || 0) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:0.88rem;font-weight:700;color:var(--accent);">' + fmtRp(sub) + '</div>' +
+    '</div>';
+  }).join('') || '<div style="font-size:0.82rem;color:var(--text3);">Tidak ada item</div>';
+
+  var subtotal = data.subtotal || items.reduce(function(s,it){return s+(it.price||0)*(it.qty||1);},0);
+  var discount = data.discount || 0;
+  var total = data.total || (subtotal - discount);
+  var html = '';
+  if (discount > 0) {
+    html += '<div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text3);margin-bottom:6px;"><span>Subtotal</span><span>' + fmtRp(subtotal) + '</span></div>';
+    html += '<div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#2e8b57;margin-bottom:8px;"><span>Diskon Promo</span><span>- ' + fmtRp(discount) + '</span></div>';
+  }
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+    '<span style="font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;color:var(--text);">Total</span>' +
+    '<span style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:700;color:var(--accent);">' + fmtRp(total) + '</span>' +
+  '</div>';
+  document.getElementById('invTotal').innerHTML = html;
+
+  var btn = document.getElementById('invConfirmBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg> Tandai SELESAI';
+  document.getElementById('invoiceModal').classList.add('open');
+}
+
+function closeInvoiceModal() {
+  document.getElementById('invoiceModal').classList.remove('open');
+  pendingInvoiceDocId = null;
+}
+
+async function confirmFromInvoice() {
+  if (!pendingInvoiceDocId) return;
+  var btn = document.getElementById('invConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  var docId = pendingInvoiceDocId;
+  var found = allOrders.find(function(o){ return o._docId === docId || o.id === docId; });
+  var id = found ? (found.id || found._docId) : docId;
+  var name = found ? (found.name || 'Anonim') : 'Anonim';
+
+  try {
+    await db.collection('orders').doc(docId).update({ status: 'SELESAI' });
+    var idx = allOrders.findIndex(function(o){ return o._docId === docId || o.id === docId; });
+    if (idx !== -1) allOrders[idx].status = 'SELESAI';
+    addLog('complete', 'Pesanan <strong>' + escHtml(id) + '</strong> → SELESAI via Scan QR.');
+    closeInvoiceModal();
+    showScanSuccess(id, name);
+    updateStats(); renderOrders();
+  } catch(err) {
+    console.error(err);
+    showToast('Gagal update status. Coba lagi.');
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg> Tandai SELESAI';
+  }
+}
+
+/* ── SCAN SUCCESS OVERLAY ── */
+function showScanSuccess(orderId, name) {
+  document.getElementById('scanSuccessId').textContent = orderId || '—';
+  document.getElementById('scanSuccessName').textContent = (name || 'Pelanggan') + ' · Berhasil dikonfirmasi!';
+
+  // Buat confetti
+  var wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  var colors = ['#c8956c','#f5c842','#a0e4bf','#ffffff','#d4a07a','#f0ddd0'];
+  for (var i = 0; i < 55; i++) {
+    var p = document.createElement('div');
+    p.className = 'confetti-particle';
+    var size = Math.random() * 9 + 5;
+    p.style.cssText =
+      'left:' + Math.random() * 100 + '%;' +
+      'width:' + size + 'px;height:' + (size * (Math.random() > 0.5 ? 1 : 0.45)) + 'px;' +
+      'background:' + colors[Math.floor(Math.random() * colors.length)] + ';' +
+      '--dur:' + (Math.random() * 0.8 + 1.2) + 's;' +
+      '--delay:' + (Math.random() * 0.6) + 's;' +
+      '--spin:' + (Math.random() > 0.5 ? '' : '-') + (Math.floor(Math.random()*480)+180) + 'deg;' +
+      '--cr:' + (Math.random() > 0.5 ? '2px' : '50%') + ';';
+    wrap.appendChild(p);
+  }
+
   document.getElementById('scanSuccess').classList.add('show');
+
+  // Suara sukses via Web Audio API
+  playScanSuccessSound();
+
+  // Vibrasi
+  if (navigator.vibrate) navigator.vibrate([100, 60, 180, 60, 100]);
+
+  // Auto dismiss setelah 5 detik
+  setTimeout(hideScanSuccess, 5000);
 }
 
 function hideScanSuccess() {
   document.getElementById('scanSuccess').classList.remove('show');
-  scanCooldown = false;
-  // Bersihkan confetti
-  setTimeout(function() {
-    var cw = document.getElementById('confettiWrap');
-    if (cw) cw.innerHTML = '';
-  }, 500);
 }
 
-function spawnConfetti() {
-  var cw = document.getElementById('confettiWrap');
-  if (!cw) return;
-  cw.innerHTML = '';
-  var colors = ['#c8956c','#f0ddd0','#0d6b35','#a0e4bf','#1a47a0','#b6d0fb','#ffffff','#fde9a2'];
-  for (var i = 0; i < 60; i++) {
-    var p = document.createElement('div');
-    p.className = 'confetti-particle';
-    var size = (Math.random() * 10 + 6) + 'px';
-    var color = colors[Math.floor(Math.random() * colors.length)];
-    var left = (Math.random() * 100) + '%';
-    var dur = (Math.random() * 1.2 + 1.2) + 's';
-    var delay = (Math.random() * 0.8) + 's';
-    var spin = (Math.random() > 0.5 ? '' : '-') + (Math.floor(Math.random() * 540) + 180) + 'deg';
-    var isCircle = Math.random() > 0.5;
-    p.style.cssText = 'width:'+size+';height:'+size+';background:'+color+';left:'+left+';--dur:'+dur+';--delay:'+delay+';--spin:'+spin+';--cr:'+(isCircle?'50%':'2px')+';border-radius:var(--cr);';
-    cw.appendChild(p);
-  }
-}
+function playScanSuccessSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Tutup scanner modal kalau klik di luar box
-document.getElementById('scannerModal').addEventListener('click', function(e) {
-  if (e.target === this) closeScanner();
-});
+    function tone(freq, start, duration, type, vol) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(vol || 0.3, ctx.currentTime + start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    }
+
+    // Melodi sukses: do-mi-sol-do tinggi
+    tone(523, 0,    0.15, 'sine', 0.28);
+    tone(659, 0.15, 0.15, 'sine', 0.28);
+    tone(784, 0.30, 0.15, 'sine', 0.28);
+    tone(1047,0.45, 0.35, 'sine', 0.32);
+    // Chord latar
+    tone(262, 0,    0.55, 'triangle', 0.08);
+    tone(392, 0,    0.55, 'triangle', 0.06);
+  } catch(e) { /* silent fail */ }
+}
 
 /* TOAST */
 function showToast(msg){
