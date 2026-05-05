@@ -376,112 +376,158 @@
     .scanner-hint { font-size: 0.75rem; color: rgba(240,232,223,0.4); line-height: 1.6; }
     .scanner-status-text { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin-top: 6px; min-height: 20px; }
 
-    /* ── SCAN SUCCESS OVERLAY ── */
-    #scanSuccess {
+    /* ── INVOICE FULLSCREEN MODAL (after scan) ── */
+    #invoiceFullscreen {
       position: fixed; inset: 0; z-index: 3000;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      pointer-events: none;
-    }
-    #scanSuccess.show { pointer-events: all; }
-
-    .success-backdrop {
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(13,107,53,0.97) 0%, rgba(5,50,25,0.99) 100%);
-      opacity: 0; transition: opacity 0.35s ease;
-    }
-    #scanSuccess.show .success-backdrop { opacity: 1; }
-
-    /* Ripple rings */
-    .success-rings {
-      position: absolute; inset: 0;
+      background: rgba(10,8,6,0.85);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    .success-ring {
-      position: absolute; border-radius: 50%;
-      border: 2px solid rgba(160, 228, 191, 0.25);
-      opacity: 0;
-    }
-    #scanSuccess.show .success-ring { animation: ringExpand 1.8s ease forwards; }
-    .success-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0.1s !important; }
-    .success-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: 0.3s !important; }
-    .success-ring:nth-child(3) { width: 300px; height: 300px; animation-delay: 0.5s !important; }
-    .success-ring:nth-child(4) { width: 420px; height: 420px; animation-delay: 0.7s !important; }
-    @keyframes ringExpand {
-      0%   { transform: scale(0.3); opacity: 0.8; }
-      100% { transform: scale(1);   opacity: 0; }
-    }
+    #invoiceFullscreen.open { opacity: 1; pointer-events: all; }
 
-    /* Confetti */
-    .confetti-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-    .confetti-particle {
-      position: absolute; top: -12px; opacity: 0;
-      border-radius: var(--cr, 2px);
+    .inv-sheet {
+      background: var(--surface);
+      border-radius: 24px;
+      width: 100%; max-width: 420px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      transform: scale(0.88) translateY(30px);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
-    #scanSuccess.show .confetti-particle {
-      animation: confettiFall var(--dur, 1.4s) cubic-bezier(0.25,0.46,0.45,0.94) var(--delay, 0s) forwards;
-    }
-    @keyframes confettiFall {
-      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-      80%  { opacity: 1; }
-      100% { transform: translateY(110vh) rotate(var(--spin, 540deg)) scale(0.6); opacity: 0; }
-    }
+    #invoiceFullscreen.open .inv-sheet { transform: scale(1) translateY(0); }
 
-    /* Content */
-    .success-content {
-      position: relative; z-index: 2;
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
-      transform: scale(0.4) translateY(30px); opacity: 0;
-      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    /* receipt top strip */
+    .inv-top {
+      background: linear-gradient(135deg, #0d6b35 0%, #0a5229 100%);
+      padding: 22px 24px 18px;
+      border-radius: 24px 24px 0 0;
+      position: relative; overflow: hidden;
     }
-    #scanSuccess.show .success-content {
-      transform: scale(1) translateY(0); opacity: 1;
+    .inv-top::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(255,255,255,0.07);
     }
-    .success-check {
-      width: 96px; height: 96px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      border: 3px solid rgba(255,255,255,0.3);
-      box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+    .inv-check-badge {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 2px solid rgba(255,255,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+      animation: invCheckPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
     }
-    #scanSuccess.show .success-check {
-      animation: checkGlow 0.6s ease 0.2s both, checkPulseOut 1.5s ease 0.5s forwards;
+    @keyframes invCheckPop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
     }
-    @keyframes checkGlow {
-      0%   { transform: scale(0.5); opacity: 0; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
-      60%  { transform: scale(1.12); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes checkPulseOut {
-      0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
-      50%  { box-shadow: 0 0 0 24px rgba(255,255,255,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
-    }
-    .success-check svg { width: 48px; height: 48px; color: white; }
-
-    .success-title {
+    .inv-check-badge svg { width: 26px; height: 26px; color: white; }
+    .inv-top-title {
       font-family: 'Playfair Display', serif;
-      font-size: 2rem; font-weight: 700; color: white;
-      text-align: center; letter-spacing: -0.02em;
+      font-size: 1.3rem; font-weight: 700; color: white;
+      margin-bottom: 3px;
     }
-    .success-order-id {
-      font-size: 0.9rem; color: rgba(160,228,191,0.85);
-      font-weight: 600; letter-spacing: 0.04em; text-align: center;
-      background: rgba(255,255,255,0.1); padding: 5px 18px;
-      border-radius: 100px; border: 1px solid rgba(255,255,255,0.15);
+    .inv-top-sub { font-size: 0.75rem; color: rgba(255,255,255,0.55); }
+
+    /* receipt jagged edge */
+    .inv-jagged {
+      width: 100%; height: 18px;
+      background: radial-gradient(circle at 50% 0%, var(--surface) 8px, #0a5229 8px);
+      background-size: 24px 18px;
+      background-position: bottom;
     }
-    .success-sub {
-      font-size: 0.82rem; color: rgba(255,255,255,0.55); text-align: center;
+
+    .inv-body { padding: 18px 24px 0; }
+
+    .inv-row-hd {
+      font-size: 0.62rem; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px;
     }
-    .success-dismiss {
-      margin-top: 8px; padding: 9px 28px;
-      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25);
-      border-radius: 100px; color: white; font-family: 'Inter', sans-serif;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer;
-      transition: background 0.2s;
+    .inv-row-val {
+      font-size: 0.9rem; font-weight: 600; color: var(--text);
     }
-    .success-dismiss:hover { background: rgba(255,255,255,0.25); }
+    .inv-row-val.accent { color: var(--accent); }
+
+    .inv-divider {
+      height: 1px; background: var(--border);
+      margin: 14px 0;
+    }
+    .inv-divider.dashed {
+      background: none;
+      border-top: 1.5px dashed var(--border);
+    }
+
+    .inv-item-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 7px;
+      animation: invItemSlide 0.3s ease both;
+    }
+    @keyframes invItemSlide {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .inv-item-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .inv-item-icon svg { width: 26px; height: 26px; }
+    .inv-item-name { flex: 1; font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .inv-item-meta { font-size: 0.72rem; color: var(--text3); margin-top: 1px; }
+    .inv-item-sub  { font-size: 0.88rem; font-weight: 700; color: var(--accent); }
+
+    .inv-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .inv-total-label { font-size: 0.82rem; color: var(--text3); }
+    .inv-total-val   { font-size: 0.82rem; color: var(--text2); font-weight: 500; }
+    .inv-total-val.green { color: #0d6b35; font-weight: 700; }
+    .inv-grand-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 10px;
+    }
+    .inv-grand-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 700; color: var(--text);
+    }
+    .inv-grand-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--accent);
+    }
+
+    .inv-footer {
+      padding: 16px 24px 22px;
+      display: flex; gap: 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 18px;
+    }
+    .inv-btn-cancel {
+      flex: 1; padding: 11px;
+      background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text2); font-family: 'Inter', sans-serif; font-size: 0.83rem; font-weight: 600;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .inv-btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+    .inv-btn-confirm {
+      flex: 2; padding: 11px;
+      background: #0d6b35; border: none; border-radius: var(--radius-sm);
+      color: white; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .inv-btn-confirm:hover:not(:disabled) { background: #0a5229; }
+    .inv-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .inv-btn-confirm svg { width: 15px; height: 15px; }
   </style>
 </head>
 <body>
@@ -1407,4 +1453,4 @@ function getItemIconSVG(name){
 }
 </script>
 </body>
-        </html>
+</html>
