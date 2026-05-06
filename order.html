@@ -161,21 +161,17 @@
     .pickup-info-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
     .pickup-info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
 
-    /* ─── SIAP DIAMBIL SECTION ─── */
+    /* ─── QR SECTION (SIAP DIAMBIL) ─── */
     .qr-section {
       display: none;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      background: linear-gradient(180deg, #dcfce7 0%, var(--bg) 100%);
-      border-top: 3px solid #4ade80;
-      animation: qrReveal 0.55s cubic-bezier(0.34,1.56,0.64,1);
+      background: linear-gradient(180deg, var(--ready-bg) 0%, var(--bg) 100%);
+      border-top: 2px solid var(--ready-border);
+      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
-    [data-theme="dark"] .qr-section {
-      background: linear-gradient(180deg, #052e16 0%, var(--bg) 100%);
-      border-top-color: #16a34a;
-    }
-    @keyframes qrReveal { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+    @keyframes qrReveal { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
 
     .qr-hero {
       width: 100%;
@@ -190,24 +186,22 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 18px;
-      background: #dcfce7;
-      color: #15803d;
-      border: 1.5px solid #4ade80;
+      padding: 6px 16px;
+      background: var(--ready-bg);
+      color: var(--ready-text);
+      border: 1.5px solid var(--ready-border);
       border-radius: 100px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.06em;
     }
-    [data-theme="dark"] .qr-ready-badge { background: #052e16; color: #4ade80; border-color: #16a34a; }
-    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: #15803d; animation: pulse 0.9s ease infinite; }
-    [data-theme="dark"] .qr-ready-dot { background: #4ade80; }
+    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ready-text); animation: pulse 1s ease infinite; }
 
     .qr-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
     .qr-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 260px; }
 
-    /* QR Frame */
+    /* Tap to Fullscreen */
     .qr-tap-wrap {
       position: relative;
       cursor: pointer;
@@ -215,68 +209,52 @@
       user-select: none;
     }
     .qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
+
     .qr-frame {
       background: white;
       padding: 16px;
       border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(22,163,74,0.18), 0 0 0 2px #4ade80;
+      box-shadow: 0 12px 40px var(--shadow-md), 0 0 0 1px var(--border);
+      position: relative;
     }
     .qr-frame img { display: block; width: 220px; height: 220px; border-radius: 6px; }
+
     .qr-tap-hint {
       position: absolute;
       bottom: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: #15803d;
-      color: white;
+      background: var(--text);
+      color: var(--bg);
       font-size: 0.7rem;
       font-weight: 600;
       padding: 4px 12px;
       border-radius: 100px;
       white-space: nowrap;
       letter-spacing: 0.03em;
+      opacity: 0.85;
     }
 
-    /* Step-by-step animated */
     .qr-instructions {
       width: 100%;
-      padding: 34px 28px 28px;
+      padding: 32px 28px 28px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
     .qr-step {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      padding: 14px 16px;
+      gap: 12px;
+      padding: 12px 16px;
       background: var(--surface);
-      border: 1.5px solid #bbf7d0;
-      border-radius: 14px;
-      opacity: 0;
-      transform: translateX(-14px);
-      animation: stepSlideIn 0.4s ease forwards;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
     }
-    .qr-step:nth-child(1) { animation-delay: 0.1s; }
-    .qr-step:nth-child(2) { animation-delay: 0.25s; }
-    .qr-step:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes stepSlideIn {
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .qr-step-num {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: #15803d;
-      color: white;
-      font-size: 0.78rem;
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(22,163,74,0.3);
-    }
-    .qr-step-content { flex: 1; }
-    .qr-step-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-    .qr-step-desc { font-size: 0.78rem; color: var(--text3); line-height: 1.55; }
+    .qr-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .qr-step-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .qr-step-text strong { color: var(--text); }
 
     /* SELESAI SCREEN */
     .done-section {
@@ -356,38 +334,61 @@
 
     /* ─── WAITING SECTION ─── */
     .waiting-section {
-      padding: 32px 28px 36px;
+      padding: 28px 28px 32px;
       border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
+      gap: 22px;
       animation: fadeUp 0.4s ease;
     }
 
-    .waiting-dot-row {
+    /* Animated Hourglass */
+    .waiting-anim-wrap {
+      position: relative;
+      width: 88px;
+      height: 88px;
       display: flex;
-      gap: 7px;
       align-items: center;
+      justify-content: center;
     }
-    .waiting-dot {
-      width: 8px;
-      height: 8px;
+    .waiting-anim-ring {
+      position: absolute;
+      inset: 0;
       border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.3;
-      animation: dotPulse 1.4s ease infinite;
+      border: 2.5px solid var(--accent-light);
+      border-top-color: var(--accent);
+      animation: spin 2.5s linear infinite;
     }
-    .waiting-dot:nth-child(2) { animation-delay: 0.2s; }
-    .waiting-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dotPulse {
-      0%, 100% { opacity: 0.25; transform: scale(0.85); }
-      50% { opacity: 1; transform: scale(1.15); }
+    .waiting-anim-ring2 {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-bottom-color: var(--accent);
+      animation: spin 3.5s linear infinite reverse;
+    }
+    .hourglass-svg { position: relative; z-index: 2; }
+    @keyframes hourglassFlip {
+      0%, 42%  { transform: rotate(0deg); }
+      52%, 95% { transform: rotate(180deg); }
+      100%     { transform: rotate(180deg); }
+    }
+    .hourglass-inner { animation: hourglassFlip 3.2s ease-in-out infinite; transform-origin: center; }
+    .sand-top    { animation: sandDrain 3.2s ease-in-out infinite; transform-origin: bottom; }
+    .sand-bottom { animation: sandFill  3.2s ease-in-out infinite; transform-origin: top; }
+    .sand-drop   { animation: sandDrop  3.2s ease-in-out infinite; }
+    @keyframes sandDrain  { 0%,5%{transform:scaleY(1)} 45%,100%{transform:scaleY(0)} }
+    @keyframes sandFill   { 0%,5%{transform:scaleY(0)} 45%,100%{transform:scaleY(1)} }
+    @keyframes sandDrop   {
+      0%,5%   { opacity:1; cy:17; r:1.5; }
+      40%,45% { opacity:1; cy:31; r:1.5; }
+      46%,100%{ opacity:0; cy:17; r:0; }
     }
 
     .waiting-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text);
       text-align: center;
@@ -397,108 +398,236 @@
       font-size: 0.82rem;
       color: var(--text3);
       text-align: center;
-      line-height: 1.7;
-      max-width: 270px;
+      line-height: 1.75;
+      max-width: 290px;
+      margin-top: -10px;
     }
 
+    /* QR Preview Banner */
+    /* Elapsed Timer */
     .waiting-timer {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
+      gap: 8px;
+      padding: 10px 18px;
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 100px;
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       color: var(--text3);
-      margin-top: 4px;
     }
-    /* ─── DIPROSES SECTION ─── */
+    /* ─── DIPROSES SECTION (animasi masak) ─── */
     .diproses-section {
       display: none;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
-      border-top: 3px solid #b6d0fb;
-      animation: fadeUp 0.4s ease;
+      background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
+      border-top: 2px solid var(--accent-light);
+      animation: fadeUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
     [data-theme="dark"] .diproses-section {
-      background: linear-gradient(180deg, #0d1a3a 0%, var(--bg) 100%);
-      border-top-color: #2a4a8a;
+      background: linear-gradient(180deg, #2a1a0a 0%, var(--bg) 100%);
+      border-top-color: #5a3820;
     }
     .diproses-hero {
       width: 100%;
-      padding: 28px 28px 24px;
+      padding: 32px 28px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
-
-    /* Cooking animation */
-    .diproses-cook-wrap {
-      position: relative;
-      width: 72px; height: 72px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .diproses-cook-ring {
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      border: 2.5px solid #dbeafe;
-      border-top-color: #1e40af;
-      animation: spin 1.8s linear infinite;
-    }
-    .diproses-cook-emoji {
-      font-size: 1.8rem;
-      animation: cookBounce 2s ease-in-out infinite;
-    }
-    @keyframes cookBounce {
-      0%, 100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-4px) rotate(5deg); }
-    }
-
     .diproses-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 14px;
-      background: #dbeafe;
-      color: #1e40af;
-      border: 1.5px solid #93c5fd;
+      padding: 6px 16px;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border: 1.5px solid var(--accent);
       border-radius: 100px;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
-    [data-theme="dark"] .diproses-badge { background: #0d1a3a; color: #7aacfb; border-color: #2a4a8a; }
-    .diproses-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #1e40af; animation: pulse 1.2s ease infinite; }
-    [data-theme="dark"] .diproses-badge-dot { background: #7aacfb; }
-    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--text); text-align: center; }
-    .diproses-subtitle { font-size: 0.8rem; color: var(--text3); text-align: center; line-height: 1.65; max-width: 260px; }
+    [data-theme="dark"] .diproses-badge {
+      background: #3d2010;
+      color: #d4a07a;
+      border-color: #6b4030;
+    }
+    .diproses-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease infinite; }
+
+    /* Cooking animation */
+    .cooking-anim-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cooking-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2.5px solid var(--accent-light);
+      border-top-color: var(--accent);
+      animation: spin 2s linear infinite;
+    }
+    .cooking-ring2 {
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-bottom-color: var(--accent);
+      animation: spin 3s linear infinite reverse;
+    }
+    .cooking-pan-wrap {
+      position: relative;
+      z-index: 2;
+      animation: cookingBounce 1.4s ease-in-out infinite;
+    }
+    @keyframes cookingBounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      30% { transform: translateY(-6px) rotate(3deg); }
+      60% { transform: translateY(-2px) rotate(-1deg); }
+    }
+    /* Steam lines */
+    .steam-wrap {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+    .steam {
+      width: 3px;
+      height: 14px;
+      border-radius: 3px;
+      background: var(--accent);
+      opacity: 0;
+      transform-origin: bottom;
+    }
+    .steam:nth-child(1) { animation: steamRise 1.8s ease-in-out 0s infinite; }
+    .steam:nth-child(2) { animation: steamRise 1.8s ease-in-out 0.35s infinite; height: 10px; }
+    .steam:nth-child(3) { animation: steamRise 1.8s ease-in-out 0.7s infinite; }
+    @keyframes steamRise {
+      0%   { opacity: 0; transform: scaleY(0.5) translateY(4px); }
+      30%  { opacity: 0.65; }
+      80%  { opacity: 0; transform: scaleY(1.3) translateY(-10px); }
+      100% { opacity: 0; }
+    }
+
+    /* Typing dots */
+    .diproses-typing {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: -4px;
+    }
+    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); text-align: center; }
+    .typing-dots { display: flex; gap: 4px; margin-top: 2px; }
+    .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0;
+    }
+    .typing-dots span:nth-child(1) { animation: dotBlink 1.4s ease-in-out 0s infinite; }
+    .typing-dots span:nth-child(2) { animation: dotBlink 1.4s ease-in-out 0.25s infinite; }
+    .typing-dots span:nth-child(3) { animation: dotBlink 1.4s ease-in-out 0.5s infinite; }
+    @keyframes dotBlink {
+      0%, 80%, 100% { opacity: 0.15; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .diproses-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 270px; }
+
+    /* QR notification banner */
+    .diproses-qr-notify {
+      width: calc(100% - 56px);
+      margin: 8px 0 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--accent-light);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius-sm);
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+    [data-theme="dark"] .diproses-qr-notify {
+      background: #3d2010;
+      border-color: #6b4030;
+    }
+    .diproses-qr-notify-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+      flex-shrink: 0;
+      animation: bellShake 2.5s ease-in-out infinite;
+    }
+    @keyframes bellShake {
+      0%, 70%, 100% { transform: rotate(0deg); }
+      75% { transform: rotate(-12deg); }
+      80% { transform: rotate(10deg); }
+      85% { transform: rotate(-8deg); }
+      90% { transform: rotate(6deg); }
+      95% { transform: rotate(-4deg); }
+    }
+    .diproses-qr-notify-text {
+      font-size: 0.82rem;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+    .diproses-qr-notify-text strong { color: var(--accent-dark); }
+    [data-theme="dark"] .diproses-qr-notify-text strong { color: var(--accent); }
+
+    .diproses-qr-frame {
+      background: white;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(26,71,160,0.15), 0 0 0 1px #b6d0fb;
+    }
+    .diproses-qr-frame img { display: block; width: 200px; height: 200px; border-radius: 6px; }
+    .diproses-qr-tap-hint {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a47a0;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+    }
     .diproses-info-wrap {
       width: 100%;
-      padding: 0 28px 28px;
+      padding: 32px 28px 28px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
     .diproses-info-note {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      padding: 10px 14px;
+      gap: 12px;
+      padding: 12px 16px;
       background: var(--surface);
-      border: 1px solid #c7d9fd;
+      border: 1px solid #b6d0fb;
       border-radius: var(--radius-sm);
     }
-    .diproses-info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-    .diproses-info-text { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+    .diproses-info-icon { width: 26px; height: 26px; border-radius: 50%; background: #e8f0fe; color: #1a47a0; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    [data-theme="dark"] .diproses-info-icon { background: #0d1a3a; color: #7aacfb; }
+    .diproses-info-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
     .diproses-info-text strong { color: var(--text); }
     @media (max-width: 520px) {
-      .diproses-hero { padding: 22px 16px 18px; }
-      .diproses-info-wrap { padding: 0 16px 22px; }
+      .diproses-hero { padding: 22px 16px 0; }
+      .diproses-info-wrap { padding: 26px 16px 22px; }
+      .diproses-qr-frame img { width: 180px; height: 180px; }
     }
 
     /* SCROLLBAR */
@@ -625,14 +754,25 @@
       <!-- WAITING SECTION (Menunggu) -->
       <div class="waiting-section" id="waitingSection" style="display:none">
 
-        <div class="waiting-dot-row">
-          <div class="waiting-dot"></div>
-          <div class="waiting-dot"></div>
-          <div class="waiting-dot"></div>
+        <div class="waiting-anim-wrap">
+          <div class="waiting-anim-ring"></div>
+          <div class="waiting-anim-ring2"></div>
+          <svg class="hourglass-svg" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <g class="hourglass-inner">
+              <path d="M10 4 L30 4 L20 20 L30 36 L10 36 L20 20 Z" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+              <clipPath id="topClip"><path d="M11 5 L29 5 L20 19 Z"/></clipPath>
+              <polygon class="sand-top" points="11,5 29,5 20,19" fill="var(--accent)" opacity="0.55" clip-path="url(#topClip)"/>
+              <clipPath id="botClip"><path d="M11 35 L29 35 L20 21 Z"/></clipPath>
+              <polygon class="sand-bottom" points="11,35 29,35 20,21" fill="var(--accent)" opacity="0.75" clip-path="url(#botClip)"/>
+              <line x1="8" y1="4" x2="32" y2="4" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="8" y1="36" x2="32" y2="36" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+            <circle class="sand-drop" cx="20" cy="20" r="1.2" fill="var(--accent)" opacity="0"/>
+          </svg>
         </div>
 
         <div class="waiting-title">Menunggu Konfirmasi</div>
-        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis — tidak perlu refresh.</div>
+        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis.</div>
 
         <div class="waiting-timer">
           <span>Menunggu selama <strong id="waitingElapsed">0 detik</strong></span>
@@ -643,33 +783,65 @@
       <!-- DIPROSES SECTION -->
       <div class="diproses-section" id="diprosesSection">
         <div class="diproses-hero">
+
           <div class="diproses-badge">
             <div class="diproses-badge-dot"></div>
-            Sedang Diproses
+            Sedang Disiapkan
           </div>
-          <div class="diproses-title">Pesananmu Sedang Dibuat 👨‍🍳</div>
-          <div class="diproses-subtitle">Sambil tunggu, simpan QR ini — kamu akan butuh saat ambil pesanan!</div>
 
-          <div class="diproses-qr-tap-wrap" id="diprosesQrWrap" onclick="openFullscreenQR()" title="Tap untuk fullscreen">
-            <div class="diproses-qr-frame">
-              <img id="diprosesQrImage" src="" alt="QR Code" />
+          <!-- Cooking Animation -->
+          <div class="cooking-anim-wrap">
+            <div class="cooking-ring"></div>
+            <div class="cooking-ring2"></div>
+            <div class="cooking-pan-wrap">
+              <div class="steam-wrap">
+                <div class="steam"></div>
+                <div class="steam"></div>
+                <div class="steam"></div>
+              </div>
+              <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Pan body -->
+                <ellipse cx="26" cy="36" rx="18" ry="7" fill="var(--accent)" opacity="0.15"/>
+                <rect x="10" y="26" width="32" height="14" rx="7" fill="var(--accent-dark)" opacity="0.85"/>
+                <!-- Pan handle -->
+                <rect x="38" y="30" width="12" height="5" rx="2.5" fill="var(--accent-dark)" opacity="0.85"/>
+                <!-- Food inside -->
+                <circle cx="20" cy="30" r="3.5" fill="var(--accent)" opacity="0.9"/>
+                <circle cx="28" cy="29" r="2.5" fill="#e8a87c" opacity="0.9"/>
+                <circle cx="33" cy="31" r="3" fill="var(--accent)" opacity="0.7"/>
+                <!-- Highlight on pan -->
+                <ellipse cx="19" cy="27.5" rx="5" ry="2" fill="white" opacity="0.12"/>
+              </svg>
             </div>
-            <div class="diproses-qr-tap-hint">⛶ Tap untuk perbesar</div>
           </div>
+
+          <div>
+            <div class="diproses-title">Pesananmu Sedang Disiapkan</div>
+            <div class="typing-dots" style="justify-content:center;margin-top:6px;">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="diproses-subtitle">Dapur kami sedang menyiapkan pesananmu dengan sepenuh hati. Sebentar lagi siap! 🍽️</div>
+
+          <!-- QR Notification Banner -->
+          <div class="diproses-qr-notify">
+            <div class="diproses-qr-notify-icon">🔔</div>
+            <div class="diproses-qr-notify-text">
+              <strong>QR Code akan muncul otomatis</strong> di sini setelah pesananmu siap diambil — kamu tidak perlu refresh halaman ini.
+            </div>
+          </div>
+
         </div>
 
         <div class="diproses-info-wrap">
           <div class="diproses-info-note">
-            <div class="diproses-info-icon">ℹ️</div>
-            <div class="diproses-info-text">QR ini adalah <strong>bukti pesananmu</strong>. Simpan halaman ini & tunjukkan ke penjual saat mengambil nanti.</div>
-          </div>
-          <div class="diproses-info-note">
-            <div class="diproses-info-icon">🔔</div>
-            <div class="diproses-info-text">Halaman ini <strong>update otomatis</strong> — saat pesanan siap, status langsung berubah tanpa perlu refresh!</div>
-          </div>
-          <div class="diproses-info-note">
             <div class="diproses-info-icon">⏱️</div>
-            <div class="diproses-info-text">Biasanya selesai dalam <strong>beberapa menit</strong>. Santai dulu ya! ☕</div>
+            <div class="diproses-info-text">Estimasi selesai dalam <strong>beberapa menit</strong>. Santai dulu ya! ☕</div>
+          </div>
+          <div class="diproses-info-note">
+            <div class="diproses-info-icon">📱</div>
+            <div class="diproses-info-text">Halaman ini <strong>update otomatis</strong> — begitu pesanan siap, status & QR langsung muncul tanpa perlu refresh.</div>
           </div>
         </div>
       </div>
@@ -972,11 +1144,6 @@
         }, 1000);
       }
     } else if (normalized === 'DIPROSES') {
-      var orderId2 = data.id || getOrderId();
-      var absoluteUrl2 = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId2;
-      var qrUrl2 = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' + encodeURIComponent(absoluteUrl2);
-      document.getElementById('diprosesQrImage').src = qrUrl2;
-      currentQrUrl = qrUrl2;
       waitingSection.style.display = 'none';
       if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
       diprosesSection.style.display = 'flex';
