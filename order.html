@@ -334,61 +334,38 @@
 
     /* ─── WAITING SECTION ─── */
     .waiting-section {
-      padding: 28px 28px 32px;
+      padding: 32px 28px 36px;
       border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+      gap: 14px;
       animation: fadeUp 0.4s ease;
     }
 
-    /* Animated Hourglass */
-    .waiting-anim-wrap {
-      position: relative;
-      width: 88px;
-      height: 88px;
+    .waiting-dot-row {
       display: flex;
+      gap: 7px;
       align-items: center;
-      justify-content: center;
     }
-    .waiting-anim-ring {
-      position: absolute;
-      inset: 0;
+    .waiting-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      border: 2.5px solid var(--accent-light);
-      border-top-color: var(--accent);
-      animation: spin 2.5s linear infinite;
+      background: var(--accent);
+      opacity: 0.3;
+      animation: dotPulse 1.4s ease infinite;
     }
-    .waiting-anim-ring2 {
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      border-bottom-color: var(--accent);
-      animation: spin 3.5s linear infinite reverse;
-    }
-    .hourglass-svg { position: relative; z-index: 2; }
-    @keyframes hourglassFlip {
-      0%, 42%  { transform: rotate(0deg); }
-      52%, 95% { transform: rotate(180deg); }
-      100%     { transform: rotate(180deg); }
-    }
-    .hourglass-inner { animation: hourglassFlip 3.2s ease-in-out infinite; transform-origin: center; }
-    .sand-top    { animation: sandDrain 3.2s ease-in-out infinite; transform-origin: bottom; }
-    .sand-bottom { animation: sandFill  3.2s ease-in-out infinite; transform-origin: top; }
-    .sand-drop   { animation: sandDrop  3.2s ease-in-out infinite; }
-    @keyframes sandDrain  { 0%,5%{transform:scaleY(1)} 45%,100%{transform:scaleY(0)} }
-    @keyframes sandFill   { 0%,5%{transform:scaleY(0)} 45%,100%{transform:scaleY(1)} }
-    @keyframes sandDrop   {
-      0%,5%   { opacity:1; cy:17; r:1.5; }
-      40%,45% { opacity:1; cy:31; r:1.5; }
-      46%,100%{ opacity:0; cy:17; r:0; }
+    .waiting-dot:nth-child(2) { animation-delay: 0.2s; }
+    .waiting-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
     }
 
     .waiting-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text);
       text-align: center;
@@ -398,23 +375,21 @@
       font-size: 0.82rem;
       color: var(--text3);
       text-align: center;
-      line-height: 1.75;
-      max-width: 290px;
-      margin-top: -10px;
+      line-height: 1.7;
+      max-width: 270px;
     }
 
-    /* QR Preview Banner */
-    /* Elapsed Timer */
     .waiting-timer {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
+      gap: 6px;
+      padding: 8px 16px;
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 100px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text3);
+      margin-top: 4px;
     }
     /* ─── DIPROSES QR SECTION ─── */
     .diproses-section {
@@ -640,25 +615,14 @@
       <!-- WAITING SECTION (Menunggu) -->
       <div class="waiting-section" id="waitingSection" style="display:none">
 
-        <div class="waiting-anim-wrap">
-          <div class="waiting-anim-ring"></div>
-          <div class="waiting-anim-ring2"></div>
-          <svg class="hourglass-svg" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <g class="hourglass-inner">
-              <path d="M10 4 L30 4 L20 20 L30 36 L10 36 L20 20 Z" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
-              <clipPath id="topClip"><path d="M11 5 L29 5 L20 19 Z"/></clipPath>
-              <polygon class="sand-top" points="11,5 29,5 20,19" fill="var(--accent)" opacity="0.55" clip-path="url(#topClip)"/>
-              <clipPath id="botClip"><path d="M11 35 L29 35 L20 21 Z"/></clipPath>
-              <polygon class="sand-bottom" points="11,35 29,35 20,21" fill="var(--accent)" opacity="0.75" clip-path="url(#botClip)"/>
-              <line x1="8" y1="4" x2="32" y2="4" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="8" y1="36" x2="32" y2="36" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-            </g>
-            <circle class="sand-drop" cx="20" cy="20" r="1.2" fill="var(--accent)" opacity="0"/>
-          </svg>
+        <div class="waiting-dot-row">
+          <div class="waiting-dot"></div>
+          <div class="waiting-dot"></div>
+          <div class="waiting-dot"></div>
         </div>
 
         <div class="waiting-title">Menunggu Konfirmasi</div>
-        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis.</div>
+        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis — tidak perlu refresh.</div>
 
         <div class="waiting-timer">
           <span>Menunggu selama <strong id="waitingElapsed">0 detik</strong></span>
