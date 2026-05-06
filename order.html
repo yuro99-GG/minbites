@@ -6,7 +6,7 @@
   <title>Status Pesanan — MinBite</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -23,633 +23,694 @@
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-    } catch (e) {
-      console.error("Firebase gagal:", e);
-    }
+    } catch (e) { console.error("Firebase gagal:", e); }
   </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #faf8f5; --bg2: #f3efe9; --bg3: #ede8e0;
-      --surface: #ffffff; --accent: #c8956c; --accent-dark: #a8734d;
-      --accent-light: #f0ddd0; --text: #2c2018; --text2: #6b5744;
-      --text3: #9c8575; --border: #e8e0d8;
-      --shadow: rgba(44,32,24,0.08); --shadow-md: rgba(44,32,24,0.14); --shadow-lg: rgba(44,32,24,0.22);
-      --radius: 18px; --radius-sm: 10px; --radius-lg: 28px;
-      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
-      --ready-bg: #e6f9ef; --ready-text: #0d6b35; --ready-border: #a0e4bf;
+      --bg:           #f4efe8;
+      --bg2:          #ede6dc;
+      --surface:      #ffffff;
+      --surface2:     #faf7f3;
+      --accent:       #c0623a;
+      --accent-dark:  #a0502e;
+      --accent-light: #fae8df;
+      --accent-muted: rgba(192,98,58,0.12);
+      --text:         #1a120a;
+      --text2:        #5a3e2b;
+      --text3:        #9a8070;
+      --border:       #e4dbd0;
+      --border2:      #d0c4b4;
+      --shadow-sm:    0 2px 8px rgba(26,18,10,0.06);
+      --shadow:       0 4px 24px rgba(26,18,10,0.09);
+      --shadow-lg:    0 12px 48px rgba(26,18,10,0.14);
+      --shadow-xl:    0 24px 80px rgba(26,18,10,0.20);
+      --radius:       20px;
+      --radius-sm:    10px;
+      --radius-lg:    28px;
+      --t:            0.24s cubic-bezier(0.4,0,0.2,1);
+      --green:        #0d6b35;
+      --green-bg:     #e8f7ef;
+      --green-border: #a3dfc0;
+      --blue:         #1a47a0;
+      --blue-bg:      #eaf0fe;
+      --blue-border:  #b6d0fb;
+      --amber:        #92620a;
+      --amber-bg:     #fff8e8;
+      --amber-border: #f5dda0;
     }
+
     [data-theme="dark"] {
-      --bg: #1a1410; --bg2: #221c16; --bg3: #2a221a; --surface: #2e251c;
-      --accent: #d4a07a; --accent-dark: #c8956c; --accent-light: #3d2e20;
-      --text: #f0e8df; --text2: #c4a98a; --text3: #8a7060; --border: #3a2e24;
-      --shadow: rgba(0,0,0,0.25); --shadow-md: rgba(0,0,0,0.38); --shadow-lg: rgba(0,0,0,0.55);
-      --ready-bg: #0a2418; --ready-text: #5acd8a; --ready-border: #145830;
+      --bg:           #130e09;
+      --bg2:          #1c1510;
+      --surface:      #231a12;
+      --surface2:     #2a2016;
+      --accent:       #d4784a;
+      --accent-dark:  #c0623a;
+      --accent-light: #3a2215;
+      --accent-muted: rgba(212,120,74,0.14);
+      --text:         #f0e8df;
+      --text2:        #c4a98a;
+      --text3:        #7a6050;
+      --border:       #352618;
+      --border2:      #4a3520;
+      --shadow-sm:    0 2px 8px rgba(0,0,0,0.30);
+      --shadow:       0 4px 24px rgba(0,0,0,0.40);
+      --shadow-lg:    0 12px 48px rgba(0,0,0,0.50);
+      --shadow-xl:    0 24px 80px rgba(0,0,0,0.60);
+      --green:        #5acd8a;
+      --green-bg:     #091e11;
+      --green-border: #1a5030;
+      --blue:         #7aacfb;
+      --blue-bg:      #08122a;
+      --blue-border:  #1a3060;
+      --amber:        #f5c842;
+      --amber-bg:     #1e1500;
+      --amber-border: #5a4000;
     }
 
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background var(--transition), color var(--transition); }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      transition: background var(--t), color var(--t);
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
-    /* HEADER */
-    header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-    .header-inner { max-width: 640px; margin: 0 auto; padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-    .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); text-decoration: none; letter-spacing: -0.02em; }
-    .logo span { color: var(--text); font-style: italic; font-weight: 400; font-size: 0.85em; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .btn-back { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 100px; background: var(--surface); color: var(--text2); font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all var(--transition); }
+    /* ═══════════ HEADER ═══════════ */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .header-inner {
+      max-width: 580px; margin: 0 auto;
+      padding: 0 20px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.45rem; font-weight: 700;
+      color: var(--accent); letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+    .logo em { font-style: italic; color: var(--text); font-weight: 300; font-size: 0.82em; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    .realtime-pill {
+      display: none; align-items: center; gap: 5px;
+      padding: 4px 10px; background: var(--green-bg);
+      border: 1px solid var(--green-border); border-radius: 100px;
+      font-size: 0.68rem; font-weight: 700; color: var(--green);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .realtime-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); animation: rtpulse 1.8s ease infinite;
+    }
+    @keyframes rtpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.6)} }
+
+    .btn-back {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border: 1.5px solid var(--border);
+      border-radius: 100px; background: var(--surface);
+      color: var(--text2); font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: all var(--t);
+    }
     .btn-back:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-back svg { width: 14px; height: 14px; }
-    .btn-theme { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
+    .btn-back svg { width: 13px; height: 13px; }
+
+    .btn-theme {
+      width: 34px; height: 34px; border: 1.5px solid var(--border);
+      border-radius: 50%; background: var(--surface); color: var(--text2);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all var(--t);
+    }
     .btn-theme:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-theme svg { width: 16px; height: 16px; }
+    .btn-theme svg { width: 15px; height: 15px; }
 
-    /* REALTIME PILL */
-    .realtime-pill { display: flex; align-items: center; gap: 5px; padding: 4px 11px; background: var(--ready-bg); border: 1px solid var(--ready-border); border-radius: 100px; font-size: 0.7rem; font-weight: 600; color: var(--ready-text); }
-    .realtime-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ready-text); animation: rtpulse 1.8s ease infinite; }
-    @keyframes rtpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+    /* ═══════════ MAIN ═══════════ */
+    .main { max-width: 580px; margin: 0 auto; padding: 24px 16px 80px; }
 
-    /* MAIN */
-    .main { max-width: 640px; margin: 0 auto; padding: 28px 20px 80px; }
-
-    /* LOADING */
-    .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 20px; }
-    .loading-ring { width: 52px; height: 52px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
+    /* ═══════════ LOADING ═══════════ */
+    .loading-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 100px 20px; gap: 18px;
+    }
+    .loading-ring {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.85s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 0.88rem; color: var(--text3); font-style: italic; }
+    .loading-text { font-size: 0.85rem; color: var(--text3); font-style: italic; }
 
-    /* ERROR */
-    .error-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 16px; text-align: center; }
-    .error-icon { width: 72px; height: 72px; background: var(--bg2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .error-icon svg { width: 32px; height: 32px; color: var(--text3); }
-    .error-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
-    .error-sub { font-size: 0.88rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
+    /* ═══════════ ERROR ═══════════ */
+    .error-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; padding: 80px 20px; gap: 14px;
+    }
+    .error-icon-ring {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .error-icon-ring svg { width: 28px; height: 28px; color: var(--text3); }
+    .error-title {
+      font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 600;
+      color: var(--text);
+    }
+    .error-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
 
-    /* ORDER CARD */
-    .order-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: 0 4px 24px var(--shadow); overflow: hidden; animation: fadeUp 0.4s ease; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    /* ═══════════ ORDER CARD ═══════════ */
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .order-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1);
+      transition: box-shadow var(--t);
+    }
+    @keyframes statusFlash {
+      0%   { box-shadow: 0 0 0 0 rgba(192,98,58,0.4), var(--shadow-lg); }
+      50%  { box-shadow: 0 0 0 8px rgba(192,98,58,0), var(--shadow-lg); }
+      100% { box-shadow: var(--shadow-lg); }
+    }
+    .order-card.status-changed { animation: statusFlash 0.9s ease; }
 
-    /* ORDER HEAD */
-    .order-head { padding: 28px 28px 24px; background: linear-gradient(135deg, var(--bg2) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-    .order-head::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:var(--accent); opacity:0.05; }
-    .order-id-label { font-size: 0.7rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
-    .order-id-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: 0.02em; }
-    .order-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .order-customer { font-size: 0.88rem; color: var(--text2); font-weight: 500; }
-    .order-customer strong { color: var(--text); }
+    /* ─── STATUS HERO ─── */
+    .status-hero {
+      padding: 28px 28px 24px;
+      position: relative; overflow: hidden;
+      transition: background 0.5s ease;
+    }
+    .status-hero.sh-MENUNGGU  { background: linear-gradient(135deg, var(--amber-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--amber-border); }
+    .status-hero.sh-DIPROSES  { background: linear-gradient(135deg, var(--blue-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--blue-border); }
+    .status-hero.sh-SIAP      { background: linear-gradient(135deg, var(--green-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--green-border); }
+    .status-hero.sh-SELESAI   { background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%); border-bottom: 1px solid var(--border); }
 
-    /* STATUS BADGE */
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 1.5px solid transparent; transition: all var(--transition); }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
-    .status-MENUNGGU { background: #fff8e6; color: #92620a; border-color: #fde9a2; }
-    .status-MENUNGGU .status-dot { background: #92620a; animation: pulse 1.6s ease infinite; }
-    .status-DIPROSES { background: #e8f0fe; color: #1a47a0; border-color: #b6d0fb; }
-    .status-DIPROSES .status-dot { background: #1a47a0; animation: pulse 1.2s ease infinite; }
-    .status-SIAP { background: var(--ready-bg); color: var(--ready-text); border-color: var(--ready-border); }
-    .status-SIAP .status-dot { background: var(--ready-text); animation: pulse 1s ease infinite; }
-    .status-SELESAI { background: #f0ece8; color: #7a6555; border-color: #d8cfc7; }
-    .status-SELESAI .status-dot { background: #7a6555; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .status-hero::after {
+      content: ''; position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: currentColor; opacity: 0.04; pointer-events: none;
+    }
 
-    /* PROGRESS */
-    .progress-section { padding: 24px 28px; border-bottom: 1px solid var(--border); }
-    .progress-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 18px; }
-    .progress-steps { display: flex; align-items: center; }
-    .step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
-    .step-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; transition: all var(--transition); flex-shrink: 0; }
-    .step-circle svg { width: 14px; height: 14px; color: var(--text3); }
-    .step-circle.active { border-color: var(--accent); background: var(--accent-light); }
-    .step-circle.active svg { color: var(--accent); }
+    .sh-eyebrow {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sh-eyebrow::before {
+      content: ''; width: 16px; height: 1.5px; background: var(--border2);
+      border-radius: 2px;
+    }
+
+    .sh-id {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em;
+      margin-bottom: 14px;
+    }
+
+    .sh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+    .sh-name {
+      font-size: 0.82rem; color: var(--text2); font-weight: 500;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .sh-name svg { width: 13px; height: 13px; color: var(--text3); flex-shrink: 0; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 13px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      border: 1.5px solid transparent;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-MENUNGGU { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+    .status-MENUNGGU .status-dot { background: var(--amber); animation: sdot 1.6s ease infinite; }
+    .status-DIPROSES { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+    .status-DIPROSES .status-dot { background: var(--blue); animation: sdot 1s ease infinite; }
+    .status-SIAP { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+    .status-SIAP .status-dot { background: var(--green); animation: sdot 0.9s ease infinite; }
+    .status-SELESAI { background: var(--surface2); color: var(--text3); border-color: var(--border); }
+    .status-SELESAI .status-dot { background: var(--text3); }
+    @keyframes sdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.65)} }
+
+    /* ─── PROGRESS TRACK ─── */
+    .progress-section {
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .progress-steps {
+      display: flex; align-items: center;
+    }
+    .step {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 7px; flex: 1;
+    }
+    .step-circle {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 2px solid var(--border2);
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 2;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      flex-shrink: 0;
+    }
+    .step-circle svg { width: 13px; height: 13px; color: var(--text3); transition: color 0.2s; }
     .step-circle.done { border-color: var(--accent); background: var(--accent); }
     .step-circle.done svg { color: white; }
-    .step-label { font-size: 0.65rem; font-weight: 600; color: var(--text3); text-align: center; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
-    .step.active-step .step-label { color: var(--accent); }
+    .step-circle.active { border-color: var(--accent); background: var(--accent-light); transform: scale(1.1); }
+    .step-circle.active svg { color: var(--accent); }
+
+    .step-label {
+      font-size: 0.6rem; font-weight: 700; color: var(--text3);
+      text-align: center; text-transform: uppercase; letter-spacing: 0.05em;
+      line-height: 1.3;
+    }
     .step.done-step .step-label { color: var(--text2); }
-    .step-connector { flex: 1; height: 2px; background: var(--border); margin-bottom: 26px; position: relative; overflow: hidden; }
+    .step.active-step .step-label { color: var(--accent); }
+
+    .step-connector {
+      flex: 1; height: 2px; background: var(--border2);
+      margin-bottom: 26px; position: relative; overflow: hidden;
+      border-radius: 2px;
+    }
     .step-connector.filled { background: var(--accent); }
-    .step-connector.filling::after { content:''; position:absolute; inset:0; background:var(--accent); animation:fillLine 0.6s ease forwards; }
-    @keyframes fillLine { from{width:0%} to{width:100%} }
+    .step-connector.filling::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--accent);
+      animation: fillLine 0.5s ease forwards;
+    }
+    @keyframes fillLine { from{width:0} to{width:100%} }
 
-    /* ITEMS */
-    .items-section { padding: 22px 28px; border-bottom: 1px solid var(--border); }
-    .section-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
-    .order-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .order-item:last-child { border-bottom: none; }
-    .item-left { display: flex; align-items: center; gap: 12px; }
-    .item-icon { width: 40px; height: 40px; background: var(--bg2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .item-icon svg { width: 36px; height: 36px; }
-    .item-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
-    .item-qty { font-size: 0.78rem; color: var(--text3); margin-top: 2px; }
-    .item-subtotal { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+    /* ─── SECTION DIVIDER ─── */
+    .sec-divider {
+      width: 100%; height: 1px;
+      background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 5px, transparent 5px, transparent 9px);
+    }
 
-    /* TOTAL */
-    .total-section { padding: 18px 28px 22px; border-bottom: 1px solid var(--border); }
-    .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .total-row-label { font-size: 0.85rem; color: var(--text3); }
-    .total-row-value { font-size: 0.85rem; color: var(--text2); }
-    .total-row.discount .total-row-value { color: #2e8b57; font-weight: 600; }
-    .total-final { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 14px; border-top: 1.5px dashed var(--border); }
-    .total-final-label { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
-    .total-final-amount { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    /* ─── STATUS SECTIONS ─── */
 
-    /* PICKUP */
-    .pickup-section { padding: 18px 28px 22px; border-bottom: 1px solid var(--border); }
-    .pickup-row { display: flex; align-items: center; gap: 12px; background: var(--bg2); border-radius: var(--radius-sm); padding: 14px 16px; }
-    .pickup-icon { width: 38px; height: 38px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .pickup-icon svg { width: 18px; height: 18px; color: var(--accent); }
-    .pickup-info-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
-    .pickup-info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    /* MENUNGGU */
+    .waiting-section {
+      display: none; flex-direction: column; align-items: center;
+      padding: 32px 28px 28px; gap: 14px; text-align: center;
+    }
+    .waiting-anim {
+      width: 64px; height: 64px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .waiting-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid var(--amber-border);
+      animation: wring 2s linear infinite;
+    }
+    .waiting-ring2 {
+      position: absolute; inset: 6px; border-radius: 50%;
+      border: 1.5px dashed var(--amber-border);
+      animation: wring 3s linear infinite reverse;
+    }
+    @keyframes wring { to { transform: rotate(360deg); } }
+    .waiting-icon {
+      font-size: 1.6rem; line-height: 1;
+      animation: wiggle 2.5s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+      0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)}
+    }
+    .waiting-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem; font-weight: 600; color: var(--text);
+    }
+    .waiting-desc { font-size: 0.82rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
+    .waiting-timer {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 7px 14px; background: var(--amber-bg);
+      border: 1px solid var(--amber-border); border-radius: 100px;
+      font-size: 0.75rem; color: var(--amber); font-weight: 600;
+    }
+    .waiting-timer svg { width: 13px; height: 13px; }
 
-    /* ─── QR SECTION (SIAP DIAMBIL) ─── */
+    /* DIPROSES */
+    .diproses-section {
+      display: none; flex-direction: column; align-items: center;
+      padding: 32px 28px 0; gap: 14px; text-align: center;
+    }
+    .cooking-anim {
+      width: 72px; height: 72px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cooking-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid var(--blue-border); animation: wring 2s linear infinite;
+    }
+    .cooking-emoji {
+      font-size: 1.8rem; line-height: 1;
+      animation: cookBounce 1.4s ease-in-out infinite;
+    }
+    @keyframes cookBounce {
+      0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
+    }
+    .diproses-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; background: var(--blue-bg);
+      border: 1.5px solid var(--blue-border); border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .diproses-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--blue); animation: sdot 1s ease infinite;
+    }
+    .diproses-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem; font-weight: 600; color: var(--text);
+    }
+    .diproses-dots { display: flex; gap: 4px; justify-content: center; margin-top: -2px; }
+    .diproses-dots span {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--blue); opacity: 0;
+    }
+    .diproses-dots span:nth-child(1) { animation: dotBlink 1.4s ease-in-out 0s infinite; }
+    .diproses-dots span:nth-child(2) { animation: dotBlink 1.4s ease-in-out 0.22s infinite; }
+    .diproses-dots span:nth-child(3) { animation: dotBlink 1.4s ease-in-out 0.44s infinite; }
+    @keyframes dotBlink {
+      0%,80%,100%{opacity:0.15;transform:scale(0.8)} 40%{opacity:1;transform:scale(1.15)}
+    }
+    .diproses-desc { font-size: 0.82rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
+    .diproses-notice {
+      width: 100%; display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; margin: 4px 0 0;
+      background: var(--accent-muted); border: 1px solid var(--accent-light);
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem; color: var(--text2); line-height: 1.55; text-align: left;
+    }
+    .diproses-notice strong { color: var(--accent); }
+    [data-theme="dark"] .diproses-notice { border-color: rgba(192,98,58,0.25); }
+    .diproses-info-block {
+      width: 100%; padding: 20px 0 24px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .diproses-info-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 0.78rem; color: var(--text2); line-height: 1.5;
+    }
+    .diproses-info-row strong { color: var(--text); }
+    .di-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--blue-bg); color: var(--blue);
+      font-size: 0.72rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    [data-theme="dark"] .di-icon { background: #0a1530; }
+
+    /* QR — SIAP DIAMBIL */
     .qr-section {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      background: linear-gradient(180deg, var(--ready-bg) 0%, var(--bg) 100%);
-      border-top: 2px solid var(--ready-border);
+      display: none; flex-direction: column; align-items: center;
+      padding: 28px 28px 0; gap: 14px; text-align: center;
+    }
+    .qr-ready-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px; background: var(--green-bg);
+      border: 1.5px solid var(--green-border); border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700; color: var(--green);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .qr-ready-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); animation: sdot 1s ease infinite;
+    }
+    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+    .qr-title {
+      font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--text);
+    }
+    .qr-subtitle { font-size: 0.8rem; color: var(--text3); max-width: 240px; line-height: 1.6; }
+
+    .qr-frame-wrap {
+      position: relative; cursor: pointer; margin-top: 4px;
       animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
-    @keyframes qrReveal { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
-
-    .qr-hero {
-      width: 100%;
-      padding: 28px 28px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .qr-ready-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 16px;
-      background: var(--ready-bg);
-      color: var(--ready-text);
-      border: 1.5px solid var(--ready-border);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ready-text); animation: pulse 1s ease infinite; }
-
-    .qr-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
-    .qr-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 260px; }
-
-    /* Tap to Fullscreen */
-    .qr-tap-wrap {
-      position: relative;
-      cursor: pointer;
-      margin: 20px 0 0;
-      user-select: none;
-    }
-    .qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
+    @keyframes qrReveal { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+    .qr-frame-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
 
     .qr-frame {
-      background: white;
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 12px 40px var(--shadow-md), 0 0 0 1px var(--border);
+      background: white; padding: 14px; border-radius: 18px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 16px 48px rgba(13,107,53,0.15);
       position: relative;
     }
-    .qr-frame img { display: block; width: 220px; height: 220px; border-radius: 6px; }
+    .qr-frame img { display: block; width: 210px; height: 210px; border-radius: 6px; }
 
-    .qr-tap-hint {
-      position: absolute;
-      bottom: -14px;
-      left: 50%;
+    .qr-scan-label {
+      position: absolute; bottom: -14px; left: 50%;
       transform: translateX(-50%);
-      background: var(--text);
-      color: var(--bg);
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 100px;
-      white-space: nowrap;
-      letter-spacing: 0.03em;
-      opacity: 0.85;
+      background: var(--text); color: var(--bg);
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+      padding: 4px 12px; border-radius: 100px; white-space: nowrap;
     }
 
-    .qr-instructions {
-      width: 100%;
-      padding: 32px 28px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .qr-steps {
+      width: 100%; display: flex; flex-direction: column; gap: 8px;
+      padding: 28px 0 24px;
     }
-
-    .qr-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+    .qr-step-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 11px 14px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
     }
-    .qr-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .qr-step-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .qr-step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent); color: white;
+      font-size: 0.68rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .qr-step-text { font-size: 0.78rem; color: var(--text2); line-height: 1.5; }
     .qr-step-text strong { color: var(--text); }
 
-    /* SELESAI SCREEN */
+    /* SELESAI */
     .done-section {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 36px 28px 32px;
-      gap: 16px;
-      text-align: center;
-      background: linear-gradient(180deg, #e6f9ef 0%, var(--bg) 100%);
-      border-top: 2px solid #a0e4bf;
+      display: none; flex-direction: column; align-items: center;
+      padding: 36px 28px 28px; gap: 16px; text-align: center;
     }
-    .done-icon-wrap { width: 80px; height: 80px; border-radius: 50%; background: #e6f9ef; border: 3px solid #a0e4bf; display: flex; align-items: center; justify-content: center; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-    @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
-    .done-icon-wrap svg { width: 36px; height: 36px; color: #0d6b35; }
-    .done-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
-    .done-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.6; max-width: 260px; }
-    .done-rating { display: flex; gap: 8px; margin-top: 6px; }
-    .star-btn { width: 40px; height: 40px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--surface); font-size: 1.3rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-    .star-btn:hover, .star-btn.active { background: #fff8e6; border-color: #f5c842; transform: scale(1.15); }
-    .done-rating-label { font-size: 0.75rem; color: var(--text3); margin-bottom: 4px; }
+    .done-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--green-bg); border: 3px solid var(--green-border);
+      display: flex; align-items: center; justify-content: center;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .done-ring svg { width: 34px; height: 34px; color: var(--green); }
+    .done-title {
+      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--text);
+    }
+    .done-sub { font-size: 0.83rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
 
-    /* REALTIME STATUS BAR */
+    .rating-label { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+    .rating-row { display: flex; gap: 8px; }
+    .star-btn {
+      width: 42px; height: 42px; border: 1.5px solid var(--border);
+      border-radius: 50%; background: var(--surface2);
+      font-size: 1.2rem; cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .star-btn:hover, .star-btn.active {
+      background: var(--amber-bg); border-color: var(--amber-border);
+      transform: scale(1.18);
+    }
+
+    .done-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .btn-act {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      transition: all var(--t); border: 1.5px solid transparent;
+      text-decoration: none;
+    }
+    .btn-act svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn-act-primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-act-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(192,98,58,0.35); }
+    .btn-act-ghost { background: var(--surface); color: var(--text2); border-color: var(--border); }
+    .btn-act-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .btn-act-ghost.copied { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+
+    /* ─── SHARE BUTTON (QR section) ─── */
+    .btn-share-inline {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 100px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      transition: all var(--t); border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text2);
+    }
+    .btn-share-inline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-share-inline svg { width: 13px; height: 13px; }
+    .btn-share-inline.copied { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+
+    /* ─── ITEMS ─── */
+    .items-section { padding: 20px 28px; }
+    .sec-label {
+      font-size: 0.62rem; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .order-item {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-icon {
+      width: 44px; height: 44px; background: var(--bg2);
+      border-radius: var(--radius-sm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .item-icon svg { width: 38px; height: 38px; }
+    .item-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .item-qty { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
+    .item-subtotal { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+
+    /* ─── TOTAL ─── */
+    .total-section { padding: 4px 28px 20px; }
+    .total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 0; font-size: 0.82rem;
+    }
+    .total-row-label { color: var(--text3); }
+    .total-row-value { color: var(--text2); font-weight: 500; }
+    .total-row.discount .total-row-value { color: var(--green); font-weight: 700; }
+    .total-final {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0 4px; margin-top: 8px;
+      border-top: 1.5px dashed var(--border2);
+    }
+    .total-final-label {
+      font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; color: var(--text);
+    }
+    .total-final-amount {
+      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent);
+    }
+
+    /* ─── PICKUP ─── */
+    .pickup-section { padding: 0 28px 22px; }
+    .pickup-row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 13px 16px;
+    }
+    .pickup-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent-muted); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pickup-icon svg { width: 16px; height: 16px; color: var(--accent); }
+    .pickup-label { font-size: 0.68rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
+    .pickup-value { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+
+    /* ═══════════ REALTIME BAR ═══════════ */
     .realtime-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      background: var(--bg2);
-      border-radius: var(--radius-sm);
-      margin-top: 16px;
-      font-size: 0.78rem;
-      color: var(--text3);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 14px; padding: 10px 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 100px; font-size: 0.75rem; color: var(--text3);
+      font-weight: 500;
     }
-    .realtime-bar-dot { width: 7px; height: 7px; border-radius: 50%; background: #27ae60; animation: rtpulse 1.8s ease infinite; }
+    .realtime-bar-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); animation: rtpulse 1.8s ease infinite;
+    }
 
-    /* FULLSCREEN QR OVERLAY */
+    /* ═══════════ FULLSCREEN QR ═══════════ */
     .qr-fullscreen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: rgba(0,0,0,0.92);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      padding: 20px;
-      animation: fsIn 0.25s ease;
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.94); display: none;
+      flex-direction: column; align-items: center;
+      justify-content: center; gap: 20px; padding: 20px;
+      animation: fsIn 0.22s ease;
     }
     @keyframes fsIn { from{opacity:0} to{opacity:1} }
     .qr-fullscreen.open { display: flex; }
-    .qr-fs-label { color: white; font-size: 0.88rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.7; }
-    .qr-fs-frame { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
-    .qr-fs-frame img { display: block; width: min(300px, 80vw); height: min(300px, 80vw); border-radius: 8px; }
-    .qr-fs-close { color: white; font-size: 0.82rem; opacity: 0.6; cursor: pointer; padding: 10px 24px; border: 1px solid rgba(255,255,255,0.25); border-radius: 100px; background: transparent; font-family: 'Inter', sans-serif; transition: opacity 0.2s; }
-    .qr-fs-close:hover { opacity: 1; }
-    .qr-fs-id { color: white; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; opacity: 0.9; }
+    .qr-fs-label {
+      color: rgba(255,255,255,0.5); font-size: 0.75rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .qr-fs-id {
+      font-family: 'Fraunces', serif; color: white;
+      font-size: 1.1rem; font-weight: 600; opacity: 0.9;
+    }
+    .qr-fs-frame {
+      background: white; padding: 20px; border-radius: 22px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+    }
+    .qr-fs-frame img { display: block; width: min(280px, 78vw); height: min(280px, 78vw); border-radius: 8px; }
+    .qr-fs-close {
+      color: rgba(255,255,255,0.6); font-size: 0.8rem;
+      background: transparent; border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px; padding: 9px 22px;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .qr-fs-close:hover { color: white; border-color: rgba(255,255,255,0.5); }
 
-    /* STATUS CHANGED FLASH */
-    @keyframes statusFlash {
-      0%   { background: var(--accent-light); }
-      50%  { background: var(--ready-bg); }
-      100% { background: var(--surface); }
+    /* ═══════════ TOAST ═══════════ */
+    #toast-container {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%); z-index: 500;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; pointer-events: none;
     }
-    .status-changed { animation: statusFlash 1.2s ease; }
-
-    /* TOAST */
-    #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-    .toast { padding: 11px 22px; border-radius: 100px; font-size: 0.83rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: toastIn 0.3s ease, toastOut 0.3s ease 2.4s forwards; white-space: nowrap; }
-    .toast.default { background: var(--text); color: var(--bg); }
-    .toast.success { background: #0d6b35; color: white; }
-    .toast.info { background: #1a47a0; color: white; }
-    @keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-8px)} }
-
-    /* ─── WAITING SECTION ─── */
-    .waiting-section {
-      padding: 28px 28px 32px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 22px;
-      animation: fadeUp 0.4s ease;
-    }
-
-    /* Animated Hourglass */
-    .waiting-anim-wrap {
-      position: relative;
-      width: 88px;
-      height: 88px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .waiting-anim-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2.5px solid var(--accent-light);
-      border-top-color: var(--accent);
-      animation: spin 2.5s linear infinite;
-    }
-    .waiting-anim-ring2 {
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      border-bottom-color: var(--accent);
-      animation: spin 3.5s linear infinite reverse;
-    }
-    .hourglass-svg { position: relative; z-index: 2; }
-    @keyframes hourglassFlip {
-      0%, 42%  { transform: rotate(0deg); }
-      52%, 95% { transform: rotate(180deg); }
-      100%     { transform: rotate(180deg); }
-    }
-    .hourglass-inner { animation: hourglassFlip 3.2s ease-in-out infinite; transform-origin: center; }
-    .sand-top    { animation: sandDrain 3.2s ease-in-out infinite; transform-origin: bottom; }
-    .sand-bottom { animation: sandFill  3.2s ease-in-out infinite; transform-origin: top; }
-    .sand-drop   { animation: sandDrop  3.2s ease-in-out infinite; }
-    @keyframes sandDrain  { 0%,5%{transform:scaleY(1)} 45%,100%{transform:scaleY(0)} }
-    @keyframes sandFill   { 0%,5%{transform:scaleY(0)} 45%,100%{transform:scaleY(1)} }
-    @keyframes sandDrop   {
-      0%,5%   { opacity:1; cy:17; r:1.5; }
-      40%,45% { opacity:1; cy:31; r:1.5; }
-      46%,100%{ opacity:0; cy:17; r:0; }
-    }
-
-    .waiting-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-      text-align: center;
-      letter-spacing: -0.01em;
-    }
-    .waiting-desc {
-      font-size: 0.82rem;
-      color: var(--text3);
-      text-align: center;
-      line-height: 1.75;
-      max-width: 290px;
-      margin-top: -10px;
-    }
-
-    /* QR Preview Banner */
-    /* Elapsed Timer */
-    .waiting-timer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      font-size: 0.78rem;
-      color: var(--text3);
-    }
-    /* ─── DIPROSES SECTION (animasi masak) ─── */
-    .diproses-section {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
-      border-top: 2px solid var(--accent-light);
-      animation: fadeUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    [data-theme="dark"] .diproses-section {
-      background: linear-gradient(180deg, #2a1a0a 0%, var(--bg) 100%);
-      border-top-color: #5a3820;
-    }
-    .diproses-hero {
-      width: 100%;
-      padding: 32px 28px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-    .diproses-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 16px;
-      background: var(--accent-light);
-      color: var(--accent-dark);
-      border: 1.5px solid var(--accent);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    [data-theme="dark"] .diproses-badge {
-      background: #3d2010;
-      color: #d4a07a;
-      border-color: #6b4030;
-    }
-    .diproses-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease infinite; }
-
-    /* Cooking animation */
-    .cooking-anim-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .cooking-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2.5px solid var(--accent-light);
-      border-top-color: var(--accent);
-      animation: spin 2s linear infinite;
-    }
-    .cooking-ring2 {
-      position: absolute;
-      inset: 10px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      border-bottom-color: var(--accent);
-      animation: spin 3s linear infinite reverse;
-    }
-    .cooking-pan-wrap {
-      position: relative;
-      z-index: 2;
-      animation: cookingBounce 1.4s ease-in-out infinite;
-    }
-    @keyframes cookingBounce {
-      0%, 100% { transform: translateY(0) rotate(-3deg); }
-      30% { transform: translateY(-6px) rotate(3deg); }
-      60% { transform: translateY(-2px) rotate(-1deg); }
-    }
-    /* Steam lines */
-    .steam-wrap {
-      position: absolute;
-      top: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-    }
-    .steam {
-      width: 3px;
-      height: 14px;
-      border-radius: 3px;
-      background: var(--accent);
-      opacity: 0;
-      transform-origin: bottom;
-    }
-    .steam:nth-child(1) { animation: steamRise 1.8s ease-in-out 0s infinite; }
-    .steam:nth-child(2) { animation: steamRise 1.8s ease-in-out 0.35s infinite; height: 10px; }
-    .steam:nth-child(3) { animation: steamRise 1.8s ease-in-out 0.7s infinite; }
-    @keyframes steamRise {
-      0%   { opacity: 0; transform: scaleY(0.5) translateY(4px); }
-      30%  { opacity: 0.65; }
-      80%  { opacity: 0; transform: scaleY(1.3) translateY(-10px); }
-      100% { opacity: 0; }
-    }
-
-    /* Typing dots */
-    .diproses-typing {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-top: -4px;
-    }
-    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); text-align: center; }
-    .typing-dots { display: flex; gap: 4px; margin-top: 2px; }
-    .typing-dots span {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0;
-    }
-    .typing-dots span:nth-child(1) { animation: dotBlink 1.4s ease-in-out 0s infinite; }
-    .typing-dots span:nth-child(2) { animation: dotBlink 1.4s ease-in-out 0.25s infinite; }
-    .typing-dots span:nth-child(3) { animation: dotBlink 1.4s ease-in-out 0.5s infinite; }
-    @keyframes dotBlink {
-      0%, 80%, 100% { opacity: 0.15; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1.1); }
-    }
-
-    .diproses-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 270px; }
-
-    /* QR notification banner */
-    .diproses-qr-notify {
-      width: calc(100% - 56px);
-      margin: 8px 0 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px 16px;
-      background: var(--accent-light);
-      border: 1.5px solid var(--accent);
-      border-radius: var(--radius-sm);
-      animation: fadeUp 0.6s ease 0.3s both;
-    }
-    [data-theme="dark"] .diproses-qr-notify {
-      background: #3d2010;
-      border-color: #6b4030;
-    }
-    .diproses-qr-notify-icon {
-      font-size: 1.3rem;
-      line-height: 1;
-      flex-shrink: 0;
-      animation: bellShake 2.5s ease-in-out infinite;
-    }
-    @keyframes bellShake {
-      0%, 70%, 100% { transform: rotate(0deg); }
-      75% { transform: rotate(-12deg); }
-      80% { transform: rotate(10deg); }
-      85% { transform: rotate(-8deg); }
-      90% { transform: rotate(6deg); }
-      95% { transform: rotate(-4deg); }
-    }
-    .diproses-qr-notify-text {
-      font-size: 0.82rem;
-      color: var(--text2);
-      line-height: 1.55;
-    }
-    .diproses-qr-notify-text strong { color: var(--accent-dark); }
-    [data-theme="dark"] .diproses-qr-notify-text strong { color: var(--accent); }
-
-    .diproses-qr-frame {
-      background: white;
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(26,71,160,0.15), 0 0 0 1px #b6d0fb;
-    }
-    .diproses-qr-frame img { display: block; width: 200px; height: 200px; border-radius: 6px; }
-    .diproses-qr-tap-hint {
-      position: absolute;
-      bottom: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a47a0;
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 100px;
+    .toast {
+      background: var(--text); color: var(--bg);
+      padding: 11px 22px; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.3s forwards;
       white-space: nowrap;
-      letter-spacing: 0.03em;
-      opacity: 0.85;
     }
-    .diproses-info-wrap {
-      width: 100%;
-      padding: 32px 28px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .diproses-info-note {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 16px;
-      background: var(--surface);
-      border: 1px solid #b6d0fb;
-      border-radius: var(--radius-sm);
-    }
-    .diproses-info-icon { width: 26px; height: 26px; border-radius: 50%; background: #e8f0fe; color: #1a47a0; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    [data-theme="dark"] .diproses-info-icon { background: #0d1a3a; color: #7aacfb; }
-    .diproses-info-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
-    .diproses-info-text strong { color: var(--text); }
-    @media (max-width: 520px) {
-      .diproses-hero { padding: 22px 16px 0; }
-      .diproses-info-wrap { padding: 26px 16px 22px; }
-      .diproses-qr-frame img { width: 180px; height: 180px; }
-    }
+    .toast.success { background: var(--green); color: white; }
+    .toast.info    { background: var(--blue); color: white; }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)} }
 
-    /* SCROLLBAR */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-    /* MOBILE */
+    /* ═══════════ MOBILE ═══════════ */
     @media (max-width: 520px) {
-      .main { padding: 20px 14px 60px; }
-      .order-head { padding: 22px 20px 18px; }
-      .progress-section { padding: 20px; }
+      .main { padding: 18px 12px 60px; }
+      .status-hero { padding: 22px 20px 18px; }
+      .progress-section { padding: 18px 20px; }
       .items-section { padding: 18px 20px; }
-      .total-section { padding: 14px 20px 18px; }
-      .pickup-section { padding: 14px 20px 18px; }
-      .qr-hero { padding: 24px 20px 0; }
-      .qr-instructions { padding: 28px 20px 22px; }
-      .done-section { padding: 28px 20px 24px; }
-      .waiting-section { padding: 22px 16px 26px; }
-      .step-label { font-size: 0.58rem; }
-      .order-id-value { font-size: 1.1rem; }
-      .qr-frame img { width: 200px; height: 200px; }
+      .total-section { padding: 4px 20px 18px; }
+      .pickup-section { padding: 0 20px 18px; }
+      .waiting-section, .diproses-section, .qr-section { padding: 24px 20px 0; }
+      .done-section { padding: 28px 20px 22px; }
+      .qr-frame img { width: 190px; height: 190px; }
+      .sh-id { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -657,21 +718,21 @@
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">MinBite</a>
+    <a class="logo" href="index.html">MinBite <em>order</em></a>
     <div class="header-right">
-      <div class="realtime-pill" id="realtimePill" style="display:none">
+      <div class="realtime-pill" id="realtimePill">
         <div class="realtime-dot"></div>
         Live
       </div>
       <a class="btn-back" href="index.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Kembali
       </a>
       <button class="btn-theme" onclick="toggleTheme()" title="Toggle tema">
-        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
           <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
-        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
@@ -680,52 +741,58 @@
 </header>
 
 <main class="main">
+
+  <!-- LOADING -->
   <div id="stateLoading" class="loading-wrap">
     <div class="loading-ring"></div>
-    <span class="loading-text">Menghubungkan ke server...</span>
+    <span class="loading-text">Menghubungkan ke server…</span>
   </div>
 
+  <!-- ERROR -->
   <div id="stateError" style="display:none">
     <div class="error-wrap">
-      <div class="error-icon">
+      <div class="error-icon-ring">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
       <div class="error-title">Pesanan Tidak Ditemukan</div>
       <div class="error-sub" id="errorMsg">ID pesanan tidak valid atau pesanan tidak ada.</div>
-      <a class="btn-back" href="index.html" style="margin-top:8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <a class="btn-back" href="index.html" style="margin-top:6px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Ke Halaman Utama
       </a>
     </div>
   </div>
 
+  <!-- ORDER -->
   <div id="stateOrder" style="display:none">
     <div class="order-card">
 
-      <!-- ORDER HEAD -->
-      <div class="order-head">
-        <div class="order-id-label">ID Pesanan</div>
-        <div class="order-id-value" id="oId"></div>
-        <div class="order-meta">
-          <div class="order-customer">Untuk: <strong id="oName"></strong></div>
-          <div class="status-badge" id="oStatusBadge">
+      <!-- STATUS HERO -->
+      <div class="status-hero sh-MENUNGGU" id="statusHero">
+        <div class="sh-eyebrow">ID Pesanan</div>
+        <div class="sh-id" id="oId">—</div>
+        <div class="sh-meta">
+          <div class="sh-name">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="oName">—</span>
+          </div>
+          <div class="status-badge status-MENUNGGU" id="oStatusBadge">
             <span class="status-dot"></span>
-            <span id="oStatusText"></span>
+            <span id="oStatusText">Menunggu</span>
           </div>
         </div>
       </div>
 
       <!-- PROGRESS -->
       <div class="progress-section">
-        <div class="progress-label">Progress Pesanan</div>
         <div class="progress-steps">
           <div class="step" id="step-0">
             <div class="step-circle" id="sc-0">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             </div>
-            <div class="step-label">Menunggu</div>
+            <div class="step-label">Masuk</div>
           </div>
           <div class="step-connector" id="conn-0"></div>
           <div class="step" id="step-1">
@@ -739,7 +806,7 @@
             <div class="step-circle" id="sc-2">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/></svg>
             </div>
-            <div class="step-label">Siap Diambil</div>
+            <div class="step-label">Siap</div>
           </div>
           <div class="step-connector" id="conn-2"></div>
           <div class="step" id="step-3">
@@ -751,167 +818,98 @@
         </div>
       </div>
 
-      <!-- WAITING SECTION (Menunggu) -->
-      <div class="waiting-section" id="waitingSection" style="display:none">
+      <div class="sec-divider"></div>
 
-        <div class="waiting-anim-wrap">
-          <div class="waiting-anim-ring"></div>
-          <div class="waiting-anim-ring2"></div>
-          <svg class="hourglass-svg" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <g class="hourglass-inner">
-              <path d="M10 4 L30 4 L20 20 L30 36 L10 36 L20 20 Z" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
-              <clipPath id="topClip"><path d="M11 5 L29 5 L20 19 Z"/></clipPath>
-              <polygon class="sand-top" points="11,5 29,5 20,19" fill="var(--accent)" opacity="0.55" clip-path="url(#topClip)"/>
-              <clipPath id="botClip"><path d="M11 35 L29 35 L20 21 Z"/></clipPath>
-              <polygon class="sand-bottom" points="11,35 29,35 20,21" fill="var(--accent)" opacity="0.75" clip-path="url(#botClip)"/>
-              <line x1="8" y1="4" x2="32" y2="4" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="8" y1="36" x2="32" y2="36" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-            </g>
-            <circle class="sand-drop" cx="20" cy="20" r="1.2" fill="var(--accent)" opacity="0"/>
-          </svg>
+      <!-- MENUNGGU -->
+      <div class="waiting-section" id="waitingSection">
+        <div class="waiting-anim">
+          <div class="waiting-ring"></div>
+          <div class="waiting-ring2"></div>
+          <span class="waiting-icon">⏳</span>
         </div>
-
         <div class="waiting-title">Menunggu Konfirmasi</div>
-        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis.</div>
-
+        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi admin. Halaman ini update otomatis.</div>
         <div class="waiting-timer">
-          <span>Menunggu selama <strong id="waitingElapsed">0 detik</strong></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Menunggu selama <strong id="waitingElapsed" style="margin-left:3px">0 detik</strong>
         </div>
-
       </div>
 
-      <!-- DIPROSES SECTION -->
+      <!-- DIPROSES -->
       <div class="diproses-section" id="diprosesSection">
-        <div class="diproses-hero">
-
-          <div class="diproses-badge">
-            <div class="diproses-badge-dot"></div>
-            Sedang Disiapkan
-          </div>
-
-          <!-- Cooking Animation -->
-          <div class="cooking-anim-wrap">
-            <div class="cooking-ring"></div>
-            <div class="cooking-ring2"></div>
-            <div class="cooking-pan-wrap">
-              <div class="steam-wrap">
-                <div class="steam"></div>
-                <div class="steam"></div>
-                <div class="steam"></div>
-              </div>
-              <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Pan body -->
-                <ellipse cx="26" cy="36" rx="18" ry="7" fill="var(--accent)" opacity="0.15"/>
-                <rect x="10" y="26" width="32" height="14" rx="7" fill="var(--accent-dark)" opacity="0.85"/>
-                <!-- Pan handle -->
-                <rect x="38" y="30" width="12" height="5" rx="2.5" fill="var(--accent-dark)" opacity="0.85"/>
-                <!-- Food inside -->
-                <circle cx="20" cy="30" r="3.5" fill="var(--accent)" opacity="0.9"/>
-                <circle cx="28" cy="29" r="2.5" fill="#e8a87c" opacity="0.9"/>
-                <circle cx="33" cy="31" r="3" fill="var(--accent)" opacity="0.7"/>
-                <!-- Highlight on pan -->
-                <ellipse cx="19" cy="27.5" rx="5" ry="2" fill="white" opacity="0.12"/>
-              </svg>
-            </div>
-          </div>
-
-          <div>
-            <div class="diproses-title">Pesananmu Sedang Disiapkan</div>
-            <div class="typing-dots" style="justify-content:center;margin-top:6px;">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-
-          <div class="diproses-subtitle">Pesananmu sedang disiapkan — nanti tinggal ambil saat bazar berlangsung! 🎪</div>
-
-          <!-- QR Notification Banner -->
-          <div class="diproses-qr-notify">
-            <div class="diproses-qr-notify-icon">💬</div>
-            <div class="diproses-qr-notify-text">
-              Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan sudah siap diambil — pastikan HP kamu aktif ya!
-            </div>
-          </div>
-
+        <div class="cooking-anim">
+          <div class="cooking-ring"></div>
+          <span class="cooking-emoji">👨‍🍳</span>
         </div>
-
-        <div class="diproses-info-wrap">
-          <div class="diproses-info-note">
-            <div class="diproses-info-icon">🎪</div>
-            <div class="diproses-info-text">Bazar berlangsung <strong>22 Mei</strong> — pesananmu akan siap selama acara berlangsung. Jangan kemana-mana ya!</div>
+        <div class="diproses-badge">
+          <span class="diproses-badge-dot"></span>
+          Sedang Disiapkan
+        </div>
+        <div class="diproses-title">Pesananmu Sedang Dibuat</div>
+        <div class="diproses-dots"><span></span><span></span><span></span></div>
+        <div class="diproses-desc">Sabar ya, sebentar lagi siap! Kamu akan dihubungi saat pesanan sudah bisa diambil.</div>
+        <div class="diproses-notice">
+          💬 Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan siap diambil — pastikan HP aktif ya!
+        </div>
+        <div class="diproses-info-block">
+          <div class="diproses-info-row">
+            <div class="di-icon">🎪</div>
+            <div>Bazar berlangsung <strong>22 Mei</strong> — pesananmu siap selama acara berlangsung.</div>
           </div>
-          <div class="diproses-info-note">
-            <div class="diproses-info-icon">📱</div>
-            <div class="diproses-info-text">Halaman ini <strong>update otomatis</strong> — begitu pesanan siap, status & QR langsung muncul tanpa perlu refresh.</div>
+          <div class="diproses-info-row">
+            <div class="di-icon">📱</div>
+            <div>Halaman ini <strong>update otomatis</strong> — QR langsung muncul tanpa perlu refresh.</div>
           </div>
         </div>
       </div>
 
-      <!-- ITEMS (hidden) -->
-      <div class="items-section" id="itemsSectionWrap" style="display:none">
-        <div class="section-label">Item Pesanan</div>
-        <div id="oItems"></div>
-      </div>
-
-      <!-- TOTAL (hidden) -->
-      <div class="total-section" id="oTotalSection" style="display:none"></div>
-
-      <!-- PICKUP (hidden) -->
-      <div class="pickup-section" style="display:none">
-        <div class="pickup-row">
-          <div class="pickup-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="pickup-info">
-            <div class="pickup-info-label">Waktu Pengambilan</div>
-            <div class="pickup-info-value" id="oPickup"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- QR SECTION (Siap Diambil) -->
+      <!-- SIAP DIAMBIL -->
       <div class="qr-section" id="qrSection">
-        <div class="qr-hero">
-          <div class="qr-ready-badge">
-            <div class="qr-ready-dot"></div>
-            Pesananmu Siap Diambil!
-          </div>
-          <div class="qr-title">Tunjukkan QR ini ke Penjual</div>
-          <div class="qr-subtitle">Tap QR untuk tampilan penuh — biar penjual gampang scan!</div>
+        <div class="qr-ready-pill">
+          <span class="qr-ready-dot"></span>
+          Siap Diambil!
+        </div>
+        <div class="qr-title">Tunjukkan QR ini ke penjual</div>
+        <div class="qr-subtitle">Tap QR untuk perbesar — layar lebih terang saat di-scan</div>
 
-          <div class="qr-tap-wrap" onclick="openFullscreenQR()" title="Tap untuk fullscreen">
-            <div class="qr-frame">
-              <img id="qrImage" src="" alt="QR Code" />
-            </div>
-            <div class="qr-tap-hint">⛶ Tap untuk perbesar</div>
+        <div class="qr-frame-wrap" onclick="openFullscreenQR()">
+          <div class="qr-frame">
+            <img id="qrImage" src="" alt="QR Code" />
           </div>
+          <div class="qr-scan-label">⛶ Tap untuk perbesar</div>
         </div>
 
-        <div class="qr-instructions">
-          <div class="qr-step">
+        <div class="qr-steps">
+          <div class="qr-step-row">
             <div class="qr-step-num">1</div>
-            <div class="qr-step-text"><strong>Tap QR di atas</strong> untuk tampilan penuh — layarmu jadi lebih terang & mudah di-scan.</div>
+            <div class="qr-step-text"><strong>Tap QR di atas</strong> untuk tampilan fullscreen, layar jadi lebih terang & mudah di-scan.</div>
           </div>
-          <div class="qr-step">
+          <div class="qr-step-row">
             <div class="qr-step-num">2</div>
-            <div class="qr-step-text">Tunjukkan ke penjual, lalu <strong>penjual tinggal scan</strong> — otomatis pesananmu selesai!</div>
+            <div class="qr-step-text">Tunjukkan ke penjual — <strong>penjual tinggal scan</strong>, pesanan langsung selesai!</div>
           </div>
-          <div class="qr-step">
+          <div class="qr-step-row">
             <div class="qr-step-num">3</div>
-            <div class="qr-step-text">Halaman ini akan <strong>update otomatis</strong> saat pesanan sudah diambil. Enjoy! 🎉</div>
+            <div class="qr-step-text">Halaman ini <strong>update otomatis</strong> setelah scan berhasil. Enjoy! 🎉</div>
           </div>
         </div>
+
+        <button class="btn-share-inline" id="btnShareLinkQR" onclick="shareOrderLink()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan Link Pesanan
+        </button>
       </div>
 
-      <!-- SELESAI SCREEN -->
+      <!-- SELESAI -->
       <div class="done-section" id="doneSection">
-        <div class="done-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="done-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="done-title">Pesanan Selesai! 🎉</div>
-        <div class="done-sub">Terima kasih sudah pesan di MinBite. Selamat menikmati!</div>
+        <div class="done-sub">Terima kasih sudah pesan di MinBite. Selamat menikmati sajianmu!</div>
         <div>
-          <div class="done-rating-label">Gimana pengalaman kamu?</div>
-          <div class="done-rating" id="ratingWrap">
+          <div class="rating-label" style="margin-bottom:10px">Gimana pengalamanmu?</div>
+          <div class="rating-row" id="ratingWrap">
             <button class="star-btn" onclick="rate(1)">😔</button>
             <button class="star-btn" onclick="rate(2)">😐</button>
             <button class="star-btn" onclick="rate(3)">😊</button>
@@ -919,14 +917,47 @@
             <button class="star-btn" onclick="rate(5)">🤩</button>
           </div>
         </div>
+        <div class="done-actions">
+          <a class="btn-act btn-act-primary" href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Pesan Lagi
+          </a>
+          <button class="btn-act btn-act-ghost" id="btnShareLink" onclick="shareOrderLink()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Bagikan Link
+          </button>
+        </div>
+      </div>
+
+      <div class="sec-divider"></div>
+
+      <!-- ITEMS -->
+      <div class="items-section" id="itemsSectionWrap" style="display:none">
+        <div class="sec-label">Item Pesanan</div>
+        <div id="oItems"></div>
+      </div>
+
+      <!-- TOTAL -->
+      <div class="total-section" id="oTotalSection" style="display:none"></div>
+
+      <!-- PICKUP -->
+      <div class="pickup-section" id="pickupSectionWrap" style="display:none">
+        <div class="pickup-row">
+          <div class="pickup-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="pickup-label">Waktu Pengambilan</div>
+            <div class="pickup-value" id="oPickup">—</div>
+          </div>
+        </div>
       </div>
 
     </div><!-- /order-card -->
 
-    <!-- REALTIME STATUS BAR -->
     <div class="realtime-bar">
       <div class="realtime-bar-dot"></div>
-      Status pesanan dipantau <strong>secara realtime</strong> — otomatis update
+      Status dipantau <strong style="margin-left:3px">secara realtime</strong> — otomatis update
     </div>
 
   </div><!-- /stateOrder -->
@@ -979,10 +1010,10 @@
 
   // ── STATUS MAP ──
   var STATUS_MAP = {
-    'MENUNGGU':     { step: 0, label: 'Menunggu',      cls: 'status-MENUNGGU' },
-    'DIPROSES':     { step: 1, label: 'Diproses',      cls: 'status-DIPROSES' },
-    'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil',  cls: 'status-SIAP' },
-    'SELESAI':      { step: 3, label: 'Selesai',        cls: 'status-SELESAI' }
+    'MENUNGGU':     { step: 0, label: 'Menunggu',     cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' },
+    'DIPROSES':     { step: 1, label: 'Diproses',     cls: 'status-DIPROSES', hero: 'sh-DIPROSES' },
+    'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil', cls: 'status-SIAP',     hero: 'sh-SIAP'     },
+    'SELESAI':      { step: 3, label: 'Selesai',       cls: 'status-SELESAI', hero: 'sh-SELESAI'  }
   };
 
   // ── ITEM ICONS ──
@@ -1004,13 +1035,33 @@
     document.getElementById('qrFullImg').src = currentQrUrl;
     document.getElementById('qrFsId').textContent = getOrderId();
     document.getElementById('qrFullscreen').classList.add('open');
-    // Brightness up
     if (navigator.maxTouchPoints > 0 && screen.orientation) {
       try { screen.orientation.lock('portrait'); } catch(e) {}
     }
   }
   function closeFullscreenQR() {
     document.getElementById('qrFullscreen').classList.remove('open');
+  }
+
+  // ── SHARE LINK ──
+  function shareOrderLink() {
+    var url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: 'Status Pesanan MinBite', url: url }).catch(function() {});
+    } else {
+      navigator.clipboard.writeText(url).then(function() {
+        showToast('Link pesanan disalin! 🔗', 'success');
+        var btns = document.querySelectorAll('#btnShareLink, #btnShareLinkQR');
+        btns.forEach(function(b) {
+          b.classList.add('copied');
+          b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Tersalin!';
+          setTimeout(function() {
+            b.classList.remove('copied');
+            b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Bagikan Link';
+          }, 2500);
+        });
+      }).catch(function() { showToast('Gagal menyalin link.'); });
+    }
   }
 
   // ── RATING ──
@@ -1022,6 +1073,12 @@
     btns.forEach(function(b, i) { if (i < score) b.classList.add('active'); });
     var labels = ['Wah, sayang sekali 😔', 'Biasa aja 😐', 'Lumayan 😊', 'Asyik! 😁', 'Luar biasa! 🤩'];
     showToast('Rating diterima: ' + labels[score - 1], 'success');
+    var orderId = getOrderId();
+    if (db && orderId) {
+      db.collection('orders').doc(orderId).update({ rating: score }).catch(function(e) {
+        console.warn('Gagal simpan rating:', e);
+      });
+    }
   }
 
   // ── RENDER ORDER ──
@@ -1034,7 +1091,7 @@
 
     var rawStatus = (data.status || 'MENUNGGU').toUpperCase().trim();
 
-    // Status changed notification
+    // Status changed
     if (prevStatus !== null && prevStatus !== rawStatus) {
       var msgs = {
         'DIPROSES':     '👨‍🍳 Pesananmu sedang diproses!',
@@ -1044,13 +1101,11 @@
       if (msgs[rawStatus]) {
         showToast(msgs[rawStatus], rawStatus === 'SELESAI' ? 'success' : 'info');
         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        // Flash card
         var card = document.querySelector('.order-card');
         card.classList.remove('status-changed');
         void card.offsetWidth;
         card.classList.add('status-changed');
         setTimeout(function() { card.classList.remove('status-changed'); }, 1200);
-        // Auto scroll to QR if siap
         if (rawStatus === 'SIAP DIAMBIL') {
           setTimeout(function() {
             document.getElementById('qrSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1064,8 +1119,12 @@
     document.getElementById('oId').textContent = data.id || 'N/A';
     document.getElementById('oName').textContent = data.name || '-';
 
+    // Status hero class
+    var statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' };
+    var hero = document.getElementById('statusHero');
+    hero.className = 'status-hero ' + statusInfo.hero;
+
     // Status badge
-    var statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU' };
     var badge = document.getElementById('oStatusBadge');
     badge.className = 'status-badge ' + statusInfo.cls;
     document.getElementById('oStatusText').textContent = statusInfo.label;
@@ -1116,14 +1175,17 @@
     totalHTML += `<div class="total-final"><span class="total-final-label">Total</span><span class="total-final-amount">${fmt(total)}</span></div>`;
     document.getElementById('oTotalSection').innerHTML = totalHTML;
 
-    // Pickup
+    // Show items, total, pickup
+    document.getElementById('itemsSectionWrap').style.display = 'block';
+    document.getElementById('oTotalSection').style.display = 'block';
+    document.getElementById('pickupSectionWrap').style.display = 'block';
     document.getElementById('oPickup').textContent = data.pickup || '-';
 
-    // QR / Done / Waiting sections
-    var waitingSection = document.getElementById('waitingSection');
-    var diprosesSection = document.getElementById('diprosesSection');
-    var qrSection = document.getElementById('qrSection');
-    var doneSection = document.getElementById('doneSection');
+    // Section display
+    var waitingSection    = document.getElementById('waitingSection');
+    var diprosesSection   = document.getElementById('diprosesSection');
+    var qrSection         = document.getElementById('qrSection');
+    var doneSection       = document.getElementById('doneSection');
     var normalized = rawStatus.replace(/\s+/g, ' ').trim();
 
     if (normalized === 'MENUNGGU') {
@@ -1131,7 +1193,6 @@
       diprosesSection.style.display = 'none';
       qrSection.style.display = 'none';
       doneSection.style.display = 'none';
-      // Start elapsed timer
       if (!window._waitingStartTime) {
         window._waitingStartTime = Date.now();
         window._waitingTimer = setInterval(function() {
@@ -1183,20 +1244,13 @@
 
   // ── REALTIME LISTENER ──
   var orderId = getOrderId();
-  var unsubscribe = null;
 
   function startRealtimeListener() {
-    if (!orderId) {
-      showError('Tidak ada ID pesanan di URL. Pastikan link yang kamu buka sudah benar.');
-      return;
-    }
+    if (!orderId) { showError('Tidak ada ID pesanan di URL. Pastikan link yang kamu buka sudah benar.'); return; }
     if (!db) { showError('Koneksi ke server gagal.'); return; }
 
-    unsubscribe = db.collection('orders').doc(orderId).onSnapshot(function(snap) {
-      if (!snap.exists) {
-        showError('Pesanan dengan ID "' + orderId + '" tidak ditemukan.');
-        return;
-      }
+    db.collection('orders').doc(orderId).onSnapshot(function(snap) {
+      if (!snap.exists) { showError('Pesanan dengan ID "' + orderId + '" tidak ditemukan.'); return; }
       renderOrder(snap.data());
     }, function(err) {
       console.error(err);
@@ -1207,4 +1261,4 @@
   startRealtimeListener();
 </script>
 </body>
-  </html>
+</html>
