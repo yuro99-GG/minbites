@@ -580,6 +580,21 @@
   </div>
 </header>
 
+<!-- H-1 BAZAR REMINDER BAR -->
+<div id="h1BazarBar" style="display:none;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,#0d6b35,#0a5229);padding:12px 24px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">⏰</div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:700;color:white;">H-1 Bazar Besok!</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.75);">Kirim notif WhatsApp ke semua pelanggan yang masih menunggu & diproses</div>
+    </div>
+  </div>
+  <button onclick="sendH1BazarReminder()" style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;background:white;color:#0d6b35;border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
+    Kirim Notif ke Semua Pelanggan
+  </button>
+</div>
+
 <div class="page">
 
   <!-- STATS -->
@@ -887,6 +902,7 @@ async function autoDeleteExpiredOrders(orders){
 document.addEventListener('DOMContentLoaded',function(){
   renderMenuEditor(); renderLog(); renderPromoList();
   fetchOrders(); startAutoRefresh();
+  checkH1BazarBanner();
 });
 
 /* BAZAR */
@@ -1085,6 +1101,8 @@ async function executeModalAction(){
       var i2=allOrders.findIndex(function(o){return o._docId===docId;}); if(i2!==-1) allOrders[i2].status='SIAP DIAMBIL';
       addLog('ready','Pesanan <strong>'+escHtml(id)+'</strong> → SIAP DIAMBIL.');
       showToast('Status: Siap Diambil');
+      // Kirim notifikasi WA ke pelanggan
+      sendWANotifReady(order);
     } else if(type==='complete'){
       await db.collection('orders').doc(docId).update({status:'SELESAI'});
       var i3=allOrders.findIndex(function(o){return o._docId===docId;}); if(i3!==-1) allOrders[i3].status='SELESAI';
@@ -1097,6 +1115,81 @@ async function executeModalAction(){
 }
 
 document.getElementById('confirmModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ── WA NOTIFIKASI SIAP DIAMBIL ── */
+function sendWANotifReady(order){
+  var phone=order.phone||'';
+  if(!phone) return;
+  // Normalize ke format internasional
+  var wa=phone.replace(/[\s\-().+]/g,'');
+  if(wa.startsWith('0')) wa='62'+wa.slice(1);
+  var name=order.name||'Kak';
+  var id=order.id||order._docId||'-';
+  var items=(order.items||[]).map(function(it){return it.name+' x'+it.qty;}).join(', ');
+  var pickup=order.pickup||'-';
+  var total=fmtRp(order.total||0);
+  var msg=
+    '🍫 *MinBite — Pesanan Siap!*\n\n' +
+    'Halo *'+name+'*! Pesananmu sudah siap diambil 🎉\n\n' +
+    '📦 *Detail Pesanan:*\n' +
+    '• ID: '+id+'\n' +
+    '• Item: '+items+'\n' +
+    '• Total: '+total+'\n' +
+    '• Waktu Ambil: '+pickup+'\n\n' +
+    '📍 Segera ambil di stand MinBite ya!\n' +
+    'Jangan lupa tunjukkan QR code kamu saat mengambil.\n\n' +
+    '_Terima kasih sudah pesan di MinBite!_ 🧋';
+  var url='https://wa.me/'+wa+'?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+}
+
+/* ── H-1 BAZAR REMINDER ── */
+function sendH1BazarReminder(){
+  var eligible=allOrders.filter(function(o){
+    var s=(o.status||'').toUpperCase();
+    return s==='MENUNGGU'||s==='DIPROSES';
+  });
+  if(eligible.length===0){ showToast('Tidak ada pesanan aktif untuk dinotifikasi.'); return; }
+  var sent=0;
+  eligible.forEach(function(order){
+    var phone=order.phone||'';
+    if(!phone) return;
+    var wa=phone.replace(/[\s\-().+]/g,'');
+    if(wa.startsWith('0')) wa='62'+wa.slice(1);
+    var name=order.name||'Kak';
+    var id=order.id||order._docId||'-';
+    var pickup=order.pickup||'-';
+    var msg=
+      '⏰ *MinBite — Pengingat Bazar Besok!*\n\n' +
+      'Halo *'+name+'*! Bazar MinBite akan digelar *besok* 🎉\n\n' +
+      '📦 Pesananmu sudah menunggu:\n' +
+      '• ID: '+id+'\n' +
+      '• Waktu Ambil: '+pickup+'\n\n' +
+      '✅ Jangan lupa datang ke stand MinBite sesuai waktu ambilmu ya!\n' +
+      'Tunjukkan QR code saat mengambil pesanan.\n\n' +
+      '_Sampai ketemu besok!_ 🧋🍫';
+    var url='https://wa.me/'+wa+'?text='+encodeURIComponent(msg);
+    window.open(url,'_blank');
+    sent++;
+  });
+  addLog('confirm','Notifikasi H-1 Bazar dikirim ke <strong>'+sent+'</strong> pelanggan.');
+  showToast('Membuka WA untuk '+sent+' pelanggan...');
+}
+
+/* Cek apakah sekarang H-1 bazar, tampilkan tombol reminder */
+function checkH1BazarBanner(){
+  var bazar=new Date(BAZAR_DATE+'T00:00:00');
+  var now=new Date();
+  var diffMs=bazar.getTime()-now.getTime();
+  var diffDays=diffMs/(1000*60*60*24);
+  var el=document.getElementById('h1BazarBar');
+  if(!el) return;
+  if(diffDays>0 && diffDays<=1.5){
+    el.style.display='flex';
+  } else {
+    el.style.display='none';
+  }
+}
 
 /* MENU */
 function loadMenuPrices(){try{var s=JSON.parse(localStorage.getItem('minbite_menu')||'null');if(s&&Array.isArray(s))return s;}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_MENU));}
@@ -1453,4 +1546,4 @@ function getItemIconSVG(name){
 }
 </script>
 </body>
-        </html>
+</html>
