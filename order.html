@@ -352,12 +352,10 @@
     }
     @keyframes wring { to { transform: rotate(360deg); } }
     .waiting-icon {
-      font-size: 1.6rem; line-height: 1;
-      animation: wiggle 2.5s ease-in-out infinite;
+      width: 32px; height: 32px;
+      color: var(--amber);
     }
-    @keyframes wiggle {
-      0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)}
-    }
+    .waiting-icon svg { width: 32px; height: 32px; }
     .waiting-title {
       font-family: 'Fraunces', serif;
       font-size: 1.2rem; font-weight: 600; color: var(--text);
@@ -384,10 +382,12 @@
       position: absolute; inset: 0; border-radius: 50%;
       border: 2px solid var(--blue-border); animation: wring 2s linear infinite;
     }
-    .cooking-emoji {
-      font-size: 1.8rem; line-height: 1;
+    .cooking-icon {
+      width: 36px; height: 36px;
+      color: var(--blue);
       animation: cookBounce 1.4s ease-in-out infinite;
     }
+    .cooking-icon svg { width: 36px; height: 36px; }
     @keyframes cookBounce {
       0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
     }
@@ -439,12 +439,11 @@
     }
     .diproses-info-row strong { color: var(--text); }
     .di-icon {
-      width: 24px; height: 24px; border-radius: 50%;
+      width: 28px; height: 28px; border-radius: 50%;
       background: var(--blue-bg); color: var(--blue);
-      font-size: 0.72rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    [data-theme="dark"] .di-icon { background: #0a1530; }
+    .di-icon svg { width: 13px; height: 13px; }
 
     /* QR — SIAP DIAMBIL */
     .qr-section {
@@ -528,17 +527,18 @@
     .done-sub { font-size: 0.83rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
 
     .rating-label { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
-    .rating-row { display: flex; gap: 8px; }
+    .rating-row { display: flex; gap: 6px; }
     .star-btn {
-      width: 42px; height: 42px; border: 1.5px solid var(--border);
-      border-radius: 50%; background: var(--surface2);
-      font-size: 1.2rem; cursor: pointer;
+      width: 38px; height: 38px; border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--surface2);
+      font-family: 'Fraunces', serif; font-size: 0.95rem; font-weight: 700;
+      color: var(--text3); cursor: pointer;
       transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
       display: flex; align-items: center; justify-content: center;
     }
     .star-btn:hover, .star-btn.active {
-      background: var(--amber-bg); border-color: var(--amber-border);
-      transform: scale(1.18);
+      background: var(--accent); border-color: var(--accent);
+      color: white; transform: scale(1.1);
     }
 
     .done-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -825,7 +825,7 @@
         <div class="waiting-anim">
           <div class="waiting-ring"></div>
           <div class="waiting-ring2"></div>
-          <span class="waiting-icon">⏳</span>
+          <span class="waiting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
         </div>
         <div class="waiting-title">Menunggu Konfirmasi</div>
         <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi admin. Halaman ini update otomatis.</div>
@@ -839,7 +839,7 @@
       <div class="diproses-section" id="diprosesSection">
         <div class="cooking-anim">
           <div class="cooking-ring"></div>
-          <span class="cooking-emoji">👨‍🍳</span>
+          <span class="cooking-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></span>
         </div>
         <div class="diproses-badge">
           <span class="diproses-badge-dot"></span>
@@ -849,15 +849,16 @@
         <div class="diproses-dots"><span></span><span></span><span></span></div>
         <div class="diproses-desc">Sabar ya, sebentar lagi siap! Kamu akan dihubungi saat pesanan sudah bisa diambil.</div>
         <div class="diproses-notice">
-          💬 Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan siap diambil — pastikan HP aktif ya!
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--accent)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan siap diambil — pastikan HP aktif ya!
         </div>
         <div class="diproses-info-block">
           <div class="diproses-info-row">
-            <div class="di-icon">🎪</div>
+            <div class="di-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <div>Bazar berlangsung <strong>22 Mei</strong> — pesananmu siap selama acara berlangsung.</div>
           </div>
           <div class="diproses-info-row">
-            <div class="di-icon">📱</div>
+            <div class="di-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
             <div>Halaman ini <strong>update otomatis</strong> — QR langsung muncul tanpa perlu refresh.</div>
           </div>
         </div>
@@ -890,7 +891,7 @@
           </div>
           <div class="qr-step-row">
             <div class="qr-step-num">3</div>
-            <div class="qr-step-text">Halaman ini <strong>update otomatis</strong> setelah scan berhasil. Enjoy! 🎉</div>
+            <div class="qr-step-text">Halaman ini <strong>update otomatis</strong> setelah scan berhasil. Selesai!</div>
           </div>
         </div>
 
@@ -905,16 +906,16 @@
         <div class="done-ring">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div class="done-title">Pesanan Selesai! 🎉</div>
+        <div class="done-title">Pesanan Selesai!</div>
         <div class="done-sub">Terima kasih sudah pesan di MinBite. Selamat menikmati sajianmu!</div>
         <div>
           <div class="rating-label" style="margin-bottom:10px">Gimana pengalamanmu?</div>
           <div class="rating-row" id="ratingWrap">
-            <button class="star-btn" onclick="rate(1)">😔</button>
-            <button class="star-btn" onclick="rate(2)">😐</button>
-            <button class="star-btn" onclick="rate(3)">😊</button>
-            <button class="star-btn" onclick="rate(4)">😁</button>
-            <button class="star-btn" onclick="rate(5)">🤩</button>
+            <button class="star-btn" onclick="rate(1)" title="Kurang">1</button>
+            <button class="star-btn" onclick="rate(2)" title="Biasa">2</button>
+            <button class="star-btn" onclick="rate(3)" title="Cukup">3</button>
+            <button class="star-btn" onclick="rate(4)" title="Bagus">4</button>
+            <button class="star-btn" onclick="rate(5)" title="Luar biasa">5</button>
           </div>
         </div>
         <div class="done-actions">
@@ -1050,7 +1051,7 @@
       navigator.share({ title: 'Status Pesanan MinBite', url: url }).catch(function() {});
     } else {
       navigator.clipboard.writeText(url).then(function() {
-        showToast('Link pesanan disalin! 🔗', 'success');
+        showToast('Link pesanan disalin!', 'success');
         var btns = document.querySelectorAll('#btnShareLink, #btnShareLinkQR');
         btns.forEach(function(b) {
           b.classList.add('copied');
@@ -1094,9 +1095,9 @@
     // Status changed
     if (prevStatus !== null && prevStatus !== rawStatus) {
       var msgs = {
-        'DIPROSES':     '👨‍🍳 Pesananmu sedang diproses!',
-        'SIAP DIAMBIL': '🎉 Pesananmu siap diambil!',
-        'SELESAI':      '✅ Pesanan selesai. Terima kasih!'
+        'DIPROSES':     'Pesananmu sedang diproses!',
+        'SIAP DIAMBIL': 'Pesananmu siap diambil!',
+        'SELESAI':      'Pesanan selesai. Terima kasih!'
       };
       if (msgs[rawStatus]) {
         showToast(msgs[rawStatus], rawStatus === 'SELESAI' ? 'success' : 'info');
@@ -1261,4 +1262,4 @@
   startRealtimeListener();
 </script>
 </body>
-</html>
+            </html>
