@@ -138,7 +138,13 @@
     .stat-card.s-done::before   { background: linear-gradient(90deg, #999, #bbb); }
     .stat-card.s-rev::before    { background: linear-gradient(90deg, var(--accent), var(--accent-dk)); }
     .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .stat-icon { font-size: 1.3rem; margin-bottom: 10px; }
+    .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
+    .stat-icon svg { width: 16px; height: 16px; }
+    .s-pending .stat-icon { background: var(--amber-bg); color: var(--amber); }
+    .s-proc .stat-icon   { background: var(--blue-bg);  color: var(--blue);  }
+    .s-ready .stat-icon  { background: var(--green-bg); color: var(--green); }
+    .s-done .stat-icon   { background: var(--bg3);      color: var(--text3); }
+    .s-rev .stat-icon    { background: var(--accent-lt); color: var(--accent); }
     .stat-label { font-size: 0.65rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
     .stat-value { font-family: 'Fraunces', serif; font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1; }
     .stat-value.accent { color: var(--accent); font-size: 1.35rem; }
@@ -254,9 +260,31 @@
     .panel-hd { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .panel-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
     .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); }
-    .menu-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .menu-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--bg2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700; color: var(--text3); }
     .menu-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
     .menu-desc { font-size: 0.72rem; color: var(--text3); }
+
+    /* ── RESPONSIVE MOBILE ── */
+    @media (max-width: 700px) {
+      .page { padding: 16px 12px 80px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stats-grid .stat-card:last-child { grid-column: span 2; }
+      .stat-value { font-size: 1.5rem; }
+      .stat-value.accent { font-size: 1.1rem; }
+      .bottom-grid { grid-template-columns: 1fr; gap: 16px; }
+      .controls-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      .search-bar-admin { max-width: 100%; }
+      .filter-row { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .promo-add-row { grid-template-columns: 1fr 1fr; }
+      .promo-add-row > .promo-field:last-child { grid-column: span 2; }
+      .header-inner { padding: 0 12px; height: 54px; }
+      .header-clock { display: none; }
+      .live-pill { display: none; }
+      .order-head { padding: 10px 12px; }
+      .order-body { padding: 10px 12px; }
+      .order-actions { padding: 8px 12px; gap: 5px; }
+      .btn { padding: 6px 10px; font-size: 0.72rem; }
+    }
     .menu-price-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
     .menu-price-input { width: 80px; padding: 6px 9px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 600; text-align: right; outline: none; transition: all var(--t); }
     .menu-price-input:focus { border-color: var(--accent); background: var(--surface); }
@@ -364,8 +392,9 @@
     #waReadyPopup { position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(5px); z-index: 450; display: none; align-items: center; justify-content: center; padding: 20px; }
     #waReadyPopup.open { display: flex; }
     .wa-ready-card { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 400px; overflow: hidden; box-shadow: var(--shadow-lg); animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    .wa-ready-top { padding: 22px 22px 18px; background: linear-gradient(135deg,#075e54,#128c7e); color: #fff; }
-    .wa-ready-emoji { font-size: 2rem; display: block; margin-bottom: 8px; }
+    .wa-ready-top { padding: 20px 22px 16px; background: linear-gradient(135deg,#075e54,#128c7e); color: #fff; display: flex; align-items: center; gap: 14px; }
+    .wa-ready-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .wa-ready-icon svg { width: 20px; height: 20px; }
     .wa-ready-top-title { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; }
     .wa-ready-top-sub { font-size: 0.75rem; opacity: 0.8; margin-top: 3px; }
     .wa-ready-body { padding: 18px 20px 20px; }
@@ -468,31 +497,31 @@
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card s-pending">
-      <div class="stat-icon">⏳</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       <div class="stat-label">Menunggu</div>
       <div class="stat-value" id="statPending">0</div>
       <div class="stat-sub">Belum diproses</div>
     </div>
     <div class="stat-card s-proc">
-      <div class="stat-icon">👨‍🍳</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></div>
       <div class="stat-label">Diproses</div>
       <div class="stat-value" id="statProc">0</div>
       <div class="stat-sub">Sedang dibuat</div>
     </div>
     <div class="stat-card s-ready">
-      <div class="stat-icon">🔔</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
       <div class="stat-label">Siap Diambil</div>
       <div class="stat-value" id="statReady">0</div>
       <div class="stat-sub">Menunggu pengambilan</div>
     </div>
     <div class="stat-card s-done">
-      <div class="stat-icon">✅</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="stat-label">Selesai</div>
       <div class="stat-value" id="statDone">0</div>
       <div class="stat-sub">Sudah diambil</div>
     </div>
     <div class="stat-card s-rev">
-      <div class="stat-icon">💰</div>
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
       <div class="stat-label">Pendapatan</div>
       <div class="stat-value accent" id="statRevenue">Rp0</div>
       <div class="stat-sub">Hari ini</div>
@@ -600,9 +629,13 @@
 <div id="waReadyPopup">
   <div class="wa-ready-card">
     <div class="wa-ready-top">
-      <span class="wa-ready-emoji">🎉</span>
-      <div class="wa-ready-top-title">Kirim Notif ke Pelanggan</div>
-      <div class="wa-ready-top-sub">Pesanan siap — beri tahu mereka via WhatsApp!</div>
+      <div class="wa-ready-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.003 2.004a9.998 9.998 0 1 0 0 19.996 9.998 9.998 0 0 0 0-19.996zm.001 18.099a8.1 8.1 0 0 1-4.114-1.119L4 20.098l1.134-4.14a8.1 8.1 0 1 1 6.87 4.145z"/></svg>
+      </div>
+      <div>
+        <div class="wa-ready-top-title">Kirim Notifikasi ke Pelanggan</div>
+        <div class="wa-ready-top-sub">Pesanan siap — beritahu mereka via WhatsApp</div>
+      </div>
     </div>
     <div class="wa-ready-body">
       <div class="wa-ready-preview" id="waReadyMsgPreview"></div>
@@ -765,8 +798,8 @@ var refreshInterval=null,countdownSec=10,countdownTimer=null;
 var knownOrderIds=new Set(),activityLog=loadLog();
 var BAZAR_DATE='2025-05-22';
 var DEFAULT_MENU=[
-  {id:'bola-oreo',name:'Bola Oreo Susu',desc:'Cokelat lembut',price:7000,icon:'🍪'},
-  {id:'thai-tea', name:'Thai Tea',       desc:'Segar & creamy',price:4000,icon:'🧋'}
+  {id:'bola-oreo',name:'Bola Oreo Susu',desc:'Cokelat lembut',price:7000,icon:'BO'},
+  {id:'thai-tea', name:'Thai Tea',       desc:'Segar & creamy',price:4000,icon:'TT'}
 ];
 var menuItems=loadMenuPrices();
 var BUILTIN_PROMOS={'HEMAT1K':{type:'fixed',amount:1000}};
@@ -793,7 +826,7 @@ function toggleSound(){
   soundEnabled=!soundEnabled;
   localStorage.setItem('sound', soundEnabled?'on':'off');
   updateSoundUI();
-  showToast(soundEnabled ? 'Notifikasi suara aktif 🔔' : 'Notifikasi suara dimatikan 🔇');
+  showToast(soundEnabled ? 'Notifikasi suara aktif' : 'Notifikasi suara dimatikan');
 }
 function updateSoundUI(){
   var btn=document.getElementById('btnSound');
@@ -1205,7 +1238,7 @@ function renderPromos(){
     html+='<div class="promo-chip'+(isBuiltin?' builtin':'')+'">'+
       '<span class="promo-chip-code">'+escHtml(code)+'</span>'+
       '<span class="promo-chip-val">'+valStr+'</span>'+
-      (isBuiltin?'<span title="Kode bawaan" style="font-size:0.65rem;color:var(--text3)">🔒</span>':
+      (isBuiltin?'<span title="Kode bawaan" style="font-size:0.65rem;font-weight:700;color:var(--text3);background:var(--bg3);padding:1px 5px;border-radius:4px;">bawaan</span>':
         '<button class="promo-chip-del" onclick="deletePromo(\''+escHtml(code)+'\')" title="Hapus">×</button>')+
       '</div>';
   });
@@ -1351,4 +1384,4 @@ renderLog();
 document.getElementById('confirmModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 </script>
 </body>
-                                                                                                             </html>
+  </html>
