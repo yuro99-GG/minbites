@@ -937,6 +937,46 @@
       color: var(--accent);
     }
 
+    /* ── ACTIVE ORDER BANNER ── */
+    #activeOrderBanner {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      position: sticky;
+      top: 64px;
+      z-index: 90;
+      animation: bannerSlide 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes bannerSlide {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .active-order-banner-inner {
+      max-width: 960px; margin: 0 auto;
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .active-order-left { display: flex; align-items: center; gap: 10px; }
+    .active-order-dot {
+      width: 8px; height: 8px; background: white; border-radius: 50%; flex-shrink: 0;
+      animation: aopulse 1.5s ease infinite;
+    }
+    @keyframes aopulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+    .active-order-title { font-size: 0.83rem; font-weight: 700; color: white; }
+    .active-order-sub { font-size: 0.72rem; color: rgba(255,255,255,0.8); }
+    .active-order-btn {
+      padding: 6px 14px; background: white; color: var(--accent-dark);
+      border-radius: 100px; font-size: 0.75rem; font-weight: 700;
+      text-decoration: none; white-space: nowrap; transition: all var(--transition);
+    }
+    .active-order-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .active-order-dismiss {
+      background: rgba(255,255,255,0.2); border: none; color: white;
+      width: 24px; height: 24px; border-radius: 50%; font-size: 0.7rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition); flex-shrink: 0;
+    }
+    .active-order-dismiss:hover { background: rgba(255,255,255,0.35); }
+
     /* ── TOAST ── */
     #toast-container {
       position: fixed;
@@ -1040,6 +1080,23 @@
       </div>
     </div>
   </header>
+
+  <!-- ══ ACTIVE ORDER BANNER ══ -->
+  <div id="activeOrderBanner" style="display:none">
+    <div class="active-order-banner-inner">
+      <div class="active-order-left">
+        <div class="active-order-dot"></div>
+        <div>
+          <div class="active-order-title">Kamu punya pesanan aktif!</div>
+          <div class="active-order-sub" id="activeOrderSub">Tap untuk cek status & QR</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <a id="activeOrderLink" href="#" class="active-order-btn">Lihat QR</a>
+        <button class="active-order-dismiss" onclick="dismissActiveBanner()" title="Tutup">✕</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ HERO ══ -->
   <section class="hero">
@@ -1964,6 +2021,19 @@
       const orderId = generateOrderId();
       currentOrderId = orderId;
 
+      // ── RATE LIMIT: maks 2 order per hari per nomor ──
+      const today = new Date().toISOString().slice(0, 10);
+      const rateSnap = await db.collection('orders')
+        .where('phone', '==', waNorm)
+        .where('date', '==', today)
+        .get();
+      if (rateSnap.size >= 2) {
+        showToast('Kamu sudah order 2x hari ini. Tunggu pesanan selesai dulu ya!');
+        btn.disabled = false;
+        btn.innerHTML = 'Pesan Sekarang';
+        return;
+      }
+
       const orderData = {
         id: orderId,
         name: nama,
@@ -1975,6 +2045,7 @@
         discount: discAmt,
         total,
         pickup: waktu,
+        date: today,
         status: 'MENUNGGU',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
@@ -1982,23 +2053,12 @@
       try {
         await db.collection('orders').doc(orderId).set(orderData);
 
-        // Send WhatsApp
-        const itemsText = cart.map(c => `${c.name} x${c.qty} = ${fmt(c.price * c.qty)}`).join('%0A');
-        const waMsg = encodeURIComponent(
-          `Halo MinBite! Saya ingin memesan.\n\n` +
-          `ID Pesanan: ${orderId}\n` +
-          `Nama: ${nama}\n` +
-          `Kelas: ${kelas} - ${jurusan}\n` +
-          `No WA: ${noWA}\n` +
-          `Waktu Ambil: ${waktu}\n\n` +
-          `Pesanan:\n` +
-          cart.map(c => `- ${c.name} x${c.qty} = ${fmt(c.price * c.qty)}`).join('\n') +
-          (discAmt > 0 ? `\nDiskon: -${fmt(discAmt)}` : '') +
-          `\nTotal: ${fmt(total)}\n\n` +
-          `⚠️ Menu saat ini hanya tersedia 2: Bola Oreo Susu & Thai Tea\n\nMohon konfirmasinya, terima kasih!`
-        );
-
-        window.open('https://wa.me/6285694458024?text=' + waMsg, '_blank');
+        // Simpan ke localStorage buat banner pengingat
+        localStorage.setItem('minbite_active_order', JSON.stringify({
+          id: orderId,
+          name: nama,
+          date: today
+        }));
 
         // Play success sound
         playSuccessSound();
@@ -2115,4 +2175,4 @@
     observer.observe(checkoutModal, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
-  </html>
+                </html>
