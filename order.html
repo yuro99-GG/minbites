@@ -404,55 +404,6 @@
     }
 
     /* QR Preview Banner */
-    .waiting-qr-banner {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: linear-gradient(135deg, var(--accent-light) 0%, var(--bg2) 100%);
-      border: 1.5px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-    .waiting-qr-banner::before {
-      content: '';
-      position: absolute;
-      top: -20px; right: -20px;
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.07;
-    }
-    .waiting-qr-icon-wrap {
-      width: 48px; height: 48px;
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.5rem;
-      box-shadow: 0 2px 8px var(--shadow);
-      animation: breathe 2.5s ease-in-out infinite;
-    }
-    @keyframes breathe {
-      0%,100% { transform: scale(1); box-shadow: 0 2px 8px var(--shadow); }
-      50%      { transform: scale(1.06); box-shadow: 0 4px 16px var(--shadow-md); }
-    }
-    .waiting-qr-text-wrap {}
-    .waiting-qr-banner-title {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 3px;
-    }
-    .waiting-qr-banner-sub {
-      font-size: 0.76rem;
-      color: var(--text2);
-      line-height: 1.55;
-    }
-
     /* Elapsed Timer */
     .waiting-timer {
       display: flex;
@@ -465,39 +416,6 @@
       font-size: 0.78rem;
       color: var(--text3);
     }
-    .waiting-timer-icon { font-size: 0.9rem; }
-    .waiting-timer strong { color: var(--accent); font-feature-settings: 'tnum'; }
-
-    /* Tips */
-    .waiting-tips {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .waiting-tips-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-bottom: 2px;
-    }
-    .waiting-tip {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 14px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      transition: all var(--transition);
-    }
-    .waiting-tip:hover { border-color: var(--accent); background: var(--accent-light); }
-    .waiting-tip-emoji { font-size: 1.05rem; flex-shrink: 0; }
-    .waiting-tip-text { font-size: 0.8rem; color: var(--text2); line-height: 1.4; }
-    .waiting-tip-text strong { color: var(--text); }
-
     /* ─── DIPROSES QR SECTION ─── */
     .diproses-section {
       display: none;
@@ -615,7 +533,6 @@
       .qr-instructions { padding: 28px 20px 22px; }
       .done-section { padding: 28px 20px 24px; }
       .waiting-section { padding: 22px 16px 26px; }
-      .waiting-qr-banner { padding: 14px 14px; }
       .step-label { font-size: 0.58rem; }
       .order-id-value { font-size: 1.1rem; }
       .qr-frame img { width: 200px; height: 200px; }
@@ -723,62 +640,28 @@
       <!-- WAITING SECTION (Menunggu) -->
       <div class="waiting-section" id="waitingSection" style="display:none">
 
-        <!-- Animated Hourglass -->
         <div class="waiting-anim-wrap">
           <div class="waiting-anim-ring"></div>
           <div class="waiting-anim-ring2"></div>
           <svg class="hourglass-svg" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
             <g class="hourglass-inner">
-              <!-- Glass outline -->
               <path d="M10 4 L30 4 L20 20 L30 36 L10 36 L20 20 Z" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
-              <!-- Top sand -->
               <clipPath id="topClip"><path d="M11 5 L29 5 L20 19 Z"/></clipPath>
               <polygon class="sand-top" points="11,5 29,5 20,19" fill="var(--accent)" opacity="0.55" clip-path="url(#topClip)"/>
-              <!-- Bottom sand -->
               <clipPath id="botClip"><path d="M11 35 L29 35 L20 21 Z"/></clipPath>
               <polygon class="sand-bottom" points="11,35 29,35 20,21" fill="var(--accent)" opacity="0.75" clip-path="url(#botClip)"/>
-              <!-- Top caps -->
               <line x1="8" y1="4" x2="32" y2="4" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
               <line x1="8" y1="36" x2="32" y2="36" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
             </g>
-            <!-- Sand drop (animated separately, outside flip) -->
             <circle class="sand-drop" cx="20" cy="20" r="1.2" fill="var(--accent)" opacity="0"/>
           </svg>
         </div>
 
-        <div class="waiting-title">Menunggu Persetujuan Admin</div>
-        <div class="waiting-desc">Pesananmu sudah masuk! Admin akan segera mengkonfirmasi. Halaman ini <strong>update otomatis</strong> — santai aja! 😊</div>
+        <div class="waiting-title">Menunggu Konfirmasi</div>
+        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis.</div>
 
-        <!-- QR Banner -->
-        <div class="waiting-qr-banner">
-          <div class="waiting-qr-icon-wrap">🎫</div>
-          <div class="waiting-qr-text-wrap">
-            <div class="waiting-qr-banner-title">QR Pemesanan akan muncul otomatis</div>
-            <div class="waiting-qr-banner-sub">setelah Admin menyetujui &amp; memproses pesanan Anda — tidak perlu refresh!</div>
-          </div>
-        </div>
-
-        <!-- Elapsed timer -->
         <div class="waiting-timer">
-          <span class="waiting-timer-icon">⏱️</span>
-          <span>Sudah menunggu <strong id="waitingElapsed">0 detik</strong></span>
-        </div>
-
-        <!-- Tips -->
-        <div class="waiting-tips">
-          <div class="waiting-tips-label">Sementara menunggu...</div>
-          <div class="waiting-tip">
-            <span class="waiting-tip-emoji">🔔</span>
-            <span class="waiting-tip-text"><strong>Notifikasi otomatis</strong> — status langsung berubah di sini saat Admin konfirmasi</span>
-          </div>
-          <div class="waiting-tip">
-            <span class="waiting-tip-emoji">📱</span>
-            <span class="waiting-tip-text"><strong>Boleh minimize app</strong> — cukup buka kembali untuk lihat update terbaru</span>
-          </div>
-          <div class="waiting-tip">
-            <span class="waiting-tip-emoji">☕</span>
-            <span class="waiting-tip-text">Biasanya dikonfirmasi dalam <strong>beberapa menit</strong> — harap bersabar!</span>
-          </div>
+          <span>Menunggu selama <strong id="waitingElapsed">0 detik</strong></span>
         </div>
 
       </div>
