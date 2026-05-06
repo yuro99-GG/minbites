@@ -1157,34 +1157,103 @@ function showScanSuccess(orderId,name){
 function hideScanSuccess(){ document.getElementById('scanSuccess').classList.remove('show'); }
 
 /* ── QR SCANNER ── */
-var html5QrCode=null;
+var html5QrCode = null;
+var scannerProcessing = false;
+
 function openScanner(){
   document.getElementById('scannerModal').classList.add('open');
-  document.getElementById('scannerStatusText').textContent='';
-  if(!html5QrCode) html5QrCode=new Html5Qrcode('qr-reader');
-  var viewfinder=document.getElementById('scannerViewfinder');
-  html5QrCode.start({facingMode:'environment'},{fps:10,qrbox:{width:200,height:200}},
+  document.getElementById('scannerStatusText').textContent = '';
+  scannerProcessing = false;
+
+  // Always create a fresh instance to avoid stale state
+  try {
+    if(html5QrCode){ try{ html5QrCode.clear(); }catch(e){} }
+    html5QrCode = new Html5Qrcode('qr-reader');
+  } catch(e) {
+    html5QrCode = new Html5Qrcode('qr-reader');
+  }
+
+  var viewfinder = document.getElementById('scannerViewfinder');
+
+  html5QrCode.start(
+    {facingMode:'environment'},
+    {fps:10, qrbox:{width:220, height:220}},
     async function(decodedText){
-      document.getElementById('scannerStatusText').textContent='QR terdeteksi, memuat…';
-      var match=decodedText.match(/[?&]id=([^&]+)/);
-      if(!match){ document.getElementById('scannerStatusText').textContent='QR tidak valid'; return; }
-      var orderId=decodeURIComponent(match[1]);
-      var o=allOrders.find(function(x){return (x.id||x._docId)===orderId;});
-      if(!o){ document.getElementById('scannerStatusText').textContent='Pesanan tidak ditemukan'; return; }
-      var s=(o.status||'').toUpperCase().trim();
-      if(s==='SELESAI'){ document.getElementById('scannerStatusText').textContent='Pesanan sudah selesai!'; return; }
-      if(s!=='SIAP DIAMBIL'){ document.getElementById('scannerStatusText').textContent='Pesanan belum siap diambil (status: '+s+')'; return; }
-      await html5QrCode.stop();
+      // Prevent multiple simultaneous executions
+      if(scannerProcessing) return;
+      scannerProcessing = true;
+
+      var statusEl = document.getElementById('scannerStatusText');
+      statusEl.textContent = '⏳ QR terdeteksi, mencari pesanan…';
+
+      var match = decodedText.match(/[?&]id=([^&]+)/);
+      if(!match){
+        statusEl.textContent = '❌ QR tidak valid untuk MinBite';
+        scannerProcessing = false;
+        return;
+      }
+
+      var orderId = decodeURIComponent(match[1]);
+
+      // 1. Coba cari di cache lokal dulu (cepat)
+      var o = allOrders.find(function(x){ return (x.id||x._docId)===orderId; });
+
+      // 2. Kalau tidak ada, langsung query Firestore (fallback utama — ini yg penting!)
+      if(!o){
+        statusEl.textContent = '🔍 Memuat data dari server…';
+        try {
+          var snap = await db.collection('orders').doc(orderId).get();
+          if(snap.exists){
+            o = Object.assign({_docId: snap.id}, snap.data());
+          }
+        } catch(fetchErr){
+          statusEl.textContent = '❌ Gagal mengakses server: ' + fetchErr.message;
+          scannerProcessing = false;
+          return;
+        }
+      }
+
+      if(!o){
+        statusEl.textContent = '❌ Pesanan "' + orderId + '" tidak ditemukan';
+        scannerProcessing = false;
+        return;
+      }
+
+      var s = (o.status||'').toUpperCase().trim();
+      if(s==='SELESAI'){
+        statusEl.textContent = '✅ Pesanan ini sudah SELESAI sebelumnya';
+        scannerProcessing = false;
+        return;
+      }
+      if(s!=='SIAP DIAMBIL'){
+        statusEl.textContent = '⚠️ Status belum SIAP DIAMBIL (saat ini: '+s+')';
+        scannerProcessing = false;
+        return;
+      }
+
+      // Sukses — hentikan scanner, tampilkan invoice
+      try{ await html5QrCode.stop(); } catch(e){}
+      html5QrCode = null;
+
       closeScanner();
       showInvoiceModal(o._docId||o.id);
     },
-    function(){viewfinder.style.opacity=viewfinder.style.opacity==='0.5'?'1':'1';}
+    function(){} // failure/no-detection callback (kosongkan, tidak perlu log)
   ).then(function(){ if(viewfinder) viewfinder.style.display='flex'; })
-  .catch(function(e){ document.getElementById('scannerStatusText').textContent='Kamera tidak bisa diakses: '+e; });
+  .catch(function(e){
+    document.getElementById('scannerStatusText').textContent = '📷 Kamera tidak bisa diakses. Pastikan izin kamera diberikan.';
+    console.error('QR Scanner error:', e);
+    scannerProcessing = false;
+  });
 }
+
 function closeScanner(){
+  scannerProcessing = false;
   document.getElementById('scannerModal').classList.remove('open');
-  if(html5QrCode){ html5QrCode.stop().catch(function(){}); }
+  if(html5QrCode){
+    html5QrCode.stop().catch(function(){});
+    html5QrCode = null;
+  }
 }
 
 /* ── MENU LIST ── */
