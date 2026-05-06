@@ -1316,16 +1316,16 @@
     <div class="section-label">Menu Hari Ini</div>
     <div class="category-tabs">
       <button class="cat-tab active" data-cat="all" onclick="filterCat('all', this)">
-        <span class="cat-tab-icon">🍽️</span> Semua <span class="cat-count">3</span>
+        <span class="cat-tab-icon"></span> Semua <span class="cat-count">3</span>
       </button>
       <button class="cat-tab" data-cat="makanan" onclick="filterCat('makanan', this)">
-        <span class="cat-tab-icon">🍫</span> Makanan <span class="cat-count">1</span>
+        <span class="cat-tab-icon"></span> Makanan <span class="cat-count">1</span>
       </button>
       <button class="cat-tab" data-cat="minuman" onclick="filterCat('minuman', this)">
-        <span class="cat-tab-icon">🧋</span> Minuman <span class="cat-count">1</span>
+        <span class="cat-tab-icon"></span> Minuman <span class="cat-count">1</span>
       </button>
       <button class="cat-tab" data-cat="bundle" onclick="filterCat('bundle', this)">
-        <span class="cat-tab-icon">🎁</span> Bundle <span class="cat-count">1</span>
+        <span class="cat-tab-icon"></span> Bundle <span class="cat-count">1</span>
       </button>
     </div>
     <div class="products-grid" id="productsGrid">
@@ -1419,7 +1419,7 @@
 
       <!-- PRODUCT 2: Thai Tea -->
       <div class="product-card" data-cat="minuman" style="position:relative;">
-        <span class="product-badge badge-seger">🌿 Seger</span>
+        <span class="product-badge badge-seger">Segar</span>
         <div class="product-image-wrap tea-bg">
           <!-- Flat illustration: Thai Tea cup -->
           <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" width="220" height="170">
@@ -1502,7 +1502,7 @@
 
       <!-- PRODUCT 3: Bundle MinBite -->
       <div class="product-card" data-cat="bundle" style="position:relative;">
-        <div style="position:absolute;top:14px;left:14px;z-index:3;background:var(--accent);color:#fff;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:100px;letter-spacing:0.04em;">🎁 BUNDLING</div>
+        <div style="position:absolute;top:14px;left:14px;z-index:3;background:var(--accent);color:#fff;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:100px;letter-spacing:0.04em;">BUNDLING</div>
         <div class="product-image-wrap bundle-bg">
           <!-- Flat illustration: Bundle (Bola Oreo + Thai Tea) -->
           <svg viewBox="0 0 270 200" xmlns="http://www.w3.org/2000/svg" width="230" height="175">
@@ -1949,7 +1949,7 @@
           ? Math.min(promo.amount, subtotal)
           : Math.round(subtotal * promo.value);
         statusEl.className = 'promo-status promo-ok';
-        statusEl.textContent = '🎉 Promo berhasil! ' + promo.label;
+        statusEl.textContent = 'Promo berhasil! ' + promo.label;
         renderOrderReview();
         return;
       }
@@ -1968,7 +1968,7 @@
           promoDiscount = Math.round(subtotal * p.value);
         }
         statusEl.className = 'promo-status promo-ok';
-        statusEl.textContent = '🎉 Promo berhasil! Hemat ' + fmt(promoDiscount);
+        statusEl.textContent = 'Promo berhasil! Hemat ' + fmt(promoDiscount);
       } else {
         promoDiscount = 0;
         statusEl.className = 'promo-status promo-err';
@@ -2296,4 +2296,4 @@
     observer.observe(checkoutModal, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
-                </html>
+          </html>
