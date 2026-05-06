@@ -161,17 +161,21 @@
     .pickup-info-label { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
     .pickup-info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
 
-    /* ─── QR SECTION (SIAP DIAMBIL) ─── */
+    /* ─── SIAP DIAMBIL SECTION ─── */
     .qr-section {
       display: none;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      background: linear-gradient(180deg, var(--ready-bg) 0%, var(--bg) 100%);
-      border-top: 2px solid var(--ready-border);
-      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      background: linear-gradient(180deg, #dcfce7 0%, var(--bg) 100%);
+      border-top: 3px solid #4ade80;
+      animation: qrReveal 0.55s cubic-bezier(0.34,1.56,0.64,1);
     }
-    @keyframes qrReveal { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    [data-theme="dark"] .qr-section {
+      background: linear-gradient(180deg, #052e16 0%, var(--bg) 100%);
+      border-top-color: #16a34a;
+    }
+    @keyframes qrReveal { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
 
     .qr-hero {
       width: 100%;
@@ -186,22 +190,24 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 16px;
-      background: var(--ready-bg);
-      color: var(--ready-text);
-      border: 1.5px solid var(--ready-border);
+      padding: 6px 18px;
+      background: #dcfce7;
+      color: #15803d;
+      border: 1.5px solid #4ade80;
       border-radius: 100px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
     }
-    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ready-text); animation: pulse 1s ease infinite; }
+    [data-theme="dark"] .qr-ready-badge { background: #052e16; color: #4ade80; border-color: #16a34a; }
+    .qr-ready-dot { width: 7px; height: 7px; border-radius: 50%; background: #15803d; animation: pulse 0.9s ease infinite; }
+    [data-theme="dark"] .qr-ready-dot { background: #4ade80; }
 
     .qr-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
     .qr-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 260px; }
 
-    /* Tap to Fullscreen */
+    /* QR Frame */
     .qr-tap-wrap {
       position: relative;
       cursor: pointer;
@@ -209,52 +215,68 @@
       user-select: none;
     }
     .qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
-
     .qr-frame {
       background: white;
       padding: 16px;
       border-radius: 20px;
-      box-shadow: 0 12px 40px var(--shadow-md), 0 0 0 1px var(--border);
-      position: relative;
+      box-shadow: 0 12px 40px rgba(22,163,74,0.18), 0 0 0 2px #4ade80;
     }
     .qr-frame img { display: block; width: 220px; height: 220px; border-radius: 6px; }
-
     .qr-tap-hint {
       position: absolute;
       bottom: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--text);
-      color: var(--bg);
+      background: #15803d;
+      color: white;
       font-size: 0.7rem;
       font-weight: 600;
       padding: 4px 12px;
       border-radius: 100px;
       white-space: nowrap;
       letter-spacing: 0.03em;
-      opacity: 0.85;
     }
 
+    /* Step-by-step animated */
     .qr-instructions {
       width: 100%;
-      padding: 32px 28px 28px;
+      padding: 34px 28px 28px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
     .qr-step {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px 16px;
+      gap: 14px;
+      padding: 14px 16px;
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1.5px solid #bbf7d0;
+      border-radius: 14px;
+      opacity: 0;
+      transform: translateX(-14px);
+      animation: stepSlideIn 0.4s ease forwards;
     }
-    .qr-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .qr-step-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
-    .qr-step-text strong { color: var(--text); }
+    .qr-step:nth-child(1) { animation-delay: 0.1s; }
+    .qr-step:nth-child(2) { animation-delay: 0.25s; }
+    .qr-step:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes stepSlideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .qr-step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #15803d;
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(22,163,74,0.3);
+    }
+    .qr-step-content { flex: 1; }
+    .qr-step-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .qr-step-desc { font-size: 0.78rem; color: var(--text3); line-height: 1.55; }
 
     /* SELESAI SCREEN */
     .done-section {
@@ -391,15 +413,15 @@
       color: var(--text3);
       margin-top: 4px;
     }
-    /* ─── DIPROSES QR SECTION ─── */
+    /* ─── DIPROSES SECTION ─── */
     .diproses-section {
       display: none;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      background: linear-gradient(180deg, #e8f0fe 0%, var(--bg) 100%);
-      border-top: 2px solid #b6d0fb;
-      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
+      border-top: 3px solid #b6d0fb;
+      animation: fadeUp 0.4s ease;
     }
     [data-theme="dark"] .diproses-section {
       background: linear-gradient(180deg, #0d1a3a 0%, var(--bg) 100%);
@@ -407,88 +429,76 @@
     }
     .diproses-hero {
       width: 100%;
-      padding: 28px 28px 0;
+      padding: 28px 28px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
+
+    /* Cooking animation */
+    .diproses-cook-wrap {
+      position: relative;
+      width: 72px; height: 72px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .diproses-cook-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 2.5px solid #dbeafe;
+      border-top-color: #1e40af;
+      animation: spin 1.8s linear infinite;
+    }
+    .diproses-cook-emoji {
+      font-size: 1.8rem;
+      animation: cookBounce 2s ease-in-out infinite;
+    }
+    @keyframes cookBounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-4px) rotate(5deg); }
+    }
+
     .diproses-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 16px;
-      background: #e8f0fe;
-      color: #1a47a0;
-      border: 1.5px solid #b6d0fb;
+      padding: 5px 14px;
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1.5px solid #93c5fd;
       border-radius: 100px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
-    [data-theme="dark"] .diproses-badge {
-      background: #0d1a3a;
-      color: #7aacfb;
-      border-color: #2a4a8a;
-    }
-    .diproses-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #1a47a0; animation: pulse 1.2s ease infinite; }
+    [data-theme="dark"] .diproses-badge { background: #0d1a3a; color: #7aacfb; border-color: #2a4a8a; }
+    .diproses-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #1e40af; animation: pulse 1.2s ease infinite; }
     [data-theme="dark"] .diproses-badge-dot { background: #7aacfb; }
-    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); text-align: center; margin-top: 4px; }
-    .diproses-subtitle { font-size: 0.82rem; color: var(--text3); text-align: center; line-height: 1.6; max-width: 270px; }
-    .diproses-qr-tap-wrap {
-      position: relative;
-      cursor: pointer;
-      margin: 20px 0 0;
-      user-select: none;
-    }
-    .diproses-qr-tap-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
-    .diproses-qr-frame {
-      background: white;
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(26,71,160,0.15), 0 0 0 1px #b6d0fb;
-    }
-    .diproses-qr-frame img { display: block; width: 200px; height: 200px; border-radius: 6px; }
-    .diproses-qr-tap-hint {
-      position: absolute;
-      bottom: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a47a0;
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 100px;
-      white-space: nowrap;
-      letter-spacing: 0.03em;
-      opacity: 0.85;
-    }
+    .diproses-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--text); text-align: center; }
+    .diproses-subtitle { font-size: 0.8rem; color: var(--text3); text-align: center; line-height: 1.65; max-width: 260px; }
     .diproses-info-wrap {
       width: 100%;
-      padding: 32px 28px 28px;
+      padding: 0 28px 28px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     .diproses-info-note {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px 16px;
+      gap: 10px;
+      padding: 10px 14px;
       background: var(--surface);
-      border: 1px solid #b6d0fb;
+      border: 1px solid #c7d9fd;
       border-radius: var(--radius-sm);
     }
-    .diproses-info-icon { width: 26px; height: 26px; border-radius: 50%; background: #e8f0fe; color: #1a47a0; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    [data-theme="dark"] .diproses-info-icon { background: #0d1a3a; color: #7aacfb; }
-    .diproses-info-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .diproses-info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .diproses-info-text { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
     .diproses-info-text strong { color: var(--text); }
     @media (max-width: 520px) {
-      .diproses-hero { padding: 22px 16px 0; }
-      .diproses-info-wrap { padding: 26px 16px 22px; }
-      .diproses-qr-frame img { width: 180px; height: 180px; }
+      .diproses-hero { padding: 22px 16px 18px; }
+      .diproses-info-wrap { padding: 0 16px 22px; }
     }
 
     /* SCROLLBAR */
