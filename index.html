@@ -1042,6 +1042,32 @@
       margin-top: 8px;
     }
 
+    .btn-cek-pesanan {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 22px;
+      padding: 12px 24px;
+      background: var(--surface);
+      color: var(--text2);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .btn-cek-pesanan svg { width: 16px; height: 16px; color: var(--accent); }
+    .btn-cek-pesanan:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 6px 20px var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .btn-cek-pesanan:active { transform: scale(0.97); }
+
     /* ── MOBILE ── */
     @media (max-width: 560px) {
       .header-inner { padding: 0 14px; }
@@ -1104,6 +1130,10 @@
     <h1>Cemilan <em>enak</em>,<br>harga ramah</h1>
     <p>Pesan sekarang, ambil saat istirahat. Segarkan harimu dengan pilihan terbaik MinBite.</p>
     <div class="texture-line"></div>
+    <button class="btn-cek-pesanan" onclick="openPesanan()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Cek Status Pesanan
+    </button>
   </section>
 
   <!-- ══ PRODUCTS ══ -->
