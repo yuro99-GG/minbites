@@ -54,88 +54,6 @@
       --transition:   0.22s cubic-bezier(0.4,0,0.2,1);
     }
 
-
-
-    /* ── FLOATER: Scroll to Top ── */
-    .fab-top {
-      position: fixed;
-      bottom: 28px;
-      right: 24px;
-      z-index: 150;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--surface);
-      color: var(--text2);
-      border: 1.5px solid var(--border);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px var(--shadow-md);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(12px);
-      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-    }
-    .fab-top.show { opacity: 1; pointer-events: all; transform: translateY(0); }
-    .fab-top:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(200,149,108,0.40); }
-    .fab-top:active { transform: scale(0.94); }
-    .fab-top svg { width: 18px; height: 18px; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      padding: 40px 20px 28px;
-    }
-    .footer-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      text-align: center;
-    }
-    .footer-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: -0.02em;
-    }
-    .footer-tagline {
-      font-size: 0.8rem;
-      color: var(--text3);
-      font-style: italic;
-      margin-bottom: 10px;
-    }
-    .footer-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .footer-links a, .footer-links button {
-      font-size: 0.78rem;
-      color: var(--text2);
-      text-decoration: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      padding: 0;
-      transition: color var(--transition);
-    }
-    .footer-links a:hover, .footer-links button:hover { color: var(--accent); }
-    .footer-links .dot { color: var(--border); font-size: 0.6rem; }
-    .footer-copy {
-      font-size: 0.7rem;
-      color: var(--text3);
-      margin-top: 8px;
-    }
-
     html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     ::-webkit-scrollbar { width: 5px; }
@@ -951,6 +869,11 @@
     <div class="success-ring"></div>
   </div>
   <div class="success-content">
+    <div class="success-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
     <div class="success-title">Pesanan Selesai!</div>
     <div class="success-order-id" id="scanSuccessId">MB-XXXXXX</div>
     <div class="success-sub" id="scanSuccessName">Berhasil dikonfirmasi & ditandai SELESAI</div>
@@ -1017,55 +940,34 @@
 
 <div id="toast-container"></div>
 
-<script
-    // ── FLOATER: Scroll to Top ──
-    (function() {
-      const btn = document.getElementById('fabTop');
-      window.addEventListener('scroll', () => {
-        btn.classList.toggle('show', window.scrollY > 300);
-      }, { passive: true });
-    })();
->
+<script>
 /* AUTH */
-var _q0='9c4788f3ef9d057c',_q1='dcb5120ea899d99b';
-var _r0='a1b2c3d4e5f67890',_r1='dead1234beef5678';
-var _q2='292b68a976719999',_q3='6ae94b37a9acb2be';
-var _s0='0f1e2d3c4b5a6978';
-var _q4='bad60b114cb0252e',_q5='cded617dbbeb5536';
-var _r2='cafebabe1234abcd',_r3='f0e1d2c3b4a59687';
-var _q6='d67bea2327e8f76a',_q7='7ae3961ab3ff4425';
-function _xu(){return _q0+_q2+_q4+_q6;}
-function _xp(){return _q1+_q3+_q5+_q7;}
-async function _h(s){
-  var b=new TextEncoder().encode(s);
-  var d=await crypto.subtle.digest('SHA-256',b);
-  return Array.from(new Uint8Array(d)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
-}
-async function _ck(u,p){var r=await Promise.all([_h(u),_h(p)]);return r[0]===_xu()&&r[1]===_xp();}
-function _sk(){try{sessionStorage.setItem('_x',btoa(_xu()+Date.now()));}catch(e){}}
-function _hsk(){try{var v=sessionStorage.getItem('_x');if(!v)return false;return atob(v).startsWith(_xu());}catch(e){return false;}}
-async function _auth(){
+var _a=[27,28,2,10],_b=[27,28,2,10,28,17,7,29,9,79],_c="pixel";
+function _dc(a,k){return a.map(function(c,i){return String.fromCharCode(c^k.charCodeAt(i%k.length))}).join('')}
+function _ck(u,p){return u===_dc(_a,_c)&&p===_dc(_b,_c)}
+function _sk(){try{sessionStorage.setItem('_x',btoa(_dc(_a,_c)+Date.now()))}catch(e){}}
+function _hsk(){try{var v=sessionStorage.getItem('_x');if(!v)return false;return atob(v).startsWith(_dc(_a,_c));}catch(e){return false;}}
+function _auth(){
   var u=document.getElementById('loginUser').value;
   var p=document.getElementById('loginPass').value;
   var err=document.getElementById('loginErr');
-  err.textContent='';
-  var ok=await _ck(u,p);
-  if(ok){
+  if(_ck(u,p)){
     _sk();
     var ov=document.getElementById('loginOverlay');
-    ov.style.transition='opacity 0.4s';ov.style.opacity='0';
+    ov.style.transition='opacity 0.4s'; ov.style.opacity='0';
     setTimeout(function(){ov.style.display='none';},420);
-  }else{err.textContent='Username atau password salah.';document.getElementById('loginPass').value='';}
+    err.textContent='';
+  } else { err.textContent='Username atau password salah.'; document.getElementById('loginPass').value=''; }
 }
 function _logout(){
   try{sessionStorage.removeItem('_x');}catch(e){}
   var ov=document.getElementById('loginOverlay');
-  ov.style.opacity='1';ov.style.display='flex';
+  ov.style.opacity='1'; ov.style.display='flex';
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
   document.getElementById('loginErr').textContent='';
 }
-(function(){if(_hsk())document.getElementById('loginOverlay').style.display='none';})();
+(function(){ if(_hsk()) document.getElementById('loginOverlay').style.display='none'; })();
 
 /* STATE */
 var allOrders=[],currentFilter='ALL',pendingAction=null;
