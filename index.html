@@ -35,45 +35,45 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #faf8f5;
-      --bg2: #f3efe9;
-      --bg3: #ede8e0;
+      --bg: #f9f7f4;
+      --bg2: #f1ede6;
+      --bg3: #e9e3d9;
       --surface: #ffffff;
-      --accent: #c8956c;
-      --accent-dark: #a8734d;
-      --accent-light: #f0ddd0;
-      --text: #2c2018;
-      --text2: #6b5744;
-      --text3: #9c8575;
-      --border: #e8e0d8;
-      --shadow: rgba(44, 32, 24, 0.08);
-      --shadow-md: rgba(44, 32, 24, 0.14);
-      --shadow-lg: rgba(44, 32, 24, 0.20);
-      --toast-bg: #2c2018;
-      --toast-text: #faf8f5;
-      --radius: 18px;
+      --accent: #bf7d4b;
+      --accent-dark: #9d6237;
+      --accent-light: #f5e4d3;
+      --text: #1e160e;
+      --text2: #5c4736;
+      --text3: #9a8072;
+      --border: #e4dbd0;
+      --shadow: rgba(30, 22, 14, 0.06);
+      --shadow-md: rgba(30, 22, 14, 0.11);
+      --shadow-lg: rgba(30, 22, 14, 0.18);
+      --toast-bg: #1e160e;
+      --toast-text: #f9f7f4;
+      --radius: 16px;
       --radius-sm: 10px;
-      --radius-lg: 28px;
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-lg: 24px;
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     [data-theme="dark"] {
-      --bg: #1a1410;
-      --bg2: #221c16;
-      --bg3: #2a221a;
-      --surface: #2e251c;
-      --accent: #d4a07a;
-      --accent-dark: #c8956c;
-      --accent-light: #3d2e20;
+      --bg: #17120d;
+      --bg2: #1f1810;
+      --bg3: #271f16;
+      --surface: #2a2018;
+      --accent: #cd9a68;
+      --accent-dark: #bf7d4b;
+      --accent-light: #38271a;
       --text: #f0e8df;
-      --text2: #c4a98a;
-      --text3: #8a7060;
-      --border: #3a2e24;
-      --shadow: rgba(0, 0, 0, 0.25);
-      --shadow-md: rgba(0, 0, 0, 0.35);
-      --shadow-lg: rgba(0, 0, 0, 0.50);
+      --text2: #c0a485;
+      --text3: #88705e;
+      --border: #362b20;
+      --shadow: rgba(0, 0, 0, 0.28);
+      --shadow-md: rgba(0, 0, 0, 0.40);
+      --shadow-lg: rgba(0, 0, 0, 0.55);
       --toast-bg: #f0e8df;
-      --toast-text: #1a1410;
+      --toast-text: #17120d;
     }
 
     html { scroll-behavior: smooth; }
@@ -92,17 +92,21 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--bg);
+      background: rgba(249, 247, 244, 0.88);
       border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    [data-theme="dark"] header {
+      background: rgba(23, 18, 13, 0.88);
     }
 
     .header-inner {
-      max-width: 960px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 0 20px;
-      height: 64px;
+      padding: 0 24px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -111,10 +115,10 @@
 
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       text-decoration: none;
       flex-shrink: 0;
     }
@@ -129,13 +133,13 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-icon {
-      width: 40px;
-      height: 40px;
-      border: 1.5px solid var(--border);
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
       border-radius: 50%;
       background: var(--surface);
       color: var(--text2);
@@ -151,21 +155,21 @@
       border-color: var(--accent);
       color: var(--accent);
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px var(--shadow-md);
+      box-shadow: 0 3px 10px var(--shadow-md);
     }
 
-    .btn-icon svg { width: 18px; height: 18px; }
+    .btn-icon svg { width: 17px; height: 17px; }
 
     .cart-badge {
       position: absolute;
       top: -4px;
       right: -4px;
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       background: var(--accent);
       color: white;
       border-radius: 50%;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -178,53 +182,54 @@
     .cart-badge.show { opacity: 1; transform: scale(1); }
 
     .btn-pesanan {
-      padding: 8px 16px;
-      border: 1.5px solid var(--border);
+      padding: 7px 15px;
+      border: 1px solid var(--border);
       border-radius: 100px;
       background: var(--surface);
       color: var(--text2);
       font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 500;
       cursor: pointer;
       transition: all var(--transition);
       white-space: nowrap;
+      letter-spacing: 0.01em;
     }
 
     .btn-pesanan:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 4px 12px var(--shadow-md);
+      box-shadow: 0 3px 10px var(--shadow-md);
     }
 
     /* ── HERO ── */
     .hero {
-      max-width: 960px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 56px 20px 24px;
+      padding: 64px 24px 28px;
       text-align: center;
     }
 
     .hero-tag {
       display: inline-block;
-      padding: 5px 14px;
+      padding: 4px 12px;
       background: var(--accent-light);
       color: var(--accent);
       border-radius: 100px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
-      line-height: 1.15;
+      line-height: 1.18;
       color: var(--text);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .hero h1 em {
@@ -233,32 +238,42 @@
     }
 
     .hero p {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: var(--text3);
-      max-width: 400px;
+      max-width: 380px;
       margin: 0 auto;
-      line-height: 1.7;
+      line-height: 1.75;
     }
 
     /* ── PRODUCTS ── */
     .products-section {
-      max-width: 960px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 32px 20px 80px;
+      padding: 28px 24px 80px;
     }
 
     .section-label {
       font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-size: 1.3rem;
+      font-weight: 700;
       color: var(--text);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
     }
 
     .product-card {
@@ -266,22 +281,23 @@
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 2px 16px var(--shadow);
-      transition: box-shadow var(--transition), transform var(--transition);
+      box-shadow: 0 1px 8px var(--shadow), 0 4px 24px rgba(0,0,0,0.04);
+      transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
     }
 
     .product-card:hover {
-      box-shadow: 0 8px 32px var(--shadow-md);
-      transform: translateY(-3px);
+      box-shadow: 0 4px 20px var(--shadow-md), 0 12px 40px rgba(0,0,0,0.06);
+      transform: translateY(-4px);
+      border-color: var(--accent-light);
     }
 
     .product-image-wrap {
       background: var(--bg2);
-      padding: 32px 24px 24px;
+      padding: 28px 24px 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 220px;
+      min-height: 200px;
       position: relative;
       overflow: hidden;
     }
@@ -292,27 +308,28 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 40px;
+      height: 32px;
       background: linear-gradient(to top, var(--surface), transparent);
     }
 
     .product-info {
-      padding: 20px 22px 22px;
+      padding: 18px 20px 20px;
     }
 
     .product-name {
       font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      font-weight: 600;
+      font-size: 1.08rem;
+      font-weight: 700;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      letter-spacing: -0.01em;
     }
 
     .product-desc {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text3);
       margin-bottom: 16px;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     .product-footer {
@@ -323,7 +340,7 @@
     }
 
     .product-price {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--accent);
       font-family: 'Playfair Display', serif;
@@ -333,18 +350,19 @@
       display: flex;
       align-items: center;
       gap: 0;
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: 100px;
       overflow: hidden;
+      background: var(--bg2);
     }
 
     .qty-btn {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       background: none;
       border: none;
       color: var(--text2);
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -353,35 +371,36 @@
       font-weight: 600;
     }
 
-    .qty-btn:hover { background: var(--bg2); color: var(--accent); }
+    .qty-btn:hover { background: var(--border); color: var(--accent); }
 
     .qty-display {
-      min-width: 32px;
+      min-width: 28px;
       text-align: center;
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       font-weight: 600;
       color: var(--text);
-      padding: 0 4px;
+      padding: 0 2px;
     }
 
     .btn-addcart {
-      padding: 9px 18px;
+      padding: 8px 16px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 100px;
       font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition);
       white-space: nowrap;
+      letter-spacing: 0.01em;
     }
 
     .btn-addcart:hover {
       background: var(--accent-dark);
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(200, 149, 108, 0.4);
+      box-shadow: 0 4px 14px rgba(191, 125, 75, 0.38);
     }
 
     .btn-addcart:active { transform: scale(0.97); }
@@ -579,13 +598,13 @@
 
     .btn-checkout {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition);
@@ -594,7 +613,7 @@
 
     .btn-checkout:hover {
       background: var(--accent-dark);
-      box-shadow: 0 6px 20px rgba(200, 149, 108, 0.4);
+      box-shadow: 0 5px 18px rgba(191, 125, 75, 0.38);
     }
 
     /* ── MODAL ── */
@@ -623,10 +642,10 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 480px;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px var(--shadow-lg);
-      transform: translateY(20px) scale(0.97);
+      box-shadow: 0 24px 64px var(--shadow-lg);
+      transform: translateY(24px) scale(0.97);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -671,20 +690,21 @@
 
     .form-input {
       width: 100%;
-      padding: 11px 14px;
+      padding: 10px 13px;
       background: var(--bg);
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       transition: all var(--transition);
       outline: none;
     }
 
     .form-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(191, 125, 75, 0.12);
+      background: var(--surface);
     }
 
     .form-input::placeholder { color: var(--text3); }
@@ -777,18 +797,19 @@
 
     .btn-submit {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       transition: all var(--transition);
       position: relative;
       overflow: hidden;
+      letter-spacing: 0.02em;
     }
 
     .btn-submit::after {
@@ -804,7 +825,7 @@
 
     .btn-submit:hover {
       background: var(--accent-dark);
-      box-shadow: 0 6px 24px rgba(200, 149, 108, 0.45);
+      box-shadow: 0 6px 24px rgba(191, 125, 75, 0.42);
     }
 
     .btn-submit:disabled {
@@ -951,8 +972,8 @@
       to   { transform: translateY(0);    opacity: 1; }
     }
     .active-order-banner-inner {
-      max-width: 960px; margin: 0 auto;
-      padding: 10px 20px;
+      max-width: 1000px; margin: 0 auto;
+      padding: 10px 24px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .active-order-left { display: flex; align-items: center; gap: 10px; }
@@ -1070,10 +1091,10 @@
 
     /* ── MOBILE ── */
     @media (max-width: 560px) {
-      .header-inner { padding: 0 14px; }
-      .hero { padding: 36px 14px 16px; }
-      .products-section { padding: 24px 14px 70px; }
-      .products-grid { grid-template-columns: 1fr; gap: 16px; }
+      .header-inner { padding: 0 16px; }
+      .hero { padding: 40px 16px 16px; }
+      .products-section { padding: 24px 16px 70px; }
+      .products-grid { grid-template-columns: 1fr; gap: 14px; }
       .form-row { grid-template-columns: 1fr; }
       .modal-header { padding: 20px 20px 0; }
       .modal-body { padding: 18px 20px 20px; }
@@ -1120,35 +1141,36 @@
     /* ── CATEGORY TABS ── */
     .category-tabs {
       display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
+      gap: 6px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
     .cat-tab {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 18px;
-      border: 1.5px solid var(--border);
+      gap: 5px;
+      padding: 7px 16px;
+      border: 1px solid var(--border);
       border-radius: 100px;
       background: var(--surface);
       color: var(--text3);
       font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition);
+      letter-spacing: 0.01em;
     }
-    .cat-tab:hover { border-color: var(--accent); color: var(--accent); }
+    .cat-tab:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
     .cat-tab.active {
       background: var(--accent);
       border-color: var(--accent);
       color: white;
-      box-shadow: 0 4px 14px rgba(200,149,108,0.35);
+      box-shadow: 0 3px 12px rgba(191, 125, 75, 0.3);
     }
-    .cat-tab-icon { font-size: 1rem; line-height: 1; }
+    .cat-tab-icon { font-size: 0.95rem; line-height: 1; }
     .cat-count {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 700;
       opacity: 0.75;
     }
@@ -1177,8 +1199,8 @@
     .product-image-wrap.bundle-bg { background: linear-gradient(145deg, #f5ede3 0%, #fde8ca 100%); }
 
     /* Card hover tilt */
-    .product-card { cursor: default; transition: box-shadow var(--transition), transform var(--transition); }
-    .product-card:hover { transform: translateY(-5px) scale(1.01); }
+    .product-card { cursor: default; transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition); }
+    .product-card:hover { transform: translateY(-5px); }
 
     /* ── FLOATING CART BAR ── */
     .float-cart-bar {
@@ -1344,65 +1366,101 @@
             <!-- Plate inner rim line -->
             <ellipse cx="130" cy="161" rx="62" ry="8" fill="none" stroke="#E8DFD3" stroke-width="1.2"/>
 
-            <!-- Milk powder scatter (background) -->
-            <g opacity="0.9">
-              <circle cx="105" cy="88" r="3.2" fill="#FFF4EC"/>
-              <circle cx="125" cy="81" r="2.8" fill="#FFF4EC"/>
-              <circle cx="148" cy="86" r="3" fill="#FFF4EC"/>
-              <circle cx="165" cy="100" r="2.4" fill="#FFF4EC"/>
-              <circle cx="93"  cy="105" r="2.5" fill="#FFF4EC"/>
-              <circle cx="140" cy="77" r="2"   fill="#FFF4EC"/>
-              <circle cx="115" cy="75" r="1.8" fill="#FFF4EC"/>
-              <circle cx="170" cy="115" r="2"  fill="#FFF4EC"/>
+            <!-- Serbuk Susu (Milk Powder dusting) -->
+            <g>
+              <!-- Diffuse soft haze base -->
+              <ellipse cx="130" cy="76" rx="62" ry="13" fill="white" opacity="0.14"/>
+              <ellipse cx="94"  cy="90" rx="22" ry="7"  fill="white" opacity="0.08"/>
+              <ellipse cx="166" cy="88" rx="18" ry="6"  fill="white" opacity="0.08"/>
+
+              <!-- Powder clumps — asymmetric ellipses at various angles -->
+              <ellipse cx="87"  cy="68"  rx="5.2" ry="2.2" transform="rotate(-18,87,68)"   fill="#FFF9F2" opacity="0.93"/>
+              <ellipse cx="104" cy="61"  rx="4.2" ry="1.9" transform="rotate(22,104,61)"   fill="#FFF9F2" opacity="0.90"/>
+              <ellipse cx="120" cy="56"  rx="5.8" ry="2.1" transform="rotate(-6,120,56)"   fill="#FFF9F2" opacity="0.94"/>
+              <ellipse cx="139" cy="60"  rx="4.6" ry="2.2" transform="rotate(15,139,60)"   fill="#FFF9F2" opacity="0.90"/>
+              <ellipse cx="155" cy="65"  rx="5.0" ry="2.0" transform="rotate(-22,155,65)"  fill="#FFF9F2" opacity="0.91"/>
+              <ellipse cx="173" cy="72"  rx="3.8" ry="1.8" transform="rotate(10,173,72)"   fill="#FFF9F2" opacity="0.87"/>
+              <ellipse cx="76"  cy="80"  rx="3.6" ry="2.0" transform="rotate(-28,76,80)"   fill="#FFF9F2" opacity="0.86"/>
+              <ellipse cx="184" cy="81"  rx="3.2" ry="1.6" transform="rotate(20,184,81)"   fill="#FFF9F2" opacity="0.83"/>
+              <!-- Upright clumps (taller blobs like settled piles) -->
+              <ellipse cx="97"  cy="57"  rx="2.8" ry="4.0" transform="rotate(8,97,57)"     fill="#FFFAF4" opacity="0.82"/>
+              <ellipse cx="163" cy="57"  rx="2.6" ry="3.6" transform="rotate(-10,163,57)"  fill="#FFFAF4" opacity="0.80"/>
+              <ellipse cx="130" cy="52"  rx="4.2" ry="2.3" transform="rotate(4,130,52)"    fill="#FFFAF4" opacity="0.80"/>
+              <ellipse cx="113" cy="50"  rx="2.4" ry="1.4" transform="rotate(-14,113,50)"  fill="#FFFAF4" opacity="0.75"/>
+              <ellipse cx="147" cy="51"  rx="2.2" ry="1.3" transform="rotate(17,147,51)"   fill="#FFFAF4" opacity="0.75"/>
+              <!-- Wispy streaks (thin, elongated) -->
+              <ellipse cx="108" cy="74"  rx="6.5" ry="1.1" transform="rotate(-12,108,74)"  fill="white"   opacity="0.55"/>
+              <ellipse cx="152" cy="73"  rx="5.8" ry="1.0" transform="rotate(16,152,73)"   fill="white"   opacity="0.50"/>
+              <ellipse cx="130" cy="68"  rx="7.2" ry="1.2" transform="rotate(-3,130,68)"   fill="white"   opacity="0.48"/>
+
+              <!-- Fine micro-particles -->
+              <circle cx="93"  cy="75"  r="1.3" fill="#FFF4EC" opacity="0.95"/>
+              <circle cx="111" cy="70"  r="1.0" fill="#FFF4EC" opacity="0.90"/>
+              <circle cx="127" cy="65"  r="1.4" fill="#FFF4EC" opacity="0.92"/>
+              <circle cx="145" cy="69"  r="1.1" fill="#FFF4EC" opacity="0.90"/>
+              <circle cx="161" cy="75"  r="1.2" fill="#FFF4EC" opacity="0.88"/>
+              <circle cx="79"  cy="92"  r="1.0" fill="#FFF4EC" opacity="0.83"/>
+              <circle cx="181" cy="89"  r="1.0" fill="#FFF4EC" opacity="0.81"/>
+              <circle cx="115" cy="74"  r="0.9" fill="#FFF4EC" opacity="0.87"/>
+              <circle cx="143" cy="75"  r="0.8" fill="#FFF4EC" opacity="0.85"/>
+              <circle cx="101" cy="83"  r="0.8" fill="#FFF4EC" opacity="0.80"/>
+              <circle cx="159" cy="82"  r="0.8" fill="#FFF4EC" opacity="0.80"/>
+              <circle cx="130" cy="48"  r="0.9" fill="#FFF4EC" opacity="0.74"/>
+              <circle cx="111" cy="48"  r="0.7" fill="#FFF4EC" opacity="0.70"/>
+              <circle cx="149" cy="49"  r="0.7" fill="#FFF4EC" opacity="0.70"/>
+              <circle cx="88"  cy="62"  r="0.7" fill="#FFF4EC" opacity="0.72"/>
+              <circle cx="172" cy="62"  r="0.7" fill="#FFF4EC" opacity="0.70"/>
             </g>
 
-            <!-- BALL: back center -->
-            <circle cx="130" cy="108" r="37" fill="#1C0D06"/>
-            <!-- Dark cap area (oreo cookie texture) -->
-            <circle cx="130" cy="108" r="37" fill="none" stroke="#0D0602" stroke-width="2"/>
-            <!-- Subtle texture circles -->
-            <circle cx="116" cy="95"  r="9"  fill="#280F06" opacity="0.65"/>
-            <circle cx="145" cy="102" r="6"  fill="#281008" opacity="0.45"/>
-            <!-- Shine highlight -->
-            <circle cx="116" cy="90"  r="5"  fill="white"   opacity="0.12"/>
-            <!-- Milk dots on ball -->
-            <circle cx="110" cy="87"  r="3.2" fill="#FFF2E8"/>
-            <circle cx="127" cy="81"  r="2.8" fill="#FFF2E8"/>
-            <circle cx="143" cy="87"  r="2.8" fill="#FFF2E8"/>
-            <circle cx="150" cy="99"  r="2.2" fill="#FFF2E8"/>
-            <circle cx="120" cy="102" r="2.2" fill="#FFF2E8"/>
-            <circle cx="137" cy="98"  r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-left (row 1) -->
+            <circle cx="90"  cy="102" r="27" fill="#1C0D06" stroke="#0D0602" stroke-width="1.8"/>
+            <circle cx="82"  cy="94"  r="7"  fill="#280F06" opacity="0.62"/>
+            <circle cx="82"  cy="91"  r="4"  fill="white"   opacity="0.11"/>
+            <circle cx="77"  cy="89"  r="2.4" fill="#FFF2E8"/>
+            <circle cx="88"  cy="84"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="100" cy="89"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="104" cy="98"  r="1.7" fill="#FFF2E8"/>
 
-            <!-- BALL: front-left -->
-            <circle cx="94" cy="134" r="37" fill="#220E07"/>
-            <circle cx="94" cy="134" r="37" fill="none" stroke="#110703" stroke-width="2"/>
-            <circle cx="80" cy="121"  r="9"  fill="#301308" opacity="0.65"/>
-            <circle cx="109" cy="128" r="6"  fill="#301308" opacity="0.45"/>
-            <circle cx="80" cy="116"  r="5"  fill="white"   opacity="0.12"/>
-            <circle cx="74" cy="114"  r="3.2" fill="#FFF2E8"/>
-            <circle cx="91" cy="108"  r="2.8" fill="#FFF2E8"/>
-            <circle cx="107" cy="114" r="2.8" fill="#FFF2E8"/>
-            <circle cx="114" cy="126" r="2.2" fill="#FFF2E8"/>
-            <circle cx="84" cy="128"  r="2.2" fill="#FFF2E8"/>
-            <circle cx="100" cy="126" r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-right (row 1) -->
+            <circle cx="170" cy="102" r="27" fill="#1A0B05" stroke="#0E0602" stroke-width="1.8"/>
+            <circle cx="162" cy="94"  r="7"  fill="#281005" opacity="0.62"/>
+            <circle cx="162" cy="91"  r="4"  fill="white"   opacity="0.11"/>
+            <circle cx="157" cy="89"  r="2.4" fill="#FFF2E8"/>
+            <circle cx="168" cy="84"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="180" cy="89"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="184" cy="98"  r="1.7" fill="#FFF2E8"/>
 
-            <!-- BALL: front-right -->
-            <circle cx="166" cy="134" r="37" fill="#1A0B05"/>
-            <circle cx="166" cy="134" r="37" fill="none" stroke="#0E0602" stroke-width="2"/>
-            <circle cx="152" cy="121" r="9"  fill="#281005" opacity="0.65"/>
-            <circle cx="181" cy="128" r="6"  fill="#281005" opacity="0.45"/>
-            <circle cx="152" cy="116" r="5"  fill="white"   opacity="0.12"/>
-            <circle cx="146" cy="114" r="3.2" fill="#FFF2E8"/>
-            <circle cx="163" cy="108" r="2.8" fill="#FFF2E8"/>
-            <circle cx="179" cy="114" r="2.8" fill="#FFF2E8"/>
-            <circle cx="186" cy="126" r="2.2" fill="#FFF2E8"/>
-            <circle cx="156" cy="128" r="2.2" fill="#FFF2E8"/>
-            <circle cx="172" cy="126" r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-center (row 1, on top) -->
+            <circle cx="130" cy="92"  r="27" fill="#1C0D06" stroke="#0D0602" stroke-width="1.8"/>
+            <circle cx="122" cy="84"  r="7"  fill="#280F06" opacity="0.62"/>
+            <circle cx="122" cy="81"  r="4"  fill="white"   opacity="0.11"/>
+            <circle cx="117" cy="79"  r="2.4" fill="#FFF2E8"/>
+            <circle cx="128" cy="74"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="140" cy="79"  r="2.1" fill="#FFF2E8"/>
+            <circle cx="144" cy="88"  r="1.7" fill="#FFF2E8"/>
+
+            <!-- BALL: front-left (row 2) -->
+            <circle cx="107" cy="133" r="27" fill="#220E07" stroke="#110703" stroke-width="1.8"/>
+            <circle cx="99"  cy="125" r="7"  fill="#301308" opacity="0.62"/>
+            <circle cx="99"  cy="122" r="4"  fill="white"   opacity="0.11"/>
+            <circle cx="94"  cy="120" r="2.4" fill="#FFF2E8"/>
+            <circle cx="105" cy="115" r="2.1" fill="#FFF2E8"/>
+            <circle cx="117" cy="120" r="2.1" fill="#FFF2E8"/>
+            <circle cx="121" cy="129" r="1.7" fill="#FFF2E8"/>
+
+            <!-- BALL: front-right (row 2) -->
+            <circle cx="153" cy="133" r="27" fill="#1A0B05" stroke="#0E0602" stroke-width="1.8"/>
+            <circle cx="145" cy="125" r="7"  fill="#281005" opacity="0.62"/>
+            <circle cx="145" cy="122" r="4"  fill="white"   opacity="0.11"/>
+            <circle cx="140" cy="120" r="2.4" fill="#FFF2E8"/>
+            <circle cx="151" cy="115" r="2.1" fill="#FFF2E8"/>
+            <circle cx="163" cy="120" r="2.1" fill="#FFF2E8"/>
+            <circle cx="167" cy="129" r="1.7" fill="#FFF2E8"/>
           </svg>
         </div>
         <div class="product-info">
           <div class="product-name">Bola Oreo Susu</div>
-          <div class="product-desc">Tiga bola cokelat lembut bertabur susu bubuk, gurih manis di setiap gigitan.</div>
+          <div class="product-desc">Lima bola cokelat lembut bertabur susu bubuk, gurih manis di setiap gigitan.</div>
           <div class="product-footer">
             <div class="product-price">Rp7.000</div>
             <div style="display:flex;align-items:center;gap:10px;">
@@ -1509,41 +1567,85 @@
 
             <!-- ══ LEFT: Bola Oreo (mini version) ══ -->
             <!-- Mini plate -->
-            <ellipse cx="73" cy="170" rx="60" ry="11" fill="#EEE6DA" stroke="#D5C9BA" stroke-width="1.5"/>
-            <ellipse cx="73" cy="165" rx="54" ry="8"  fill="#F8F1E8"/>
+            <ellipse cx="73" cy="168" rx="58" ry="10" fill="#EEE6DA" stroke="#D5C9BA" stroke-width="1.5"/>
+            <ellipse cx="73" cy="163" rx="52" ry="7.5" fill="#F8F1E8"/>
 
-            <!-- Milk powder scatter (bg) -->
-            <circle cx="52"  cy="86"  r="2.2" fill="#FFF4EC" opacity="0.9"/>
-            <circle cx="68"  cy="80"  r="2"   fill="#FFF4EC" opacity="0.9"/>
-            <circle cx="88"  cy="85"  r="2"   fill="#FFF4EC" opacity="0.9"/>
-            <circle cx="98"  cy="100" r="1.8" fill="#FFF4EC" opacity="0.9"/>
+            <!-- Serbuk Susu bundle (Milk Powder dusting, compressed left side) -->
+            <g>
+              <!-- Diffuse haze -->
+              <ellipse cx="73"  cy="72"  rx="44" ry="10" fill="white" opacity="0.13"/>
+              <ellipse cx="50"  cy="85"  rx="16" ry="5"  fill="white" opacity="0.08"/>
+              <ellipse cx="96"  cy="84"  rx="14" ry="5"  fill="white" opacity="0.08"/>
+              <!-- Powder clumps -->
+              <ellipse cx="43"  cy="64"  rx="4.0" ry="1.7" transform="rotate(-16,43,64)"  fill="#FFF9F2" opacity="0.92"/>
+              <ellipse cx="58"  cy="58"  rx="3.5" ry="1.6" transform="rotate(20,58,58)"   fill="#FFF9F2" opacity="0.90"/>
+              <ellipse cx="73"  cy="54"  rx="4.5" ry="1.8" transform="rotate(-5,73,54)"   fill="#FFF9F2" opacity="0.93"/>
+              <ellipse cx="88"  cy="58"  rx="3.8" ry="1.7" transform="rotate(14,88,58)"   fill="#FFF9F2" opacity="0.90"/>
+              <ellipse cx="103" cy="64"  rx="4.0" ry="1.6" transform="rotate(-20,103,64)" fill="#FFF9F2" opacity="0.89"/>
+              <ellipse cx="36"  cy="76"  rx="2.8" ry="1.6" transform="rotate(-26,36,76)"  fill="#FFF9F2" opacity="0.85"/>
+              <ellipse cx="110" cy="76"  rx="2.6" ry="1.4" transform="rotate(18,110,76)"  fill="#FFF9F2" opacity="0.83"/>
+              <ellipse cx="55"  cy="51"  rx="2.2" ry="3.2" transform="rotate(8,55,51)"    fill="#FFFAF4" opacity="0.80"/>
+              <ellipse cx="91"  cy="51"  rx="2.0" ry="3.0" transform="rotate(-10,91,51)"  fill="#FFFAF4" opacity="0.78"/>
+              <ellipse cx="73"  cy="48"  rx="3.4" ry="1.8" transform="rotate(3,73,48)"    fill="#FFFAF4" opacity="0.78"/>
+              <!-- Wispy streaks -->
+              <ellipse cx="60"  cy="70"  rx="5.0" ry="0.9" transform="rotate(-10,60,70)"  fill="white"   opacity="0.50"/>
+              <ellipse cx="86"  cy="70"  rx="4.5" ry="0.9" transform="rotate(14,86,70)"   fill="white"   opacity="0.48"/>
+              <!-- Fine micro-particles -->
+              <circle cx="47"  cy="72"  r="1.1" fill="#FFF4EC" opacity="0.93"/>
+              <circle cx="62"  cy="67"  r="0.9" fill="#FFF4EC" opacity="0.90"/>
+              <circle cx="76"  cy="63"  r="1.2" fill="#FFF4EC" opacity="0.92"/>
+              <circle cx="90"  cy="66"  r="0.9" fill="#FFF4EC" opacity="0.90"/>
+              <circle cx="104" cy="71"  r="1.0" fill="#FFF4EC" opacity="0.87"/>
+              <circle cx="38"  cy="88"  r="0.8" fill="#FFF4EC" opacity="0.82"/>
+              <circle cx="108" cy="85"  r="0.8" fill="#FFF4EC" opacity="0.80"/>
+              <circle cx="68"  cy="48"  r="0.7" fill="#FFF4EC" opacity="0.73"/>
+              <circle cx="78"  cy="46"  r="0.7" fill="#FFF4EC" opacity="0.70"/>
+            </g>
 
-            <!-- Back ball -->
-            <circle cx="73" cy="108" r="28" fill="#1C0D06" stroke="#0D0602" stroke-width="1.8"/>
-            <circle cx="63" cy="98"  r="7"  fill="#280F06" opacity="0.6"/>
-            <circle cx="63" cy="95"  r="4"  fill="white"   opacity="0.1"/>
-            <circle cx="58" cy="92"  r="2.5" fill="#FFF2E8"/>
-            <circle cx="71" cy="87"  r="2.2" fill="#FFF2E8"/>
-            <circle cx="85" cy="92"  r="2.2" fill="#FFF2E8"/>
-            <circle cx="90" cy="103" r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-left -->
+            <circle cx="52"  cy="98"  r="19" fill="#1C0D06" stroke="#0D0602" stroke-width="1.5"/>
+            <circle cx="45"  cy="91"  r="5"  fill="#280F06" opacity="0.62"/>
+            <circle cx="45"  cy="89"  r="3"  fill="white"   opacity="0.11"/>
+            <circle cx="41"  cy="87"  r="1.8" fill="#FFF2E8"/>
+            <circle cx="50"  cy="84"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="60"  cy="87"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="63"  cy="95"  r="1.3" fill="#FFF2E8"/>
 
-            <!-- Front-left ball -->
-            <circle cx="48" cy="130" r="28" fill="#220E07" stroke="#110703" stroke-width="1.8"/>
-            <circle cx="38" cy="120" r="7"  fill="#301308" opacity="0.6"/>
-            <circle cx="38" cy="117" r="4"  fill="white"   opacity="0.1"/>
-            <circle cx="33" cy="114" r="2.5" fill="#FFF2E8"/>
-            <circle cx="46" cy="109" r="2.2" fill="#FFF2E8"/>
-            <circle cx="60" cy="114" r="2.2" fill="#FFF2E8"/>
-            <circle cx="65" cy="125" r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-right -->
+            <circle cx="94"  cy="98"  r="19" fill="#1A0B05" stroke="#0E0602" stroke-width="1.5"/>
+            <circle cx="87"  cy="91"  r="5"  fill="#281005" opacity="0.62"/>
+            <circle cx="87"  cy="89"  r="3"  fill="white"   opacity="0.11"/>
+            <circle cx="83"  cy="87"  r="1.8" fill="#FFF2E8"/>
+            <circle cx="92"  cy="84"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="102" cy="87"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="105" cy="95"  r="1.3" fill="#FFF2E8"/>
 
-            <!-- Front-right ball -->
-            <circle cx="98" cy="130" r="28" fill="#1A0B05" stroke="#0E0602" stroke-width="1.8"/>
-            <circle cx="88" cy="120" r="7"  fill="#281005" opacity="0.6"/>
-            <circle cx="88" cy="117" r="4"  fill="white"   opacity="0.1"/>
-            <circle cx="83" cy="114" r="2.5" fill="#FFF2E8"/>
-            <circle cx="96" cy="109" r="2.2" fill="#FFF2E8"/>
-            <circle cx="110" cy="114" r="2.2" fill="#FFF2E8"/>
-            <circle cx="115" cy="125" r="1.8" fill="#FFF2E8"/>
+            <!-- BALL: back-center (on top) -->
+            <circle cx="73"  cy="90"  r="19" fill="#1C0D06" stroke="#0D0602" stroke-width="1.5"/>
+            <circle cx="66"  cy="83"  r="5"  fill="#280F06" opacity="0.62"/>
+            <circle cx="66"  cy="81"  r="3"  fill="white"   opacity="0.11"/>
+            <circle cx="62"  cy="79"  r="1.8" fill="#FFF2E8"/>
+            <circle cx="71"  cy="76"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="81"  cy="79"  r="1.6" fill="#FFF2E8"/>
+            <circle cx="84"  cy="87"  r="1.3" fill="#FFF2E8"/>
+
+            <!-- BALL: front-left -->
+            <circle cx="57"  cy="122" r="20" fill="#220E07" stroke="#110703" stroke-width="1.5"/>
+            <circle cx="50"  cy="115" r="5"  fill="#301308" opacity="0.62"/>
+            <circle cx="50"  cy="113" r="3"  fill="white"   opacity="0.11"/>
+            <circle cx="46"  cy="111" r="1.8" fill="#FFF2E8"/>
+            <circle cx="55"  cy="108" r="1.6" fill="#FFF2E8"/>
+            <circle cx="65"  cy="111" r="1.6" fill="#FFF2E8"/>
+            <circle cx="68"  cy="119" r="1.3" fill="#FFF2E8"/>
+
+            <!-- BALL: front-right -->
+            <circle cx="89"  cy="122" r="20" fill="#1A0B05" stroke="#0E0602" stroke-width="1.5"/>
+            <circle cx="82"  cy="115" r="5"  fill="#281005" opacity="0.62"/>
+            <circle cx="82"  cy="113" r="3"  fill="white"   opacity="0.11"/>
+            <circle cx="78"  cy="111" r="1.8" fill="#FFF2E8"/>
+            <circle cx="87"  cy="108" r="1.6" fill="#FFF2E8"/>
+            <circle cx="97"  cy="111" r="1.6" fill="#FFF2E8"/>
+            <circle cx="100" cy="119" r="1.3" fill="#FFF2E8"/>
 
             <!-- ══ PLUS SIGN (center) ══ -->
             <rect x="127" y="108" width="16" height="5" rx="2.5" fill="#C8956C" opacity="0.7"/>
