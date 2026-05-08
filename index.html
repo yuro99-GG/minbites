@@ -10,6 +10,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs/dist/thumbmark.umd.js"></script>
   <script>
     var db;
     try {
@@ -1879,6 +1880,10 @@
         <!-- Order Review -->
         <div class="order-review" id="orderReview"></div>
 
+        <!-- honeypot: disembunyikan dari user, bot biasanya mengisi ini -->
+        <input type="text" id="fWebsite" name="website" autocomplete="off"
+          style="opacity:0;position:absolute;top:-9999px;left:-9999px;height:0;width:0;pointer-events:none;" tabindex="-1" aria-hidden="true"/>
+
         <button class="btn-submit" id="btnSubmit" onclick="submitOrder()">Pesan Sekarang</button>
       </div>
     </div>
@@ -2099,8 +2104,11 @@
     }
 
     // ── CHECKOUT ──
+    let checkoutOpenedAt = null;
+
     function openCheckout() {
       closeCart();
+      checkoutOpenedAt = Date.now();
       document.getElementById('checkoutModal').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -2234,6 +2242,28 @@
     }
 
     async function submitOrder() {
+      // ── 1. HONEYPOT: kalau field tersembunyi ini diisi = bot ──
+      if (document.getElementById('fWebsite').value) {
+        console.warn('Honeypot triggered');
+        return;
+      }
+
+      // ── 2. MINIMUM WAKTU ISI FORM (8 detik) ──
+      const MINIMUM_MS = 8000;
+      if (checkoutOpenedAt && (Date.now() - checkoutOpenedAt) < MINIMUM_MS) {
+        showToast('Tolong isi form dengan lengkap sebelum memesan 😊');
+        return;
+      }
+
+      // ── 3. ORDER WINDOW: hanya bisa order jam 07:00–11:30 ──
+      const nowHour = new Date().getHours();
+      const nowMin  = new Date().getMinutes();
+      const nowTotal = nowHour * 60 + nowMin;
+      if (nowTotal < 7 * 60 || nowTotal > 24 * 60) {
+        showToast('Order hanya bisa dilakukan jam 07:00–24:00 ya!');
+        return;
+      }
+
       const nama    = document.getElementById('fNama').value.trim();
       const kelas   = document.getElementById('fKelas').value.trim();
       const jurusan = document.getElementById('fJurusan').value.trim();
@@ -2276,6 +2306,17 @@
       const half = Math.floor(waDigits.length/2);
       if (waDigits.startsWith(waDigits.slice(0,half).repeat(2))) { highlightError('fWA','Nomor terdeteksi palsu (pola berulang)'); return; }
 
+      // ── 4. BLACKLIST NOMOR WA ──
+      try {
+        const blackSnap = await db.collection('blacklist').doc(waNorm).get();
+        if (blackSnap.exists) {
+          showToast('Nomor ini tidak dapat digunakan untuk memesan.');
+          return;
+        }
+      } catch(e) {
+        console.warn('Blacklist check dilewati:', e.message);
+      }
+
       if (!waktu) { highlightError('fWaktu','Waktu ambil tidak boleh kosong'); return; }
       const [jam,menit] = waktu.split(':').map(Number);
       const totalMenit  = jam*60 + menit;
@@ -2299,11 +2340,25 @@
         btn.disabled = false; btn.innerHTML = 'Pesan Sekarang'; return;
       }
 
+      // ── CEK DEVICE FINGERPRINT ──
+      if (deviceFingerprint) {
+        try {
+          const deviceSnap = await db.collection('orders').where('deviceId','==',deviceFingerprint).where('date','==',today).get();
+          if (deviceSnap.size >= 2) {
+            showToast('Device ini sudah digunakan untuk order 2x hari ini.');
+            btn.disabled = false; btn.innerHTML = 'Pesan Sekarang'; return;
+          }
+        } catch(e) {
+          console.warn('Device fingerprint check dilewati:', e.message);
+        }
+      }
+
       const orderData = {
         id: orderId, name: nama, kelas, jurusan, phone: waNorm,
         items: cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
         subtotal, discount: discAmt, total, pickup: waktu,
         date: today, status: 'MENUNGGU',
+        deviceId: deviceFingerprint || null,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
 
@@ -2389,6 +2444,17 @@
       });
     }
 
+    // ── DEVICE FINGERPRINT ──
+    let deviceFingerprint = null;
+    (async () => {
+      try {
+        const tm = await ThumbmarkJS.getFingerprint();
+        deviceFingerprint = tm;
+      } catch(e) {
+        console.warn('Fingerprint gagal:', e);
+      }
+    })();
+
     // ── INIT ──
     updateCartUI();
 
@@ -2402,4 +2468,4 @@
     observer.observe(checkoutModal, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
-</html>
+  </html>
