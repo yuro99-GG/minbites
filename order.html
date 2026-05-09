@@ -634,6 +634,62 @@
     .pickup-label { font-size: 0.68rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
     .pickup-value { font-size: 0.95rem; font-weight: 700; color: var(--text); }
 
+    /* ═══════════ PAYMENT INFO ═══════════ */
+    .payment-info-section { padding: 0 28px 20px; }
+    .payment-info-row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 8px;
+    }
+    .payment-info-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent-muted); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .payment-info-label { font-size: 0.68rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+    .payment-info-value { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .payment-status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .ps-pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .ps-verified { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .ps-rejected { background: rgba(230,57,70,0.08); color: #e63946; border: 1px solid rgba(230,57,70,0.25); }
+    .ps-cash     { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+    /* Proof image preview in order page */
+    .proof-preview-wrap {
+      margin-top: 8px; border-radius: var(--radius-sm); overflow: hidden;
+      border: 1px solid var(--border); cursor: pointer; position: relative;
+    }
+    .proof-preview-wrap img { display: block; width: 100%; max-height: 140px; object-fit: cover; }
+    .proof-preview-label {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.38); color: white; font-size: 0.72rem; font-weight: 700;
+      opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .proof-preview-wrap:hover .proof-preview-label { opacity: 1; }
+
+    /* Proof lightbox */
+    .proof-lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92); display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px; gap: 14px;
+    }
+    .proof-lightbox.open { display: flex; }
+    .proof-lightbox img { max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,0.7); }
+    .proof-lightbox-close {
+      color: rgba(255,255,255,0.7); background: transparent;
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 100px;
+      padding: 8px 22px; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .proof-lightbox-close:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
     /* ═══════════ REALTIME BAR ═══════════ */
     .realtime-bar {
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -930,6 +986,27 @@
         </div>
       </div>
 
+      <!-- PAYMENT INFO -->
+      <div class="payment-info-section" id="paymentInfoSection" style="display:none">
+        <div class="payment-info-row">
+          <div class="payment-info-icon" id="paymentInfoIcon">💳</div>
+          <div style="flex:1">
+            <div class="payment-info-label">Metode Pembayaran</div>
+            <div class="payment-info-value" id="paymentInfoValue">—</div>
+          </div>
+          <span class="payment-status-badge" id="paymentStatusBadge"></span>
+        </div>
+        <div id="proofImageWrap" style="display:none">
+          <div class="proof-preview-wrap" onclick="openProofLightbox()">
+            <img id="proofImg" src="" alt="Bukti Pembayaran"/>
+            <div class="proof-preview-label">🔍 Perbesar</div>
+          </div>
+        </div>
+        <div id="rejectedNotice" style="display:none;padding:10px 14px;background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);border-radius:var(--radius-sm);font-size:0.78rem;color:#e63946;margin-top:4px;line-height:1.55">
+          ⚠️ Bukti pembayaran kamu <strong>ditolak</strong> oleh admin. Hubungi penjual untuk konfirmasi lebih lanjut.
+        </div>
+      </div>
+
       <div class="sec-divider"></div>
 
       <!-- ITEMS -->
@@ -972,6 +1049,12 @@
     <img id="qrFullImg" src="" alt="QR Fullscreen" />
   </div>
   <button class="qr-fs-close" onclick="closeFullscreenQR()">✕ Tutup</button>
+</div>
+
+<!-- PROOF LIGHTBOX -->
+<div class="proof-lightbox" id="proofLightbox" onclick="closeProofLightbox()">
+  <img id="proofLightboxImg" src="" alt="Bukti Pembayaran" onclick="event.stopPropagation()"/>
+  <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕ Tutup</button>
 </div>
 
 <div id="toast-container"></div>
@@ -1042,6 +1125,17 @@
   }
   function closeFullscreenQR() {
     document.getElementById('qrFullscreen').classList.remove('open');
+  }
+
+  // ── PROOF LIGHTBOX ──
+  function openProofLightbox() {
+    var img = document.getElementById('proofImg');
+    if (!img || !img.src) return;
+    document.getElementById('proofLightboxImg').src = img.src;
+    document.getElementById('proofLightbox').classList.add('open');
+  }
+  function closeProofLightbox() {
+    document.getElementById('proofLightbox').classList.remove('open');
   }
 
   // ── SHARE LINK ──
@@ -1182,6 +1276,45 @@
     document.getElementById('pickupSectionWrap').style.display = 'block';
     document.getElementById('oPickup').textContent = data.pickup || '-';
 
+    // Payment info
+    var paySection = document.getElementById('paymentInfoSection');
+    var payMethod = (data.paymentMethod || '').toLowerCase();
+    var payStatus = (data.paymentStatus || '');
+    if (payMethod) {
+      paySection.style.display = 'block';
+      var iconEl = document.getElementById('paymentInfoIcon');
+      var valEl  = document.getElementById('paymentInfoValue');
+      var badgeEl = document.getElementById('paymentStatusBadge');
+      var proofWrap = document.getElementById('proofImageWrap');
+      var rejectedNotice = document.getElementById('rejectedNotice');
+      if (payMethod === 'qris') {
+        iconEl.textContent = '📱';
+        valEl.textContent = 'QRIS / Transfer';
+        if (payStatus === 'pending') {
+          badgeEl.className = 'payment-status-badge ps-pending';
+          badgeEl.textContent = '⏳ Menunggu Verifikasi';
+        } else if (payStatus === 'verified') {
+          badgeEl.className = 'payment-status-badge ps-verified';
+          badgeEl.textContent = '✓ Terverifikasi';
+        } else if (payStatus === 'rejected') {
+          badgeEl.className = 'payment-status-badge ps-rejected';
+          badgeEl.textContent = '✗ Ditolak';
+          rejectedNotice.style.display = 'block';
+        }
+        if (data.paymentProof) {
+          proofWrap.style.display = 'block';
+          document.getElementById('proofImg').src = data.paymentProof;
+        }
+      } else {
+        iconEl.textContent = '💵';
+        valEl.textContent = 'Tunai saat ambil';
+        badgeEl.className = 'payment-status-badge ps-cash';
+        badgeEl.textContent = 'Bayar di Tempat';
+      }
+    } else {
+      paySection.style.display = 'none';
+    }
+
     // Section display
     var waitingSection    = document.getElementById('waitingSection');
     var diprosesSection   = document.getElementById('diprosesSection');
@@ -1262,4 +1395,4 @@
   startRealtimeListener();
 </script>
 </body>
-            </html>
+</html>
