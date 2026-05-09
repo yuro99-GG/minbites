@@ -1791,15 +1791,7 @@
       detailQty = Math.max(1, detailQty + d);
       document.getElementById('detailQtyNum').textContent = detailQty;
     }
-    function addFromDetail() {
-      if (detailIdx === null) return;
-      const p = PRODUCTS[detailIdx];
-      for (let i = 0; i < detailQty; i++) {
-        const existing = cart.find(c => c.id === p.id);
-        if (existing) existing.qty++;
-        else cart.push({ ...p, qty: 1 });
-      }
-      function selectKelas(btn, val) {
+    function selectKelas(btn, val) {
       document.querySelectorAll('#kelasSelectorGroup .selector-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('fAlamat').value = val;
@@ -1811,7 +1803,15 @@
       document.getElementById('fCatatan').value = val;
     }
 
-    updateCartUI();
+    function addFromDetail() {
+      if (detailIdx === null) return;
+      const p = PRODUCTS[detailIdx];
+      for (let i = 0; i < detailQty; i++) {
+        const existing = cart.find(c => c.id === p.id);
+        if (existing) existing.qty++;
+        else cart.push({ ...p, qty: 1 });
+      }
+      updateCartUI();
       showToast(`${p.name} ×${detailQty} ditambahkan! 🛒`);
       closeDetail();
     }
@@ -2273,4 +2273,4 @@
     document.getElementById('successPopup').addEventListener('click', function(e) { /* don't close */ });
   </script>
 </body>
-  </html>
+                                                                            </html>
