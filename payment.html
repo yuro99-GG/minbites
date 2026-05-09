@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pembayaran QRIS — MinBite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script>
+    var db, storage;
+    try {
+      var firebaseConfig = {
+        apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
+        authDomain: "planning-with-ai-d8ea1.firebaseapp.com",
+        projectId: "planning-with-ai-d8ea1",
+        storageBucket: "planning-with-ai-d8ea1.firebasestorage.app",
+        messagingSenderId: "975523910853",
+        appId: "1:975523910853:web:af7350de88ce5d9e668cac"
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      db   = firebase.firestore();
+      storage = firebase.storage();
+    } catch(e) { console.error("Firebase gagal:", e); }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #faf8f5;
+      --bg2:         #f3ede3;
+      --bg3:         #e8dfd3;
+      --surface:     #ffffff;
+      --accent:      #c07a48;
+      --accent-dark: #9d5e31;
+      --accent-light:#f5e4d0;
+      --accent-glow: rgba(192,122,72,0.25);
+      --accent-glow2:rgba(192,122,72,0.12);
+      --text:        #1c1208;
+      --text2:       #5a3e28;
+      --text3:       #9a7a60;
+      --border:      #e4d9cc;
+      --border2:     rgba(192,122,72,0.3);
+      --shadow:      rgba(28,18,8,0.08);
+      --shadow-md:   rgba(28,18,8,0.14);
+      --shadow-lg:   rgba(28,18,8,0.22);
+      --shadow-xl:   rgba(28,18,8,0.36);
+      --radius:      16px;
+      --radius-sm:   12px;
+      --radius-lg:   24px;
+      --radius-xl:   32px;
+      --t:           0.22s cubic-bezier(0.4,0,0.2,1);
+      --green:       #2a9d8f;
+      --red:         #e63946;
+      --qris-red:    #e8002d;
+    }
+
+    [data-theme="dark"] {
+      --bg:          #120c07;
+      --bg2:         #1a1309;
+      --bg3:         #221910;
+      --surface:     #281e14;
+      --accent:      #d49060;
+      --accent-dark: #c07a48;
+      --accent-light:#3a2718;
+      --accent-glow: rgba(212,144,96,0.28);
+      --accent-glow2:rgba(212,144,96,0.1);
+      --text:        #f2e8de;
+      --text2:       #c4a080;
+      --text3:       #7a5e48;
+      --border:      #332010;
+      --border2:     rgba(212,144,96,0.28);
+      --shadow:      rgba(0,0,0,0.42);
+      --shadow-md:   rgba(0,0,0,0.58);
+      --shadow-lg:   rgba(0,0,0,0.72);
+      --shadow-xl:   rgba(0,0,0,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ─── HEADER ─── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      background: rgba(250,248,245,0.85);
+      transition: background var(--t);
+    }
+    [data-theme="dark"] header { background: rgba(18,12,7,0.9); }
+
+    .header-inner {
+      max-width: 600px; margin: 0 auto;
+      padding: 0 20px; height: 58px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+    .btn-back {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border: 1.5px solid var(--border);
+      border-radius: 100px; background: var(--surface);
+      color: var(--text2); font-size: 0.76rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all var(--t);
+    }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-back svg { width: 13px; height: 13px; }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main { max-width: 520px; margin: 0 auto; padding: 28px 16px 80px; }
+
+    /* ERROR STATE */
+    .err-wrap {
+      text-align: center; padding: 80px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .err-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--bg2); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+    }
+    .err-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; font-weight: 700; color: var(--text);
+    }
+    .err-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
+
+    /* ─── CARD ─── */
+    .pay-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 40px var(--shadow-lg), 0 2px 10px var(--shadow);
+      overflow: hidden;
+      animation: cardIn 0.45s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ─── QRIS HEADER ─── */
+    .qris-header {
+      padding: 28px 28px 22px;
+      background: linear-gradient(160deg, #fff5f5 0%, var(--bg2) 60%, var(--surface) 100%);
+      border-bottom: 1px solid var(--border);
+      text-align: center; position: relative;
+    }
+    [data-theme="dark"] .qris-header {
+      background: linear-gradient(160deg, #1e0a0a 0%, var(--bg2) 60%, var(--surface) 100%);
+    }
+
+    .qris-top-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 6px;
+    }
+    .qris-wordmark {
+      font-size: 1rem; font-weight: 900; letter-spacing: -0.04em; color: var(--text);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .qris-badge-label {
+      background: var(--qris-red); color: white;
+      font-size: 0.58rem; font-weight: 900;
+      letter-spacing: 0.12em; padding: 2px 8px;
+      border-radius: 5px; text-transform: uppercase;
+    }
+
+    .qris-merchant {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.02em;
+      margin-bottom: 2px;
+    }
+    .qris-nmid {
+      font-size: 0.68rem; color: var(--text3); margin-bottom: 18px;
+    }
+
+    .qris-amount-pill {
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: var(--surface); border: 2px solid var(--border2);
+      border-radius: 14px; padding: 10px 28px;
+      box-shadow: 0 2px 12px var(--accent-glow2);
+    }
+    .qris-amount-label {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 2px;
+    }
+    .qris-amount-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    }
+
+    /* ─── ORDER SUMMARY STRIP ─── */
+    .order-strip {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px;
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+    .order-strip-id { font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
+    .order-strip-name { color: var(--text2); font-weight: 500; }
+    .order-strip-items { color: var(--text3); }
+
+    /* ─── QR CODE AREA ─── */
+    .qr-section {
+      padding: 24px 28px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+
+    .qr-frame-wrap {
+      position: relative; display: flex; flex-direction: column; align-items: center;
+    }
+
+    .qr-frame {
+      background: white; border-radius: 20px;
+      padding: 14px; border: 3px solid var(--qris-red);
+      box-shadow: 0 8px 32px rgba(232,0,45,0.14), 0 4px 16px var(--shadow);
+      position: relative; overflow: hidden;
+    }
+    .qr-frame img {
+      width: 220px; height: 220px; display: block;
+      border-radius: 10px; object-fit: cover;
+    }
+
+    /* Shimmer placeholder if qris.jpg missing */
+    .qr-placeholder {
+      width: 220px; height: 220px;
+      background: linear-gradient(135deg, #f5f0ea 25%, #ede5d8 50%, #f5f0ea 75%);
+      background-size: 200% 200%; animation: shimmer 1.8s ease infinite;
+      border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+    .qr-placeholder svg { width: 48px; height: 48px; color: var(--accent); opacity: 0.5; }
+    .qr-placeholder-text { font-size: 0.7rem; color: var(--text3); font-weight: 600; text-align: center; padding: 0 16px; line-height: 1.5; }
+
+    .qr-scan-note {
+      font-size: 0.74rem; font-weight: 600; color: var(--text3); text-align: center;
+    }
+    .qr-apps-row {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    }
+    .app-chip {
+      padding: 3px 11px; border-radius: 100px;
+      font-size: 0.63rem; font-weight: 700;
+      background: var(--bg2); border: 1px solid var(--border); color: var(--text3);
+    }
+
+    /* ─── COUNTDOWN TIMER ─── */
+    .timer-bar {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 8px 20px;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.76rem; color: var(--text3);
+    }
+    .timer-bar svg { width: 14px; height: 14px; color: var(--accent); }
+    .timer-val { font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+    .timer-val.urgent { color: var(--red); animation: urgentPulse 0.8s ease infinite; }
+    @keyframes urgentPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ─── INSTRUCTIONS ─── */
+    .instructions {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .instructions-title {
+      font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .instructions-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .steps-list { display: flex; flex-direction: column; gap: 10px; }
+    .step-item {
+      display: flex; align-items: flex-start; gap: 11px;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 0.7rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-text { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+    .step-text strong { color: var(--text); font-weight: 700; }
+
+    /* ─── UPLOAD SECTION ─── */
+    .upload-section {
+      padding: 18px 24px 24px;
+    }
+    .upload-title {
+      font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .upload-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .upload-title svg { width: 13px; height: 13px; color: var(--accent); }
+
+    .upload-note {
+      font-size: 0.73rem; color: var(--text3);
+      background: var(--accent-light); border: 1px solid var(--border2);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      margin-bottom: 14px; line-height: 1.65;
+    }
+    .upload-note strong { color: var(--accent-dark); }
+
+    /* Preview */
+    .preview-wrap {
+      display: none; border-radius: var(--radius-sm);
+      overflow: hidden; border: 2px solid var(--green);
+      position: relative; margin-bottom: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+    .preview-wrap img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+    .preview-remove {
+      position: absolute; top: 8px; right: 8px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,0.6); color: white;
+      border: none; cursor: pointer; font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--t);
+    }
+    .preview-remove:hover { background: rgba(230,57,70,0.9); }
+
+    /* Drop area */
+    .drop-area {
+      border: 2px dashed var(--border2); border-radius: var(--radius-sm);
+      padding: 28px 16px; text-align: center; cursor: pointer;
+      transition: all 0.2s ease; background: var(--bg2);
+      position: relative; margin-bottom: 12px;
+    }
+    .drop-area:hover { border-color: var(--accent); background: var(--accent-light); }
+    .drop-area.has-file { border-color: var(--green); border-style: solid; background: rgba(42,157,143,0.06); }
+    .drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-icon { font-size: 2rem; margin-bottom: 7px; }
+    .drop-text { font-size: 0.82rem; font-weight: 700; color: var(--text2); margin-bottom: 3px; }
+    .drop-sub { font-size: 0.68rem; color: var(--text3); }
+
+    /* Progress */
+    .progress-wrap { display: none; margin-bottom: 12px; }
+    .progress-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+      border-radius: 3px; transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-text { font-size: 0.7rem; color: var(--text3); text-align: center; font-weight: 600; }
+
+    /* Submit button */
+    .btn-upload {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--green), #218a80);
+      color: white; border: none; border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.94rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t); margin-bottom: 10px;
+      box-shadow: 0 6px 22px rgba(42,157,143,0.28);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: 0.02em;
+    }
+    .btn-upload:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(42,157,143,0.38); }
+    .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-cancel {
+      width: 100%; padding: 12px;
+      background: transparent; color: var(--text3);
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-cancel:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ─── VERIFICATION BADGE ─── */
+    .verify-badge {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      font-size: 0.74rem; color: var(--text3);
+    }
+    .verify-badge svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+    .verify-badge strong { color: var(--text2); }
+
+    /* ─── SPINNER ─── */
+    .spinner {
+      display: inline-block; width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── TOAST ─── */
+    #toast-container {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%); z-index: 500;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: var(--text); color: var(--bg);
+      padding: 11px 24px; border-radius: 100px;
+      font-size: 0.83rem; font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.4s forwards;
+      white-space: nowrap; max-width: calc(100vw - 40px);
+    }
+    .toast.err  { background: var(--red); color: white; }
+    .toast.ok   { background: var(--green); color: white; }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-8px)} }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 520px) {
+      .qris-header { padding: 22px 20px 18px; }
+      .qr-section  { padding: 20px 16px 12px; }
+      .qr-frame img { width: 190px; height: 190px; }
+      .qr-placeholder { width: 190px; height: 190px; }
+      .instructions, .upload-section { padding: 16px 20px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">MinBite</a>
+    <a class="btn-back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Batal
+    </a>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ERROR STATE -->
+  <div id="stateError" style="display:none" class="err-wrap">
+    <div class="err-icon">⚠️</div>
+    <div class="err-title">Data Pesanan Tidak Ditemukan</div>
+    <div class="err-sub">Sesi checkout mungkin sudah berakhir. Kembali ke menu dan coba lagi.</div>
+    <a class="btn-cancel" href="index.html" style="margin-top:8px;text-decoration:none;display:inline-block;text-align:center;padding:12px 28px;border-radius:100px;border:1.5px solid var(--border);color:var(--text2);font-weight:600;font-size:0.84rem;">← Ke Menu</a>
+  </div>
+
+  <!-- PAYMENT CARD -->
+  <div id="statePayment" style="display:none">
+    <div class="pay-card">
+
+      <!-- QRIS HEADER -->
+      <div class="qris-header">
+        <div class="qris-top-row">
+          <div class="qris-wordmark">QRIS <span class="qris-badge-label">Standar</span></div>
+        </div>
+        <div class="qris-merchant">MinBite</div>
+        <div class="qris-nmid">NMID: ID1026517506121 · A01</div>
+        <div class="qris-amount-pill">
+          <span class="qris-amount-label">Total Pembayaran</span>
+          <span class="qris-amount-value" id="displayAmount">Rp0</span>
+        </div>
+      </div>
+
+      <!-- ORDER STRIP -->
+      <div class="order-strip">
+        <div>
+          <div class="order-strip-id" id="displayOrderId">—</div>
+          <div class="order-strip-name" id="displayName">—</div>
+        </div>
+        <div class="order-strip-items" id="displayItems">—</div>
+      </div>
+
+      <!-- QR CODE -->
+      <div class="qr-section">
+        <div class="qr-frame-wrap">
+          <div class="qr-frame">
+            <img id="qrisImg" src="qris.jpg" alt="QRIS MinBite"
+              onerror="this.style.display='none';document.getElementById('qrisPlaceholder').style.display='flex'"/>
+            <div id="qrisPlaceholder" style="display:none" class="qr-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <path d="M14 14h.01M18 14h.01M14 18h.01M18 18h.01M14 14v4h4v-4z"/>
+              </svg>
+              <div class="qr-placeholder-text">Letakkan file <strong>qris.jpg</strong><br>di folder yang sama</div>
+            </div>
+          </div>
+        </div>
+        <div class="qr-scan-note">Scan dengan e-wallet favoritmu</div>
+        <div class="qr-apps-row">
+          <span class="app-chip">GoPay</span>
+          <span class="app-chip">OVO</span>
+          <span class="app-chip">Dana</span>
+          <span class="app-chip">ShopeePay</span>
+          <span class="app-chip">BCA</span>
+        </div>
+      </div>
+
+      <!-- COUNTDOWN -->
+      <div class="timer-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Selesaikan pembayaran dalam &nbsp;<span class="timer-val" id="timerDisplay">10:00</span>
+      </div>
+
+      <!-- INSTRUCTIONS -->
+      <div class="instructions">
+        <div class="instructions-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Cara Pembayaran
+        </div>
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">Buka aplikasi <strong>e-wallet</strong> (GoPay, OVO, Dana, ShopeePay, dll) atau <strong>Mobile Banking</strong> kamu</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">Pilih fitur <strong>Scan QR / QRIS</strong>, lalu arahkan kamera ke kode QR di atas</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">Pastikan jumlah yang tertera sesuai <strong id="instrAmount">—</strong>, lalu konfirmasi pembayaran</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>Screenshot / foto</strong> bukti pembayaranmu, lalu upload di bawah ini untuk konfirmasi pesanan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD SECTION -->
+      <div class="upload-section">
+        <div class="upload-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload Bukti Pembayaran
+        </div>
+
+        <div class="upload-note">
+          📌 Setelah berhasil bayar, <strong>screenshot / foto struk pembayaranmu</strong> dan upload di sini.<br>
+          Admin akan <strong>memverifikasi secara manual</strong> sebelum pesanan diproses.
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-wrap" id="previewWrap">
+          <img id="previewImg" src="" alt="Preview Bukti"/>
+          <button class="preview-remove" onclick="removeFile()" title="Hapus">✕</button>
+        </div>
+
+        <!-- Drop area -->
+        <div class="drop-area" id="dropArea">
+          <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="onFileSelected(this)"/>
+          <div class="drop-icon">📷</div>
+          <div class="drop-text">Foto / Pilih dari Galeri</div>
+          <div class="drop-sub">JPG, PNG • Maksimal 3 MB</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Mengupload…</div>
+        </div>
+
+        <!-- Buttons -->
+        <button class="btn-upload" id="btnUpload" disabled onclick="submitPayment()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:17px;height:17px">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Kirim Bukti &amp; Konfirmasi Pesanan
+        </button>
+        <button class="btn-cancel" onclick="goBack()">← Kembali ke Checkout</button>
+      </div>
+
+      <!-- VERIFICATION BADGE -->
+      <div class="verify-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Pembayaran diverifikasi manual oleh <strong>Admin MinBite</strong>. Prosesnya cepat!</span>
+      </div>
+
+    </div><!-- /.pay-card -->
+  </div><!-- /#statePayment -->
+
+</main>
+
+<div id="toast-container"></div>
+
+<script>
+  // ═══════════════════════════════════════
+  // FIREBASE CONFIG (shared)
+  // ═══════════════════════════════════════
+  var firebaseConfig = {
+    apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
+    authDomain: "planning-with-ai-d8ea1.firebaseapp.com",
+    projectId: "planning-with-ai-d8ea1",
+    storageBucket: "planning-with-ai-d8ea1.firebasestorage.app",
+    messagingSenderId: "975523910853",
+    appId: "1:975523910853:web:af7350de88ce5d9e668cac"
+  };
+
+  // ═══════════════════════════════════════
+  // THEME
+  // ═══════════════════════════════════════
+  (function() {
+    var saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+
+  // ═══════════════════════════════════════
+  // LOAD PENDING ORDER FROM sessionStorage
+  // ═══════════════════════════════════════
+  var orderData = null;
+  var selectedFile = null;
+  var TIMER_SECS = 600; // 10 minutes
+  var timerInterval = null;
+
+  function fmt(n) { return 'Rp' + Number(n).toLocaleString('id-ID'); }
+
+  function init() {
+    var raw = sessionStorage.getItem('mb_pending_order');
+    if (!raw) {
+      document.getElementById('stateError').style.display = '';
+      return;
+    }
+    try { orderData = JSON.parse(raw); }
+    catch(e) {
+      document.getElementById('stateError').style.display = '';
+      return;
+    }
+    if (!orderData || !orderData.id) {
+      document.getElementById('stateError').style.display = '';
+      return;
+    }
+    renderPage();
+  }
+
+  function renderPage() {
+    var d = orderData;
+    document.getElementById('statePayment').style.display = '';
+
+    // Header amounts
+    document.getElementById('displayAmount').textContent = fmt(d.total || 0);
+    document.getElementById('displayOrderId').textContent = d.id;
+    document.getElementById('displayName').textContent = d.name || '';
+
+    // Items strip
+    var items = d.items || [];
+    var itemsLabel = items.slice(0, 2).map(function(it) {
+      return it.name + ' ×' + it.qty;
+    }).join(' · ');
+    if (items.length > 2) itemsLabel += ' …';
+    document.getElementById('displayItems').textContent = itemsLabel || '-';
+
+    // Instruction amount
+    document.getElementById('instrAmount').textContent = fmt(d.total || 0);
+
+    // Start countdown
+    startTimer();
+  }
+
+  // ═══════════════════════════════════════
+  // COUNTDOWN TIMER
+  // ═══════════════════════════════════════
+  function startTimer() {
+    var remaining = TIMER_SECS;
+    var el = document.getElementById('timerDisplay');
+    function tick() {
+      var m = Math.floor(remaining / 60);
+      var s = remaining % 60;
+      el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      el.classList.toggle('urgent', remaining <= 60);
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        el.textContent = '0:00';
+        showToast('Waktu pembayaran habis. Silakan coba lagi.', 'err');
+      }
+      remaining--;
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  // ═══════════════════════════════════════
+  // FILE UPLOAD UX
+  // ═══════════════════════════════════════
+  function onFileSelected(input) {
+    var file = input.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('File harus berupa gambar (JPG, PNG)', 'err');
+      input.value = '';
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      showToast('Ukuran file terlalu besar — maksimal 3 MB', 'err');
+      input.value = '';
+      return;
+    }
+
+    selectedFile = file;
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('previewWrap').style.display = 'block';
+      document.getElementById('dropArea').style.display = 'none';
+      document.getElementById('btnUpload').disabled = false;
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('dropArea').classList.add('has-file');
+  }
+
+  function removeFile() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('dropArea').style.display = 'block';
+    document.getElementById('dropArea').classList.remove('has-file');
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('btnUpload').disabled = true;
+  }
+
+  // ═══════════════════════════════════════
+  // SUBMIT PAYMENT + CREATE ORDER
+  // ═══════════════════════════════════════
+  async function submitPayment() {
+    if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
+    if (!orderData)    { showToast('Data pesanan tidak valid', 'err'); return; }
+    if (!db || !storage) { showToast('Koneksi Firebase gagal', 'err'); return; }
+
+    var btn = document.getElementById('btnUpload');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Mengupload…';
+
+    var pw = document.getElementById('progressWrap');
+    var pf = document.getElementById('progressFill');
+    var pt = document.getElementById('progressText');
+    pw.style.display = 'block';
+
+    try {
+      var orderId = orderData.id;
+      var ext = (selectedFile.name.split('.').pop() || 'jpg').toLowerCase();
+      var randStr = Math.random().toString(36).slice(2, 10);
+      var storagePath = 'payments/' + orderId + '/' + randStr + '.' + ext;
+      var storageRef = storage.ref(storagePath);
+      var uploadTask = storageRef.put(selectedFile);
+
+      // Progress tracking
+      uploadTask.on('state_changed',
+        function(snapshot) {
+          var pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
+          pf.style.width = pct + '%';
+          pt.textContent = 'Mengupload ' + pct + '%…';
+        },
+        function(err) { throw err; }
+      );
+
+      await uploadTask;
+      var downloadURL = await storageRef.getDownloadURL();
+
+      pt.textContent = 'Menyimpan pesanan…';
+      pf.style.width = '100%';
+
+      // Build final Firestore order document
+      var now = firebase.firestore.FieldValue.serverTimestamp();
+      var finalOrder = {
+        orderId:            orderId,
+        id:                 orderId,
+        nama:               orderData.name   || '',
+        name:               orderData.name   || '',
+        noHp:               orderData.phone  || '',
+        phone:              orderData.phone  || '',
+        kelas:              orderData.address || '',
+        address:            orderData.address || '',
+        jurusan:            orderData.notes  || '',
+        notes:              orderData.notes  || '',
+        items:              orderData.items  || [],
+        subtotal:           orderData.subtotal || 0,
+        total:              orderData.total   || 0,
+        metodePembayaran:   'qris',
+        payment:            'qris',
+        statusPembayaran:   'menunggu_verifikasi',
+        paymentStatus:      'menunggu_verifikasi',
+        statusOrder:        'MENUNGGU',
+        status:             'MENUNGGU',
+        buktiPembayaranUrl:  downloadURL,
+        buktiPembayaranPath: storagePath,
+        paymentProof: {
+          url:        downloadURL,
+          path:       storagePath,
+          uploadedAt: now
+        },
+        waktuUploadBukti: now,
+        alasanReject:     '',
+        catatanAdmin:     '',
+        date:       orderData.date || new Date().toISOString().slice(0,10),
+        createdAt:  now,
+        updatedAt:  now,
+        timestamp:  now
+      };
+
+      await db.collection('orders').doc(orderId).set(finalOrder);
+
+      // Save active order to localStorage for banner
+      try {
+        localStorage.setItem('minbite_active_order', JSON.stringify({
+          id:   orderId,
+          name: orderData.name,
+          date: orderData.date
+        }));
+      } catch(e) {}
+
+      // Clear pending session
+      sessionStorage.removeItem('mb_pending_order');
+      if (timerInterval) clearInterval(timerInterval);
+
+      showToast('Bukti berhasil dikirim! 🎉', 'ok');
+      setTimeout(function() {
+        window.location.href = 'order.html?id=' + orderId;
+      }, 900);
+
+    } catch(err) {
+      console.error(err);
+      showToast('Upload gagal — coba lagi', 'err');
+      pw.style.display = 'none';
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:17px;height:17px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Kirim Bukti &amp; Konfirmasi Pesanan';
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // REUPLOAD MODE (from order.html reject)
+  // ═══════════════════════════════════════
+  async function submitReupload(existingOrderId) {
+    if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
+    if (!db || !storage) { showToast('Koneksi Firebase gagal', 'err'); return; }
+
+    var btn = document.getElementById('btnUpload');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Mengupload…';
+
+    var pw = document.getElementById('progressWrap');
+    var pf = document.getElementById('progressFill');
+    var pt = document.getElementById('progressText');
+    pw.style.display = 'block';
+
+    try {
+      var ext = (selectedFile.name.split('.').pop() || 'jpg').toLowerCase();
+      var randStr = Math.random().toString(36).slice(2, 10);
+      var storagePath = 'payments/' + existingOrderId + '/reupload_' + randStr + '.' + ext;
+      var storageRef = storage.ref(storagePath);
+      var uploadTask = storageRef.put(selectedFile);
+
+      uploadTask.on('state_changed',
+        function(snapshot) {
+          var pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
+          pf.style.width = pct + '%';
+          pt.textContent = 'Mengupload ' + pct + '%…';
+        },
+        function(err) { throw err; }
+      );
+
+      await uploadTask;
+      var downloadURL = await storageRef.getDownloadURL();
+      pf.style.width = '100%';
+      pt.textContent = 'Memperbarui status…';
+
+      var now = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('orders').doc(existingOrderId).update({
+        statusPembayaran:    'menunggu_verifikasi',
+        paymentStatus:       'menunggu_verifikasi',
+        buktiPembayaranUrl:   downloadURL,
+        buktiPembayaranPath:  storagePath,
+        paymentProof: {
+          url:        downloadURL,
+          path:       storagePath,
+          uploadedAt: now
+        },
+        waktuUploadBukti: now,
+        alasanReject:     '',
+        catatanAdmin:     '',
+        updatedAt:        now
+      });
+
+      sessionStorage.removeItem('mb_pending_order');
+      if (timerInterval) clearInterval(timerInterval);
+
+      showToast('Bukti berhasil diupload ulang! 🎉', 'ok');
+      setTimeout(function() {
+        window.location.href = 'order.html?id=' + existingOrderId;
+      }, 900);
+
+    } catch(err) {
+      console.error(err);
+      showToast('Upload gagal — coba lagi', 'err');
+      pw.style.display = 'none';
+      btn.disabled = false;
+      btn.innerHTML = 'Upload Ulang Bukti';
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // REUPLOAD PAGE MODE
+  // ═══════════════════════════════════════
+  function initReupload(orderId) {
+    // Load order info from Firestore
+    db.collection('orders').doc(orderId).get().then(function(snap) {
+      if (!snap.exists) { document.getElementById('stateError').style.display = ''; return; }
+      var d = snap.data();
+      document.getElementById('statePayment').style.display = '';
+      document.getElementById('displayAmount').textContent = fmt(d.total || 0);
+      document.getElementById('displayOrderId').textContent = orderId;
+      document.getElementById('displayName').textContent = d.name || d.nama || '';
+      var items = d.items || [];
+      document.getElementById('displayItems').textContent = items.slice(0,2).map(function(it){ return it.name + ' ×' + it.qty; }).join(' · ');
+      document.getElementById('instrAmount').textContent = fmt(d.total || 0);
+      // Override submit to reupload mode
+      document.getElementById('btnUpload').onclick = function() { submitReupload(orderId); };
+      document.getElementById('btnUpload').textContent = 'Upload Ulang Bukti';
+      startTimer();
+    }).catch(function() {
+      document.getElementById('stateError').style.display = '';
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // NAVIGATION
+  // ═══════════════════════════════════════
+  function goBack() {
+    // If reupload mode, go back to order page
+    var params = new URLSearchParams(window.location.search);
+    var reuploadId = params.get('reupload');
+    if (reuploadId) {
+      window.location.href = 'order.html?id=' + reuploadId;
+    } else {
+      // Restore session so checkout form stays filled
+      window.history.back();
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // TOAST
+  // ═══════════════════════════════════════
+  function showToast(msg, type) {
+    var c = document.getElementById('toast-container');
+    var el = document.createElement('div');
+    el.className = 'toast' + (type ? ' ' + type : '');
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(function() { el.remove(); }, 2800);
+  }
+
+  // ═══════════════════════════════════════
+  // ENTRY POINT
+  // ═══════════════════════════════════════
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var reuploadId = params.get('reupload');
+
+    if (reuploadId) {
+      // Reupload mode — load from Firestore
+      if (db) {
+        initReupload(reuploadId);
+      } else {
+        document.getElementById('stateError').style.display = '';
+      }
+    } else {
+      // Normal checkout → payment flow
+      init();
+    }
+  })();
+</script>
+</body>
+</html>
