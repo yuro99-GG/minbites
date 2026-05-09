@@ -824,6 +824,7 @@
       border: none; border-radius: var(--radius-sm);
       font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
       cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+      text-decoration: none;
     }
     .btn-reupload:hover:not(:disabled) { background: #c0272e; transform: translateY(-1px); }
     .btn-reupload:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
@@ -976,32 +977,33 @@
           </div>
           <div class="proof-upload-time" id="proofUploadTime"></div>
         </div>
+        <!-- QRIS verifikasi info -->
+        <div id="qrisVerifyInfo" style="display:none;margin-top:10px;background:var(--blue-bg);border:1.5px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--blue);line-height:1.6;">
+          🔍 <strong>Bukti pembayaran sedang diperiksa admin.</strong> Pesanan akan diproses setelah pembayaran diverifikasi.
+        </div>
+        <!-- QRIS diterima info -->
+        <div id="qrisAcceptedInfo" style="display:none;margin-top:10px;background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--green);line-height:1.6;">
+          ✅ <strong>Pembayaran berhasil diverifikasi.</strong> Pesananmu sedang diproses!
+        </div>
+        <!-- Cash info card -->
+        <div id="cashInfoCard" style="display:none;margin-top:10px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--text2);line-height:1.6;">
+          💵 <strong>Pembayaran dilakukan saat pengambilan / pengantaran.</strong> Siapkan uang pas ya!
+        </div>
       </div>
 
-      <!-- RE-UPLOAD SECTION (show when rejected) -->
+      <!-- RE-UPLOAD SECTION (show when rejected → redirect to payment.html) -->
       <div class="reupload-section" id="reuploadSection" style="display:none">
         <div class="reupload-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload Ulang Bukti Pembayaran
         </div>
-        <div class="reupload-preview-wrap" id="reuploadPreviewWrap">
-          <img id="reuploadPreviewImg" src="" alt="Preview"/>
-          <button class="reupload-preview-remove" onclick="removeReuploadFile()">✕</button>
+        <div style="font-size:0.78rem;color:var(--text2);line-height:1.65;margin-bottom:14px;background:rgba(230,57,70,0.05);border:1.5px solid rgba(230,57,70,0.18);border-radius:var(--radius-sm);padding:12px 14px;">
+          Bukti pembayaranmu ditolak oleh admin. Silakan upload ulang foto bukti yang jelas dan valid.
         </div>
-        <div class="reupload-drop-area" id="reuploadDropArea">
-          <input type="file" id="reuploadFileInput" accept="image/*" capture="environment" onchange="onReuploadFileSelected(this)"/>
-          <div style="font-size:1.5rem;margin-bottom:5px">📷</div>
-          <div style="font-size:0.8rem;font-weight:700;color:var(--text2)">Pilih foto baru dari galeri / kamera</div>
-          <div style="font-size:0.68rem;color:var(--text3);margin-top:3px">JPG, PNG • Maks 3 MB</div>
-        </div>
-        <div class="upload-progress-wrap" id="reuploadProgressWrap" style="display:none">
-          <div class="upload-progress-bar"><div class="upload-progress-fill" id="reuploadProgressFill"></div></div>
-          <div class="upload-progress-text" id="reuploadProgressText">Mengupload...</div>
-        </div>
-        <button class="btn-reupload" id="btnReupload" disabled onclick="submitReupload()">
+        <a class="btn-reupload" id="btnReuploadRedirect" href="#">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Kirim Ulang Bukti
-        </button>
+          Upload Ulang Bukti
+        </a>
       </div>
 
       <!-- MENUNGGU -->
@@ -1209,76 +1211,7 @@
     document.getElementById('proofLightbox').classList.remove('open');
   }
 
-  // ── RE-UPLOAD ──
-  var reuploadFile = null;
-  function onReuploadFileSelected(input) {
-    var file = input.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar'); input.value = ''; return; }
-    if (file.size > 3 * 1024 * 1024) { showToast('Ukuran maks 3 MB'); input.value = ''; return; }
-    reuploadFile = file;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('reuploadPreviewImg').src = e.target.result;
-      document.getElementById('reuploadPreviewWrap').style.display = 'block';
-      document.getElementById('reuploadDropArea').style.display = 'none';
-      document.getElementById('btnReupload').disabled = false;
-    };
-    reader.readAsDataURL(file);
-  }
-  function removeReuploadFile() {
-    reuploadFile = null;
-    document.getElementById('reuploadFileInput').value = '';
-    document.getElementById('reuploadPreviewImg').src = '';
-    document.getElementById('reuploadPreviewWrap').style.display = 'none';
-    document.getElementById('reuploadDropArea').style.display = 'block';
-    document.getElementById('btnReupload').disabled = true;
-  }
-  async function submitReupload() {
-    if (!reuploadFile) { showToast('Pilih foto bukti dulu'); return; }
-    var orderId = getOrderId();
-    if (!orderId) { showToast('ID pesanan tidak ditemukan'); return; }
-    var btn = document.getElementById('btnReupload');
-    btn.disabled = true;
-    btn.textContent = 'Mengupload...';
-    var progressWrap = document.getElementById('reuploadProgressWrap');
-    var progressFill = document.getElementById('reuploadProgressFill');
-    var progressText = document.getElementById('reuploadProgressText');
-    progressWrap.style.display = 'block';
-    try {
-      var ext = reuploadFile.name.split('.').pop() || 'jpg';
-      var storagePath = 'payment_proofs/' + orderId + '_reupload_' + Date.now() + '.' + ext;
-      var storageRef = storage.ref(storagePath);
-      var uploadTask = storageRef.put(reuploadFile);
-      uploadTask.on('state_changed', function(snapshot) {
-        var pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
-        progressFill.style.width = pct + '%';
-        progressText.textContent = 'Mengupload ' + pct + '%...';
-      });
-      await uploadTask;
-      var downloadURL = await storageRef.getDownloadURL();
-      await db.collection('orders').doc(orderId).update({
-        paymentStatus: 'menunggu_verifikasi',
-        paymentProof: {
-          url: downloadURL,
-          path: storagePath,
-          uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-        },
-        catatanAdmin: '',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      progressFill.style.width = '100%';
-      progressText.textContent = 'Upload selesai!';
-      showToast('Bukti berhasil dikirim ulang! Menunggu verifikasi admin.', 'success');
-      document.getElementById('reuploadSection').style.display = 'none';
-    } catch(err) {
-      console.error(err);
-      showToast('Gagal upload. Coba lagi.');
-      progressWrap.style.display = 'none';
-      btn.disabled = false;
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Kirim Ulang Bukti';
-    }
-  }
+  // ── RE-UPLOAD → redirect to payment.html handled via btnReuploadRedirect link ──
 
   // ── STATUS MAP ──
   var STATUS_MAP = {
@@ -1362,9 +1295,9 @@
     document.getElementById('stateOrder').style.display = 'block';
     document.getElementById('realtimePill').style.display = 'flex';
 
-    var rawStatus = (data.status || 'MENUNGGU').toUpperCase().trim();
-    var paymentMethod = (data.payment || 'cash').toLowerCase();
-    var paymentStatus = data.paymentStatus || (paymentMethod === 'cash' ? 'belum_dibayar' : 'menunggu_upload');
+    var rawStatus = (data.status || data.statusOrder || 'MENUNGGU').toUpperCase().trim();
+    var paymentMethod = (data.payment || data.metodePembayaran || 'cash').toLowerCase();
+    var paymentStatus = data.paymentStatus || data.statusPembayaran || (paymentMethod === 'cash' ? 'belum_dibayar' : 'menunggu_verifikasi');
 
     // Payment status change notifications
     if (prevPaymentStatus !== null && prevPaymentStatus !== paymentStatus) {
@@ -1402,8 +1335,8 @@
     prevStatus = rawStatus;
 
     // ID & Name
-    document.getElementById('oId').textContent = data.id || 'N/A';
-    document.getElementById('oName').textContent = data.name || '-';
+    document.getElementById('oId').textContent = data.id || data.orderId || 'N/A';
+    document.getElementById('oName').textContent = data.name || data.nama || '-';
 
     // Status hero class
     var statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' };
@@ -1456,9 +1389,10 @@
 
     // Rejection reason
     var rejectCard = document.getElementById('rejectCard');
-    if (paymentStatus === 'ditolak' && data.catatanAdmin) {
+    var rejectReason = data.alasanReject || data.catatanAdmin || '';
+    if (paymentStatus === 'ditolak') {
       rejectCard.style.display = 'block';
-      document.getElementById('rejectReason').textContent = data.catatanAdmin;
+      document.getElementById('rejectReason').textContent = rejectReason || 'Tidak ada keterangan dari admin.';
     } else {
       rejectCard.style.display = 'none';
     }
@@ -1466,12 +1400,14 @@
     // Proof thumbnail
     var proofSection = document.getElementById('proofThumbSection');
     var reuploadSection = document.getElementById('reuploadSection');
-    if (paymentMethod === 'qris' && data.paymentProof && data.paymentProof.url) {
+    var proofUrl = (data.paymentProof && data.paymentProof.url) ? data.paymentProof.url : (data.buktiPembayaranUrl || '');
+    if (paymentMethod === 'qris' && proofUrl) {
       proofSection.style.display = 'block';
-      document.getElementById('proofThumbImg').src = data.paymentProof.url;
-      if (data.paymentProof.uploadedAt && data.paymentProof.uploadedAt.toDate) {
+      document.getElementById('proofThumbImg').src = proofUrl;
+      var uploadedAt = (data.paymentProof && data.paymentProof.uploadedAt) ? data.paymentProof.uploadedAt : data.waktuUploadBukti;
+      if (uploadedAt && uploadedAt.toDate) {
         document.getElementById('proofUploadTime').textContent =
-          'Diupload: ' + data.paymentProof.uploadedAt.toDate().toLocaleString('id-ID');
+          'Diupload: ' + uploadedAt.toDate().toLocaleString('id-ID');
       }
     } else {
       proofSection.style.display = 'none';
@@ -1480,8 +1416,28 @@
     // Re-upload section
     if (paymentMethod === 'qris' && paymentStatus === 'ditolak') {
       reuploadSection.style.display = 'block';
+      // Set redirect URL for reupload button
+      var ordId = data.id || getOrderId();
+      document.getElementById('btnReuploadRedirect').href = 'payment.html?reupload=' + ordId;
     } else {
       reuploadSection.style.display = 'none';
+    }
+
+    // Cash / QRIS info cards
+    var cashInfo    = document.getElementById('cashInfoCard');
+    var qrisVerify  = document.getElementById('qrisVerifyInfo');
+    var qrisAccepted= document.getElementById('qrisAcceptedInfo');
+    cashInfo.style.display     = 'none';
+    qrisVerify.style.display   = 'none';
+    qrisAccepted.style.display = 'none';
+    if (paymentMethod === 'cash') {
+      cashInfo.style.display = 'block';
+    } else if (paymentMethod === 'qris') {
+      if (paymentStatus === 'menunggu_verifikasi') {
+        qrisVerify.style.display = 'block';
+      } else if (paymentStatus === 'diterima') {
+        qrisAccepted.style.display = 'block';
+      }
     }
 
     // Items
@@ -1516,7 +1472,7 @@
     document.getElementById('itemsSectionWrap').style.display = 'block';
     document.getElementById('oTotalSection').style.display = 'block';
     document.getElementById('pickupSectionWrap').style.display = 'block';
-    document.getElementById('oPickup').textContent = data.pickup || data.address || '-';
+    document.getElementById('oPickup').textContent = data.pickup || data.address || data.kelas || '-';
 
     // Section display — QRIS menunggu upload/verifikasi blocks "MENUNGGU" flow section
     var waitingSection    = document.getElementById('waitingSection');
@@ -1598,4 +1554,4 @@
   startRealtimeListener();
 </script>
 </body>
-              </html>
+</html>
