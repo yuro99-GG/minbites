@@ -10,8 +10,9 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script>
-    var db;
+    var db, storage;
     try {
       var firebaseConfig = {
         apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
@@ -23,6 +24,7 @@
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
+      storage = firebase.storage();
     } catch(e) { console.error(e); alert("Koneksi ke server gagal."); }
   </script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -790,6 +792,81 @@
       .promo-add-row { grid-template-columns: 1fr; }
       .promo-add-row > .promo-field:last-child { grid-column: span 1; }
     }
+
+    /* ═══════════════════════════════ PAYMENT VERIFICATION ═══════════════════════════════ */
+    .pay-badge-qris { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 0.63rem; font-weight: 700; background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+    .pay-badge-cash { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 0.63rem; font-weight: 700; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .pay-status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 0.62rem; font-weight: 700; }
+    .ps-upload { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .ps-verify { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .ps-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .ps-reject { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+    .proof-thumb {
+      width: 100%; cursor: pointer; border-radius: var(--radius-sm);
+      overflow: hidden; border: 1px solid var(--border);
+      background: var(--bg3); margin-top: 8px; position: relative;
+    }
+    .proof-thumb img { width: 100%; max-height: 180px; object-fit: contain; display: block; background: white; }
+    .proof-thumb-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+      font-size: 0.7rem; font-weight: 700; color: white;
+    }
+    .proof-thumb:hover .proof-thumb-overlay { opacity: 1; }
+    .proof-upload-time { font-size: 0.65rem; color: var(--text3); margin-top: 5px; }
+
+    .verify-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-approve {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 14px; background: var(--green-bg); border: 1px solid var(--green-border);
+      color: var(--green); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-approve:hover { background: var(--green); color: white; }
+    .btn-reject-pay {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 14px; background: var(--red-bg); border: 1px solid var(--red-border);
+      color: var(--red); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-reject-pay:hover { background: var(--red); color: white; }
+
+    .reject-reason-wrap { margin-top: 8px; display: none; }
+    .reject-reason-input {
+      width: 100%; padding: 9px 12px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+      outline: none; resize: none;
+    }
+    .reject-reason-input:focus { border-color: var(--red); }
+    .btn-reject-confirm {
+      width: 100%; padding: 9px; margin-top: 6px;
+      background: var(--red); border: none;
+      border-radius: var(--radius-sm); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-reject-confirm:hover { background: #c02020; }
+
+    /* Proof lightbox in admin */
+    .proof-lightbox-admin {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.95); display: none;
+      flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;
+    }
+    .proof-lightbox-admin.open { display: flex; }
+    .proof-lightbox-admin img { max-width: 100%; max-height: 80vh; border-radius: 12px; }
+    .proof-lightbox-close-btn {
+      color: rgba(255,255,255,0.6); background: transparent;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
+      padding: 8px 22px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -927,6 +1004,7 @@
       <button class="ftab" onclick="setFilter('DIPROSES')" data-filter="DIPROSES">Diproses</button>
       <button class="ftab" onclick="setFilter('SIAP DIAMBIL')" data-filter="SIAP DIAMBIL">Siap Diambil</button>
       <button class="ftab" onclick="setFilter('SELESAI')" data-filter="SELESAI">Selesai</button>
+      <button class="ftab" onclick="setFilter('QRIS_VERIFY')" data-filter="QRIS_VERIFY" id="tabQrisVerify" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)">📲 Verifikasi QRIS <span id="qrisVerifyCount" style="display:none;background:var(--amber);color:white;border-radius:100px;padding:1px 6px;font-size:0.6rem;margin-left:3px">0</span></button>
     </div>
     <button class="btn-export" onclick="exportCSV()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1163,6 +1241,12 @@
 
 <div id="toast-container"></div>
 
+<!-- PROOF LIGHTBOX ADMIN -->
+<div class="proof-lightbox-admin" id="proofLightboxAdmin" onclick="closeAdminProofLightbox()">
+  <img id="proofLightboxAdminImg" src="" alt="Bukti Pembayaran"/>
+  <button class="proof-lightbox-close-btn" onclick="closeAdminProofLightbox()">✕ Tutup</button>
+</div>
+
 <script>
 /* ══════════ AUTH ══════════ */
 var _a=[27,28,2,10],_b=[27,28,2,10,28,17,7,29,9,79],_c="pixel";
@@ -1293,19 +1377,30 @@ async function fetchOrders(){
 
 /* ══════════ STATS ══════════ */
 function updateStats(){
-  var pending=0,proc=0,ready=0,done=0,rev=0;
+  var pending=0,proc=0,ready=0,done=0,rev=0,qrisVerify=0;
   allOrders.forEach(function(o){
     var s=(o.status||'MENUNGGU').toUpperCase().trim();
     if(s==='MENUNGGU') pending++;
     else if(s==='DIPROSES') proc++;
     else if(s==='SIAP DIAMBIL') ready++;
     else if(s==='SELESAI'){ done++; rev+=Number(o.total||0); }
+    if(o.paymentStatus==='menunggu_verifikasi') qrisVerify++;
   });
   document.getElementById('statPending').textContent=pending;
   document.getElementById('statProc').textContent=proc;
   document.getElementById('statReady').textContent=ready;
   document.getElementById('statDone').textContent=done;
   document.getElementById('statRevenue').textContent=fmtRp(rev);
+
+  // QRIS verify badge
+  var countEl=document.getElementById('qrisVerifyCount');
+  var tabEl=document.getElementById('tabQrisVerify');
+  if(qrisVerify>0){
+    if(countEl){countEl.textContent=qrisVerify;countEl.style.display='inline-block';}
+    if(tabEl) tabEl.style.animation='none';
+  } else {
+    if(countEl) countEl.style.display='none';
+  }
 }
 
 /* ══════════ RENDER ORDERS ══════════ */
@@ -1314,7 +1409,12 @@ function renderOrders(){
   searchQ=searchQ.trim().toLowerCase();
   var filtered=allOrders.filter(function(o){
     var s=(o.status||'MENUNGGU').toUpperCase().trim();
-    var filterOk=currentFilter==='ALL'||s===currentFilter;
+    var filterOk;
+    if(currentFilter==='QRIS_VERIFY'){
+      filterOk = o.paymentStatus==='menunggu_verifikasi';
+    } else {
+      filterOk=currentFilter==='ALL'||s===currentFilter;
+    }
     if(!filterOk) return false;
     if(!searchQ) return true;
     var hay=(o.name||'')+(o.id||o._docId||'')+(o.kelas||'')+(o.jurusan||'')+(o.phone||'');
@@ -1352,8 +1452,59 @@ function renderOrders(){
       return '<span class="item-chip">'+escHtml(it.name)+' ×'+it.qty+'</span>';
     }).join('');
 
+    // Payment badges
+    var paymentHtml='';
+    if(o.payment){
+      var payClass = o.payment==='qris' ? 'pay-badge-qris' : 'pay-badge-cash';
+      var payLabel = o.payment==='qris' ? '📲 QRIS' : '💵 Cash';
+      paymentHtml += '<span class="'+payClass+'">'+payLabel+'</span> ';
+    }
+    if(o.paymentStatus){
+      var psMap={
+        'menunggu_upload':'⏳ Belum Upload',
+        'menunggu_verifikasi':'🔍 Verifikasi',
+        'diterima':'✓ Lunas',
+        'ditolak':'✕ Ditolak',
+        'belum_dibayar':'Bayar Cash'
+      };
+      var psCls={
+        'menunggu_upload':'ps-upload',
+        'menunggu_verifikasi':'ps-verify',
+        'diterima':'ps-ok',
+        'ditolak':'ps-reject',
+        'belum_dibayar':'ps-upload'
+      };
+      paymentHtml += '<span class="pay-status-badge '+(psCls[o.paymentStatus]||'')+'">'+(psMap[o.paymentStatus]||o.paymentStatus)+'</span>';
+    }
+
+    // Proof section (visible when payment proof exists and status=menunggu_verifikasi or ditolak)
+    var proofHtml = '';
+    var ps = o.paymentStatus || '';
+    if(o.paymentProof && o.paymentProof.url && (ps==='menunggu_verifikasi')){
+      var proofUploadTime = '';
+      if(o.paymentProof.uploadedAt && o.paymentProof.uploadedAt.toDate){
+        proofUploadTime = o.paymentProof.uploadedAt.toDate().toLocaleString('id-ID');
+      }
+      proofHtml += '<div style="margin:10px 0 2px">';
+      proofHtml += '<div class="proof-label">Bukti Pembayaran</div>';
+      proofHtml += '<div class="proof-thumb" onclick="openAdminProofLightbox(\''+escHtml(o.paymentProof.url)+'\')">'+
+        '<img src="'+escHtml(o.paymentProof.url)+'" alt="Bukti" loading="lazy"/>'+
+        '<div class="proof-thumb-overlay">🔍 Perbesar</div></div>';
+      if(proofUploadTime) proofHtml += '<div class="proof-upload-time">Diupload: '+proofUploadTime+'</div>';
+      proofHtml += '</div>';
+      // Verify/reject buttons
+      proofHtml += '<div class="verify-actions">';
+      proofHtml += '<button class="btn-approve" onclick="approvePayment(\''+docId+'\')">✓ Approve Pembayaran</button>';
+      proofHtml += '<button class="btn-reject-pay" onclick="toggleRejectReason(\''+docId+'\')">✕ Tolak</button>';
+      proofHtml += '</div>';
+      proofHtml += '<div class="reject-reason-wrap" id="reject-'+docId+'">';
+      proofHtml += '<textarea class="reject-reason-input" id="reason-'+docId+'" placeholder="Alasan penolakan (wajib diisi)..." rows="2"></textarea>';
+      proofHtml += '<button class="btn-reject-confirm" onclick="rejectPayment(\''+docId+'\')">Kirim Penolakan</button>';
+      proofHtml += '</div>';
+    }
+
     var actionBtns='';
-    if(s==='MENUNGGU'){
+    if(s==='MENUNGGU' && ps!=='menunggu_upload' && ps!=='menunggu_verifikasi'){
       actionBtns+='<button class="btn btn-process" onclick="changeStatus(\''+docId+'\',\'DIPROSES\')">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><path d="M12 2a10 10 0 1 0 10 10"/></svg>Proses</button>';
     }
@@ -1372,13 +1523,15 @@ function renderOrders(){
     actionBtns+='<a href="order.html?id='+encodeURIComponent(id)+'" target="_blank" class="btn btn-secondary" style="text-decoration:none">'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Detail</a>';
 
-    html+='<div class="order-card'+(o.is_new?' is-new':'')+(s==='MENUNGGU'?' priority-high':'')+'">';
+    html+='<div class="order-card'+(o.is_new?' is-new':'')+(s==='MENUNGGU'?' priority-high':'')+(ps==='menunggu_verifikasi'?' is-new':'')+'">';
     html+='<div class="order-head">';
     html+='<div><div class="order-id">'+escHtml(id)+'</div>';
     html+='<div class="order-meta"><strong>'+escHtml(o.name||'—')+'</strong>';
     if(o.kelas||o.jurusan) html+=' · <span>'+escHtml(o.kelas||'')+(o.jurusan?' '+escHtml(o.jurusan):'')+'</span>';
     html+=elapsedHtml?'  '+elapsedHtml:'';
-    html+='</div></div>';
+    html+='</div>';
+    if(paymentHtml) html+='<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">'+paymentHtml+'</div>';
+    html+='</div>';
     html+='<span class="status-badge '+sc+'">'+s+'</span>';
     html+='</div>';
     html+='<div class="order-body">';
@@ -1388,6 +1541,9 @@ function renderOrders(){
     if(o.pickup) html+='<div class="order-pickup-time" style="margin-top:4px;justify-content:flex-end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+escHtml(o.pickup)+'</div>';
     html+='</div>';
     html+='</div>';
+    if(proofHtml){
+      html+='<div style="padding:0 13px 10px">'+proofHtml+'</div>';
+    }
     html+='<div class="order-actions">'+actionBtns+'</div>';
     html+='</div>';
   });
@@ -1780,6 +1936,59 @@ function playScanSuccessSound(){
   }catch(e){}
 }
 
+/* ══════════ QRIS PAYMENT VERIFICATION ══════════ */
+function openAdminProofLightbox(url){
+  var lb=document.getElementById('proofLightboxAdmin');
+  document.getElementById('proofLightboxAdminImg').src=url;
+  lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  lb.onclick=closeAdminProofLightbox;
+}
+function closeAdminProofLightbox(){
+  var lb=document.getElementById('proofLightboxAdmin');
+  lb.style.display='none';
+}
+function toggleRejectReason(docId){
+  var wrap=document.getElementById('reject-'+docId);
+  if(!wrap) return;
+  wrap.style.display=wrap.style.display==='block'?'none':'block';
+}
+async function approvePayment(docId){
+  var o=allOrders.find(function(x){return x._docId===docId||x.id===docId;});
+  var id=o?(o.id||docId):docId;
+  if(!confirm('Approve pembayaran pesanan '+id+'?')) return;
+  try{
+    await db.collection('orders').doc(docId).update({
+      paymentStatus:'diterima',
+      status:'MENUNGGU',
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    var idx=allOrders.findIndex(function(x){return x._docId===docId||x.id===docId;});
+    if(idx!==-1){ allOrders[idx].paymentStatus='diterima'; }
+    addLog('status','Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → DITERIMA');
+    if(soundEnabled) playNotifSound();
+    updateStats(); renderOrders();
+    showToast('Pembayaran pesanan '+id+' diterima!');
+  } catch(err){ console.error(err); showToast('Gagal approve. Coba lagi.'); }
+}
+async function rejectPayment(docId){
+  var reason=document.getElementById('reason-'+docId)&&document.getElementById('reason-'+docId).value.trim();
+  if(!reason){ showToast('Tulis alasan penolakan dulu'); return; }
+  var o=allOrders.find(function(x){return x._docId===docId||x.id===docId;});
+  var id=o?(o.id||docId):docId;
+  try{
+    await db.collection('orders').doc(docId).update({
+      paymentStatus:'ditolak',
+      catatanAdmin:reason,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    var idx=allOrders.findIndex(function(x){return x._docId===docId||x.id===docId;});
+    if(idx!==-1){ allOrders[idx].paymentStatus='ditolak'; allOrders[idx].catatanAdmin=reason; }
+    addLog('status','Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → DITOLAK: '+escHtml(reason));
+    updateStats(); renderOrders();
+    showToast('Pembayaran pesanan '+id+' ditolak.');
+  } catch(err){ console.error(err); showToast('Gagal reject. Coba lagi.'); }
+}
+
 /* ══════════ TOAST ══════════ */
 function showToast(msg){
   var c=document.getElementById('toast-container'),el=document.createElement('div');
@@ -1801,4 +2010,4 @@ document.getElementById('confirmModal').addEventListener('click',function(e){if(
 document.getElementById('invoiceModal').addEventListener('click',function(e){if(e.target===this)closeInvoiceModal();});
 </script>
 </body>
-                                                                                                             </html>
+  </html>
