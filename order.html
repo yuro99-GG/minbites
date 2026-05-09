@@ -10,8 +10,9 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script>
-    var db;
+    var db, storage;
     try {
       var firebaseConfig = {
         apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
@@ -23,6 +24,7 @@
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
+      storage = firebase.storage();
     } catch (e) { console.error("Firebase gagal:", e); }
   </script>
 
@@ -634,62 +636,6 @@
     .pickup-label { font-size: 0.68rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
     .pickup-value { font-size: 0.95rem; font-weight: 700; color: var(--text); }
 
-    /* ═══════════ PAYMENT INFO ═══════════ */
-    .payment-info-section { padding: 0 28px 20px; }
-    .payment-info-row {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 8px;
-    }
-    .payment-info-icon {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--accent-muted); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-    }
-    .payment-info-label { font-size: 0.68rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
-    .payment-info-value { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .payment-status-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 100px;
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .ps-pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-    .ps-verified { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-    .ps-rejected { background: rgba(230,57,70,0.08); color: #e63946; border: 1px solid rgba(230,57,70,0.25); }
-    .ps-cash     { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
-
-    /* Proof image preview in order page */
-    .proof-preview-wrap {
-      margin-top: 8px; border-radius: var(--radius-sm); overflow: hidden;
-      border: 1px solid var(--border); cursor: pointer; position: relative;
-    }
-    .proof-preview-wrap img { display: block; width: 100%; max-height: 140px; object-fit: cover; }
-    .proof-preview-label {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.38); color: white; font-size: 0.72rem; font-weight: 700;
-      opacity: 0; transition: opacity 0.2s; letter-spacing: 0.05em; text-transform: uppercase;
-    }
-    .proof-preview-wrap:hover .proof-preview-label { opacity: 1; }
-
-    /* Proof lightbox */
-    .proof-lightbox {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.92); display: none;
-      flex-direction: column; align-items: center; justify-content: center;
-      padding: 20px; gap: 14px;
-    }
-    .proof-lightbox.open { display: flex; }
-    .proof-lightbox img { max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,0.7); }
-    .proof-lightbox-close {
-      color: rgba(255,255,255,0.7); background: transparent;
-      border: 1px solid rgba(255,255,255,0.25); border-radius: 100px;
-      padding: 8px 22px; cursor: pointer;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem;
-      transition: all 0.2s;
-    }
-    .proof-lightbox-close:hover { color: white; border-color: rgba(255,255,255,0.5); }
-
     /* ═══════════ REALTIME BAR ═══════════ */
     .realtime-bar {
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -754,6 +700,133 @@
     .toast.info    { background: var(--blue); color: white; }
     @keyframes toastIn  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
     @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)} }
+
+    /* ═══════════ PAYMENT STATUS SECTION ═══════════ */
+    .payment-status-section {
+      padding: 18px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .payment-status-title {
+      font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .payment-status-title svg { width: 13px; height: 13px; color: var(--accent); }
+
+    .payment-method-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: var(--surface2);
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .payment-method-icon { font-size: 1.2rem; }
+    .payment-method-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
+    .payment-method-desc { font-size: 0.7rem; color: var(--text3); }
+
+    /* Payment status badges */
+    .ps-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
+      border: 1.5px solid transparent; text-transform: uppercase;
+    }
+    .ps-badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .ps-upload   { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+    .ps-upload   .ps-badge-dot { background: var(--amber); animation: sdot 1.6s ease infinite; }
+    .ps-verify   { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+    .ps-verify   .ps-badge-dot { background: var(--blue); animation: sdot 1.2s ease infinite; }
+    .ps-ok       { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+    .ps-ok       .ps-badge-dot { background: var(--green); }
+    .ps-cash     { background: var(--surface2); color: var(--text3); border-color: var(--border); }
+    .ps-cash     .ps-badge-dot { background: var(--text3); }
+    .ps-rejected {
+      background: rgba(230,57,70,0.08); color: #e63946;
+      border-color: rgba(230,57,70,0.3);
+    }
+    .ps-rejected .ps-badge-dot { background: #e63946; animation: sdot 1s ease infinite; }
+
+    /* Rejection reason card */
+    .reject-card {
+      background: rgba(230,57,70,0.06); border: 1.5px solid rgba(230,57,70,0.25);
+      border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px;
+    }
+    .reject-card-title {
+      font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #e63946; margin-bottom: 5px;
+    }
+    .reject-card-reason { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+
+    /* Proof thumbnail */
+    .proof-thumb-section { margin-top: 10px; }
+    .proof-thumb-label {
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px;
+    }
+    .proof-thumb-img {
+      border-radius: var(--radius-sm); overflow: hidden;
+      border: 1.5px solid var(--border); max-height: 180px;
+      cursor: pointer; position: relative; display: inline-block;
+    }
+    .proof-thumb-img img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
+    .proof-upload-time { font-size: 0.68rem; color: var(--text3); margin-top: 5px; }
+
+    /* Proof Lightbox */
+    .proof-lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      z-index: 9000; display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .proof-lightbox.open { display: flex; }
+    .proof-lightbox img {
+      max-width: 100%; max-height: 85vh; border-radius: 12px;
+      object-fit: contain;
+    }
+    .proof-lightbox-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
+      color: white; cursor: pointer; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Re-upload section */
+    .reupload-section {
+      padding: 14px 24px 20px;
+      border-top: 1px dashed var(--border);
+    }
+    .reupload-title {
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #e63946; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .reupload-drop-area {
+      border: 2px dashed rgba(230,57,70,0.35); border-radius: var(--radius-sm);
+      padding: 18px 14px; text-align: center; cursor: pointer;
+      background: rgba(230,57,70,0.04); margin-bottom: 10px;
+      position: relative; transition: all 0.2s;
+    }
+    .reupload-drop-area:hover { border-color: #e63946; background: rgba(230,57,70,0.07); }
+    .reupload-drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .reupload-preview-wrap { display: none; margin-bottom: 10px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid #e63946; position: relative; }
+    .reupload-preview-wrap img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
+    .reupload-preview-remove {
+      position: absolute; top: 8px; right: 8px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,0,0,0.6); color: white; border: none;
+      cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+    }
+    .upload-progress-wrap { margin-bottom: 10px; }
+    .upload-progress-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+    .upload-progress-fill { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent-dark)); border-radius: 3px; transition: width 0.3s; width: 0%; }
+    .upload-progress-text { font-size: 0.68rem; color: var(--text3); text-align: center; font-weight: 600; }
+    .btn-reupload {
+      width: 100%; padding: 13px; background: #e63946; color: white;
+      border: none; border-radius: var(--radius-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-reupload:hover:not(:disabled) { background: #c0272e; transform: translateY(-1px); }
+    .btn-reupload:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
     /* ═══════════ MOBILE ═══════════ */
     @media (max-width: 520px) {
@@ -876,6 +949,61 @@
 
       <div class="sec-divider"></div>
 
+      <!-- PAYMENT STATUS SECTION -->
+      <div class="payment-status-section" id="paymentStatusSection" style="display:none">
+        <div class="payment-status-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Pembayaran
+        </div>
+        <div class="payment-method-row" id="paymentMethodRow">
+          <span class="payment-method-icon" id="paymentMethodIcon">💵</span>
+          <div>
+            <div class="payment-method-label" id="paymentMethodLabel">Cash</div>
+            <div class="payment-method-desc" id="paymentMethodDesc">Bayar langsung di tempat</div>
+          </div>
+          <div id="paymentStatusBadge"></div>
+        </div>
+        <!-- Rejection reason (QRIS ditolak) -->
+        <div class="reject-card" id="rejectCard" style="display:none">
+          <div class="reject-card-title">⚠️ Pembayaran Ditolak Admin</div>
+          <div class="reject-card-reason" id="rejectReason">—</div>
+        </div>
+        <!-- Proof thumbnail (QRIS) -->
+        <div class="proof-thumb-section" id="proofThumbSection" style="display:none">
+          <div class="proof-thumb-label">Bukti Pembayaran Yang Diupload</div>
+          <div class="proof-thumb-img" onclick="openProofLightbox()">
+            <img id="proofThumbImg" src="" alt="Bukti Pembayaran"/>
+          </div>
+          <div class="proof-upload-time" id="proofUploadTime"></div>
+        </div>
+      </div>
+
+      <!-- RE-UPLOAD SECTION (show when rejected) -->
+      <div class="reupload-section" id="reuploadSection" style="display:none">
+        <div class="reupload-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Ulang Bukti Pembayaran
+        </div>
+        <div class="reupload-preview-wrap" id="reuploadPreviewWrap">
+          <img id="reuploadPreviewImg" src="" alt="Preview"/>
+          <button class="reupload-preview-remove" onclick="removeReuploadFile()">✕</button>
+        </div>
+        <div class="reupload-drop-area" id="reuploadDropArea">
+          <input type="file" id="reuploadFileInput" accept="image/*" capture="environment" onchange="onReuploadFileSelected(this)"/>
+          <div style="font-size:1.5rem;margin-bottom:5px">📷</div>
+          <div style="font-size:0.8rem;font-weight:700;color:var(--text2)">Pilih foto baru dari galeri / kamera</div>
+          <div style="font-size:0.68rem;color:var(--text3);margin-top:3px">JPG, PNG • Maks 3 MB</div>
+        </div>
+        <div class="upload-progress-wrap" id="reuploadProgressWrap" style="display:none">
+          <div class="upload-progress-bar"><div class="upload-progress-fill" id="reuploadProgressFill"></div></div>
+          <div class="upload-progress-text" id="reuploadProgressText">Mengupload...</div>
+        </div>
+        <button class="btn-reupload" id="btnReupload" disabled onclick="submitReupload()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Kirim Ulang Bukti
+        </button>
+      </div>
+
       <!-- MENUNGGU -->
       <div class="waiting-section" id="waitingSection">
         <div class="waiting-anim">
@@ -986,27 +1114,6 @@
         </div>
       </div>
 
-      <!-- PAYMENT INFO -->
-      <div class="payment-info-section" id="paymentInfoSection" style="display:none">
-        <div class="payment-info-row">
-          <div class="payment-info-icon" id="paymentInfoIcon">💳</div>
-          <div style="flex:1">
-            <div class="payment-info-label">Metode Pembayaran</div>
-            <div class="payment-info-value" id="paymentInfoValue">—</div>
-          </div>
-          <span class="payment-status-badge" id="paymentStatusBadge"></span>
-        </div>
-        <div id="proofImageWrap" style="display:none">
-          <div class="proof-preview-wrap" onclick="openProofLightbox()">
-            <img id="proofImg" src="" alt="Bukti Pembayaran"/>
-            <div class="proof-preview-label">🔍 Perbesar</div>
-          </div>
-        </div>
-        <div id="rejectedNotice" style="display:none;padding:10px 14px;background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);border-radius:var(--radius-sm);font-size:0.78rem;color:#e63946;margin-top:4px;line-height:1.55">
-          ⚠️ Bukti pembayaran kamu <strong>ditolak</strong> oleh admin. Hubungi penjual untuk konfirmasi lebih lanjut.
-        </div>
-      </div>
-
       <div class="sec-divider"></div>
 
       <!-- ITEMS -->
@@ -1051,13 +1158,13 @@
   <button class="qr-fs-close" onclick="closeFullscreenQR()">✕ Tutup</button>
 </div>
 
+<div id="toast-container"></div>
+
 <!-- PROOF LIGHTBOX -->
 <div class="proof-lightbox" id="proofLightbox" onclick="closeProofLightbox()">
-  <img id="proofLightboxImg" src="" alt="Bukti Pembayaran" onclick="event.stopPropagation()"/>
-  <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕ Tutup</button>
+  <img id="proofLightboxImg" src="" alt="Bukti Pembayaran"/>
+  <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕</button>
 </div>
-
-<div id="toast-container"></div>
 
 <script>
   // ── THEME ──
@@ -1090,6 +1197,87 @@
 
   function getOrderId() {
     return new URLSearchParams(window.location.search).get('id') || '';
+  }
+
+  // ── PROOF LIGHTBOX ──
+  function openProofLightbox() {
+    var img = document.getElementById('proofThumbImg').src;
+    document.getElementById('proofLightboxImg').src = img;
+    document.getElementById('proofLightbox').classList.add('open');
+  }
+  function closeProofLightbox() {
+    document.getElementById('proofLightbox').classList.remove('open');
+  }
+
+  // ── RE-UPLOAD ──
+  var reuploadFile = null;
+  function onReuploadFileSelected(input) {
+    var file = input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar'); input.value = ''; return; }
+    if (file.size > 3 * 1024 * 1024) { showToast('Ukuran maks 3 MB'); input.value = ''; return; }
+    reuploadFile = file;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('reuploadPreviewImg').src = e.target.result;
+      document.getElementById('reuploadPreviewWrap').style.display = 'block';
+      document.getElementById('reuploadDropArea').style.display = 'none';
+      document.getElementById('btnReupload').disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+  function removeReuploadFile() {
+    reuploadFile = null;
+    document.getElementById('reuploadFileInput').value = '';
+    document.getElementById('reuploadPreviewImg').src = '';
+    document.getElementById('reuploadPreviewWrap').style.display = 'none';
+    document.getElementById('reuploadDropArea').style.display = 'block';
+    document.getElementById('btnReupload').disabled = true;
+  }
+  async function submitReupload() {
+    if (!reuploadFile) { showToast('Pilih foto bukti dulu'); return; }
+    var orderId = getOrderId();
+    if (!orderId) { showToast('ID pesanan tidak ditemukan'); return; }
+    var btn = document.getElementById('btnReupload');
+    btn.disabled = true;
+    btn.textContent = 'Mengupload...';
+    var progressWrap = document.getElementById('reuploadProgressWrap');
+    var progressFill = document.getElementById('reuploadProgressFill');
+    var progressText = document.getElementById('reuploadProgressText');
+    progressWrap.style.display = 'block';
+    try {
+      var ext = reuploadFile.name.split('.').pop() || 'jpg';
+      var storagePath = 'payment_proofs/' + orderId + '_reupload_' + Date.now() + '.' + ext;
+      var storageRef = storage.ref(storagePath);
+      var uploadTask = storageRef.put(reuploadFile);
+      uploadTask.on('state_changed', function(snapshot) {
+        var pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
+        progressFill.style.width = pct + '%';
+        progressText.textContent = 'Mengupload ' + pct + '%...';
+      });
+      await uploadTask;
+      var downloadURL = await storageRef.getDownloadURL();
+      await db.collection('orders').doc(orderId).update({
+        paymentStatus: 'menunggu_verifikasi',
+        paymentProof: {
+          url: downloadURL,
+          path: storagePath,
+          uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        catatanAdmin: '',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      progressFill.style.width = '100%';
+      progressText.textContent = 'Upload selesai!';
+      showToast('Bukti berhasil dikirim ulang! Menunggu verifikasi admin.', 'success');
+      document.getElementById('reuploadSection').style.display = 'none';
+    } catch(err) {
+      console.error(err);
+      showToast('Gagal upload. Coba lagi.');
+      progressWrap.style.display = 'none';
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Kirim Ulang Bukti';
+    }
   }
 
   // ── STATUS MAP ──
@@ -1125,17 +1313,6 @@
   }
   function closeFullscreenQR() {
     document.getElementById('qrFullscreen').classList.remove('open');
-  }
-
-  // ── PROOF LIGHTBOX ──
-  function openProofLightbox() {
-    var img = document.getElementById('proofImg');
-    if (!img || !img.src) return;
-    document.getElementById('proofLightboxImg').src = img.src;
-    document.getElementById('proofLightbox').classList.add('open');
-  }
-  function closeProofLightbox() {
-    document.getElementById('proofLightbox').classList.remove('open');
   }
 
   // ── SHARE LINK ──
@@ -1178,6 +1355,7 @@
 
   // ── RENDER ORDER ──
   var prevStatus = null;
+  var prevPaymentStatus = null;
   function renderOrder(data) {
     document.getElementById('stateLoading').style.display = 'none';
     document.getElementById('stateError').style.display = 'none';
@@ -1185,6 +1363,19 @@
     document.getElementById('realtimePill').style.display = 'flex';
 
     var rawStatus = (data.status || 'MENUNGGU').toUpperCase().trim();
+    var paymentMethod = (data.payment || 'cash').toLowerCase();
+    var paymentStatus = data.paymentStatus || (paymentMethod === 'cash' ? 'belum_dibayar' : 'menunggu_upload');
+
+    // Payment status change notifications
+    if (prevPaymentStatus !== null && prevPaymentStatus !== paymentStatus) {
+      var psMsg = {
+        'menunggu_verifikasi': 'Bukti diterima! Menunggu verifikasi admin.',
+        'diterima': 'Pembayaran diterima! Pesanan akan segera diproses.',
+        'ditolak': 'Pembayaran ditolak admin. Silakan upload ulang bukti.'
+      };
+      if (psMsg[paymentStatus]) showToast(psMsg[paymentStatus], paymentStatus === 'ditolak' ? 'default' : 'success');
+    }
+    prevPaymentStatus = paymentStatus;
 
     // Status changed
     if (prevStatus !== null && prevStatus !== rawStatus) {
@@ -1242,6 +1433,57 @@
       else if (j === activeIdx - 1) conn.classList.add('filling');
     }
 
+    // ── PAYMENT STATUS SECTION ──
+    var psSection = document.getElementById('paymentStatusSection');
+    psSection.style.display = 'block';
+
+    // Payment method display
+    document.getElementById('paymentMethodIcon').textContent = paymentMethod === 'qris' ? '📲' : '💵';
+    document.getElementById('paymentMethodLabel').textContent = paymentMethod === 'qris' ? 'QRIS' : 'Cash';
+    document.getElementById('paymentMethodDesc').textContent = paymentMethod === 'qris' ? 'Scan QR Code' : 'Bayar langsung di tempat';
+
+    // Payment status badge
+    var psBadgeMap = {
+      'menunggu_upload':     { cls: 'ps-upload',   label: '⏳ Menunggu Upload Bukti' },
+      'menunggu_verifikasi': { cls: 'ps-verify',   label: '🔍 Menunggu Verifikasi Admin' },
+      'diterima':            { cls: 'ps-ok',       label: '✓ Pembayaran Diterima' },
+      'ditolak':             { cls: 'ps-rejected', label: '✕ Ditolak — Upload Ulang' },
+      'belum_dibayar':       { cls: 'ps-cash',     label: '💵 Bayar di Tempat' }
+    };
+    var psInfo = psBadgeMap[paymentStatus] || { cls: 'ps-cash', label: paymentStatus };
+    document.getElementById('paymentStatusBadge').innerHTML =
+      '<span class="ps-badge ' + psInfo.cls + '"><span class="ps-badge-dot"></span>' + psInfo.label + '</span>';
+
+    // Rejection reason
+    var rejectCard = document.getElementById('rejectCard');
+    if (paymentStatus === 'ditolak' && data.catatanAdmin) {
+      rejectCard.style.display = 'block';
+      document.getElementById('rejectReason').textContent = data.catatanAdmin;
+    } else {
+      rejectCard.style.display = 'none';
+    }
+
+    // Proof thumbnail
+    var proofSection = document.getElementById('proofThumbSection');
+    var reuploadSection = document.getElementById('reuploadSection');
+    if (paymentMethod === 'qris' && data.paymentProof && data.paymentProof.url) {
+      proofSection.style.display = 'block';
+      document.getElementById('proofThumbImg').src = data.paymentProof.url;
+      if (data.paymentProof.uploadedAt && data.paymentProof.uploadedAt.toDate) {
+        document.getElementById('proofUploadTime').textContent =
+          'Diupload: ' + data.paymentProof.uploadedAt.toDate().toLocaleString('id-ID');
+      }
+    } else {
+      proofSection.style.display = 'none';
+    }
+
+    // Re-upload section
+    if (paymentMethod === 'qris' && paymentStatus === 'ditolak') {
+      reuploadSection.style.display = 'block';
+    } else {
+      reuploadSection.style.display = 'none';
+    }
+
     // Items
     var items = data.items || [];
     var itemsHTML = '';
@@ -1274,48 +1516,9 @@
     document.getElementById('itemsSectionWrap').style.display = 'block';
     document.getElementById('oTotalSection').style.display = 'block';
     document.getElementById('pickupSectionWrap').style.display = 'block';
-    document.getElementById('oPickup').textContent = data.pickup || '-';
+    document.getElementById('oPickup').textContent = data.pickup || data.address || '-';
 
-    // Payment info
-    var paySection = document.getElementById('paymentInfoSection');
-    var payMethod = (data.paymentMethod || '').toLowerCase();
-    var payStatus = (data.paymentStatus || '');
-    if (payMethod) {
-      paySection.style.display = 'block';
-      var iconEl = document.getElementById('paymentInfoIcon');
-      var valEl  = document.getElementById('paymentInfoValue');
-      var badgeEl = document.getElementById('paymentStatusBadge');
-      var proofWrap = document.getElementById('proofImageWrap');
-      var rejectedNotice = document.getElementById('rejectedNotice');
-      if (payMethod === 'qris') {
-        iconEl.textContent = '📱';
-        valEl.textContent = 'QRIS / Transfer';
-        if (payStatus === 'pending') {
-          badgeEl.className = 'payment-status-badge ps-pending';
-          badgeEl.textContent = '⏳ Menunggu Verifikasi';
-        } else if (payStatus === 'verified') {
-          badgeEl.className = 'payment-status-badge ps-verified';
-          badgeEl.textContent = '✓ Terverifikasi';
-        } else if (payStatus === 'rejected') {
-          badgeEl.className = 'payment-status-badge ps-rejected';
-          badgeEl.textContent = '✗ Ditolak';
-          rejectedNotice.style.display = 'block';
-        }
-        if (data.paymentProof) {
-          proofWrap.style.display = 'block';
-          document.getElementById('proofImg').src = data.paymentProof;
-        }
-      } else {
-        iconEl.textContent = '💵';
-        valEl.textContent = 'Tunai saat ambil';
-        badgeEl.className = 'payment-status-badge ps-cash';
-        badgeEl.textContent = 'Bayar di Tempat';
-      }
-    } else {
-      paySection.style.display = 'none';
-    }
-
-    // Section display
+    // Section display — QRIS menunggu upload/verifikasi blocks "MENUNGGU" flow section
     var waitingSection    = document.getElementById('waitingSection');
     var diprosesSection   = document.getElementById('diprosesSection');
     var qrSection         = document.getElementById('qrSection');
@@ -1395,4 +1598,4 @@
   startRealtimeListener();
 </script>
 </body>
-</html>
+              </html>
