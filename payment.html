@@ -592,7 +592,7 @@
           <input type="file" id="fileInput" accept="image/*" onchange="onFileSelected(this)"/>
           <div class="drop-icon">📷</div>
           <div class="drop-text">Foto / Pilih dari Galeri</div>
-          <div class="drop-sub">JPG, PNG • Maksimal 3 MB</div>
+          <div class="drop-sub">JPG, PNG • Otomatis dikompres</div>
         </div>
 
         <!-- Progress -->
@@ -727,6 +727,45 @@
   // ═══════════════════════════════════════
   // FILE UPLOAD UX
   // ═══════════════════════════════════════
+  // ═══════════════════════════════════════
+  // IMAGE COMPRESSION
+  // ═══════════════════════════════════════
+  function compressImage(file, maxSizeKB, maxWidthPx, quality) {
+    return new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var w = img.width, h = img.height;
+          // Scale down if wider than maxWidthPx
+          if (w > maxWidthPx) { h = Math.round(h * maxWidthPx / w); w = maxWidthPx; }
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+
+          // Try reducing quality until under maxSizeKB
+          var q = quality;
+          function tryCompress() {
+            canvas.toBlob(function(blob) {
+              if (blob.size <= maxSizeKB * 1024 || q <= 0.3) {
+                // Convert blob to File
+                var compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+                resolve({ file: compressed, dataUrl: canvas.toDataURL('image/jpeg', q) });
+              } else {
+                q = Math.max(q - 0.1, 0.3);
+                tryCompress();
+              }
+            }, 'image/jpeg', q);
+          }
+          tryCompress();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function onFileSelected(input) {
     var file = input.files[0];
     if (!file) return;
@@ -736,23 +775,32 @@
       input.value = '';
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
-      showToast('Ukuran file terlalu besar — maksimal 3 MB', 'err');
+    // Allow up to 15 MB before compression
+    if (file.size > 15 * 1024 * 1024) {
+      showToast('Ukuran file terlalu besar — maksimal 15 MB', 'err');
       input.value = '';
       return;
     }
 
-    selectedFile = file;
+    // Show "compressing" state while processing
+    document.getElementById('btnUpload').disabled = true;
+    var dropArea = document.getElementById('dropArea');
+    dropArea.classList.add('has-file');
 
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('previewImg').src = e.target.result;
+    // Compress: max 800px wide, max 400 KB, quality 0.82
+    compressImage(file, 400, 800, 0.82).then(function(result) {
+      selectedFile = result.file;
+      document.getElementById('previewImg').src = result.dataUrl;
       document.getElementById('previewWrap').style.display = 'block';
-      document.getElementById('dropArea').style.display = 'none';
+      dropArea.style.display = 'none';
       document.getElementById('btnUpload').disabled = false;
-    };
-    reader.readAsDataURL(file);
-    document.getElementById('dropArea').classList.add('has-file');
+
+      var origKB = Math.round(file.size / 1024);
+      var newKB  = Math.round(result.file.size / 1024);
+      if (origKB > newKB + 20) {
+        showToast('Gambar dikompres: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
+      }
+    });
   }
 
   function removeFile() {
