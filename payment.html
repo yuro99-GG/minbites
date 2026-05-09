@@ -23,7 +23,7 @@
         appId: "1:975523910853:web:af7350de88ce5d9e668cac"
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      db   = firebase.firestore();
+      db      = firebase.firestore();
       storage = firebase.storage();
     } catch(e) { console.error("Firebase gagal:", e); }
   </script>
@@ -254,7 +254,6 @@
       border-radius: 10px; object-fit: cover;
     }
 
-    /* Shimmer placeholder if qris.jpg missing */
     .qr-placeholder {
       width: 220px; height: 220px;
       background: linear-gradient(135deg, #f5f0ea 25%, #ede5d8 50%, #f5f0ea 75%);
@@ -592,7 +591,7 @@
           <input type="file" id="fileInput" accept="image/*" onchange="onFileSelected(this)"/>
           <div class="drop-icon">📷</div>
           <div class="drop-text">Foto / Pilih dari Galeri</div>
-          <div class="drop-sub">JPG, PNG • Otomatis dikompres</div>
+          <div class="drop-sub">JPG, PNG · Otomatis dikompres</div>
         </div>
 
         <!-- Progress -->
@@ -631,18 +630,6 @@
 
 <script>
   // ═══════════════════════════════════════
-  // FIREBASE CONFIG (shared)
-  // ═══════════════════════════════════════
-  var firebaseConfig = {
-    apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
-    authDomain: "planning-with-ai-d8ea1.firebaseapp.com",
-    projectId: "planning-with-ai-d8ea1",
-    storageBucket: "planning-with-ai-d8ea1.firebasestorage.app",
-    messagingSenderId: "975523910853",
-    appId: "1:975523910853:web:af7350de88ce5d9e668cac"
-  };
-
-  // ═══════════════════════════════════════
   // THEME
   // ═══════════════════════════════════════
   (function() {
@@ -651,54 +638,38 @@
   })();
 
   // ═══════════════════════════════════════
-  // LOAD PENDING ORDER FROM sessionStorage
+  // STATE
   // ═══════════════════════════════════════
-  var orderData = null;
-  var selectedFile = null;
-  var TIMER_SECS = 600; // 10 minutes
+  var orderData     = null;
+  var selectedFile  = null;
+  var TIMER_SECS    = 600;
   var timerInterval = null;
 
   function fmt(n) { return 'Rp' + Number(n).toLocaleString('id-ID'); }
 
+  // ═══════════════════════════════════════
+  // LOAD PENDING ORDER
+  // ═══════════════════════════════════════
   function init() {
     var raw = sessionStorage.getItem('mb_pending_order');
-    if (!raw) {
-      document.getElementById('stateError').style.display = '';
-      return;
-    }
+    if (!raw) { document.getElementById('stateError').style.display = ''; return; }
     try { orderData = JSON.parse(raw); }
-    catch(e) {
-      document.getElementById('stateError').style.display = '';
-      return;
-    }
-    if (!orderData || !orderData.id) {
-      document.getElementById('stateError').style.display = '';
-      return;
-    }
+    catch(e) { document.getElementById('stateError').style.display = ''; return; }
+    if (!orderData || !orderData.id) { document.getElementById('stateError').style.display = ''; return; }
     renderPage();
   }
 
   function renderPage() {
     var d = orderData;
     document.getElementById('statePayment').style.display = '';
-
-    // Header amounts
     document.getElementById('displayAmount').textContent = fmt(d.total || 0);
     document.getElementById('displayOrderId').textContent = d.id;
     document.getElementById('displayName').textContent = d.name || '';
-
-    // Items strip
     var items = d.items || [];
-    var itemsLabel = items.slice(0, 2).map(function(it) {
-      return it.name + ' ×' + it.qty;
-    }).join(' · ');
+    var itemsLabel = items.slice(0, 2).map(function(it) { return it.name + ' ×' + it.qty; }).join(' · ');
     if (items.length > 2) itemsLabel += ' …';
     document.getElementById('displayItems').textContent = itemsLabel || '-';
-
-    // Instruction amount
     document.getElementById('instrAmount').textContent = fmt(d.total || 0);
-
-    // Start countdown
     startTimer();
   }
 
@@ -725,12 +696,11 @@
   }
 
   // ═══════════════════════════════════════
-  // FILE UPLOAD UX
+  // IMAGE COMPRESSION — FAST
+  // Binary search quality + WebP otomatis
+  // Target: 150 KB, 650px lebar
   // ═══════════════════════════════════════
-  // ═══════════════════════════════════════
-  // IMAGE COMPRESSION
-  // ═══════════════════════════════════════
-  function compressImage(file, maxSizeKB, maxWidthPx, quality) {
+  function compressImage(file, maxSizeKB, maxWidthPx) {
     return new Promise(function(resolve) {
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -738,27 +708,52 @@
         img.onload = function() {
           var canvas = document.createElement('canvas');
           var w = img.width, h = img.height;
-          // Scale down if wider than maxWidthPx
           if (w > maxWidthPx) { h = Math.round(h * maxWidthPx / w); w = maxWidthPx; }
           canvas.width = w; canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
 
-          // Try reducing quality until under maxSizeKB
-          var q = quality;
-          function tryCompress() {
+          // Pilih WebP jika didukung (40-60% lebih kecil)
+          var fmt  = canvas.toDataURL('image/webp').startsWith('data:image/webp') ? 'image/webp' : 'image/jpeg';
+          var ext  = fmt === 'image/webp' ? 'webp' : 'jpg';
+
+          // Estimasi quality awal berdasarkan ukuran file asli — hemat iterasi
+          var rawKB = file.size / 1024;
+          var initQ = rawKB < 500 ? 0.75 : rawKB < 1500 ? 0.60 : rawKB < 4000 ? 0.45 : 0.35;
+
+          // Binary search: maksimal 4 iterasi canvas.toBlob
+          var lo = 0.20, hi = initQ, bestBlob = null, bestQ = initQ, itr = 0;
+
+          function tryQ(q) {
             canvas.toBlob(function(blob) {
-              if (blob.size <= maxSizeKB * 1024 || q <= 0.3) {
-                // Convert blob to File
-                var compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-                resolve({ file: compressed, dataUrl: canvas.toDataURL('image/jpeg', q) });
+              itr++;
+              var sizeKB = blob.size / 1024;
+
+              if (sizeKB <= maxSizeKB) {
+                bestBlob = blob; bestQ = q;
+                // Masih ada ruang? Coba naikkan kualitas
+                if (hi - lo > 0.05 && itr < 4) { lo = q; tryQ(Math.min((q + hi) / 2, initQ)); }
+                else { finish(bestBlob, bestQ, ext, fmt); }
               } else {
-                q = Math.max(q - 0.1, 0.3);
-                tryCompress();
+                hi = q;
+                if (hi - lo > 0.05 && itr < 4) { tryQ((lo + q) / 2); }
+                else {
+                  if (bestBlob) { finish(bestBlob, bestQ, ext, fmt); }
+                  else { canvas.toBlob(function(b) { finish(b, 0.20, ext, fmt); }, fmt, 0.20); }
+                }
               }
-            }, 'image/jpeg', q);
+            }, fmt, q);
           }
-          tryCompress();
+
+          function finish(blob, q, ext, fmt) {
+            var outName    = file.name.replace(/\.[^.]+$/, '.' + ext);
+            var compressed = new File([blob], outName, { type: fmt });
+            // Buat dataUrl untuk preview dari blob langsung
+            var fr = new FileReader();
+            fr.onload = function(ev) { resolve({ file: compressed, dataUrl: ev.target.result }); };
+            fr.readAsDataURL(blob);
+          }
+
+          tryQ(initQ);
         };
         img.src = e.target.result;
       };
@@ -766,29 +761,28 @@
     });
   }
 
+  // ═══════════════════════════════════════
+  // FILE UPLOAD UX
+  // ═══════════════════════════════════════
   function onFileSelected(input) {
     var file = input.files[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       showToast('File harus berupa gambar (JPG, PNG)', 'err');
-      input.value = '';
-      return;
+      input.value = ''; return;
     }
-    // Allow up to 15 MB before compression
-    if (file.size > 15 * 1024 * 1024) {
-      showToast('Ukuran file terlalu besar — maksimal 15 MB', 'err');
-      input.value = '';
-      return;
+    if (file.size > 20 * 1024 * 1024) {
+      showToast('Ukuran file terlalu besar — maksimal 20 MB', 'err');
+      input.value = ''; return;
     }
 
-    // Show "compressing" state while processing
     document.getElementById('btnUpload').disabled = true;
     var dropArea = document.getElementById('dropArea');
     dropArea.classList.add('has-file');
 
-    // Compress: max 800px wide, max 400 KB, quality 0.82
-    compressImage(file, 400, 800, 0.82).then(function(result) {
+    // Target: 150 KB, lebar 650px — cukup jelas untuk struk, upload jauh lebih cepat
+    compressImage(file, 150, 650).then(function(result) {
       selectedFile = result.file;
       document.getElementById('previewImg').src = result.dataUrl;
       document.getElementById('previewWrap').style.display = 'block';
@@ -797,9 +791,7 @@
 
       var origKB = Math.round(file.size / 1024);
       var newKB  = Math.round(result.file.size / 1024);
-      if (origKB > newKB + 20) {
-        showToast('Gambar dikompres: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
-      }
+      showToast('Siap upload: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
     });
   }
 
@@ -833,14 +825,13 @@
     pw.style.display = 'block';
 
     try {
-      var orderId = orderData.id;
-      var ext = (selectedFile.name.split('.').pop() || 'jpg').toLowerCase();
-      var randStr = Math.random().toString(36).slice(2, 10);
+      var orderId   = orderData.id;
+      var ext       = selectedFile.name.split('.').pop() || 'jpg';
+      var randStr   = Math.random().toString(36).slice(2, 10);
       var storagePath = 'payments/' + orderId + '/' + randStr + '.' + ext;
-      var storageRef = storage.ref(storagePath);
-      var uploadTask = storageRef.put(selectedFile);
+      var storageRef  = storage.ref(storagePath);
+      var uploadTask  = storageRef.put(selectedFile);
 
-      // Progress tracking
       uploadTask.on('state_changed',
         function(snapshot) {
           var pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
@@ -856,30 +847,29 @@
       pt.textContent = 'Menyimpan pesanan…';
       pf.style.width = '100%';
 
-      // Build final Firestore order document
       var now = firebase.firestore.FieldValue.serverTimestamp();
       var finalOrder = {
-        orderId:            orderId,
-        id:                 orderId,
-        nama:               orderData.name   || '',
-        name:               orderData.name   || '',
-        noHp:               orderData.phone  || '',
-        phone:              orderData.phone  || '',
-        kelas:              orderData.address || '',
-        address:            orderData.address || '',
-        jurusan:            orderData.notes  || '',
-        notes:              orderData.notes  || '',
-        items:              orderData.items  || [],
-        subtotal:           orderData.subtotal || 0,
-        total:              orderData.total   || 0,
-        metodePembayaran:   'qris',
-        payment:            'qris',
-        statusPembayaran:   'menunggu_verifikasi',
-        paymentStatus:      'menunggu_verifikasi',
-        statusOrder:        'MENUNGGU',
-        status:             'MENUNGGU',
-        buktiPembayaranUrl:  downloadURL,
-        buktiPembayaranPath: storagePath,
+        orderId:             orderId,
+        id:                  orderId,
+        nama:                orderData.name    || '',
+        name:                orderData.name    || '',
+        noHp:                orderData.phone   || '',
+        phone:               orderData.phone   || '',
+        kelas:               orderData.address || '',
+        address:             orderData.address || '',
+        jurusan:             orderData.notes   || '',
+        notes:               orderData.notes   || '',
+        items:               orderData.items   || [],
+        subtotal:            orderData.subtotal || 0,
+        total:               orderData.total   || 0,
+        metodePembayaran:    'qris',
+        payment:             'qris',
+        statusPembayaran:    'menunggu_verifikasi',
+        paymentStatus:       'menunggu_verifikasi',
+        statusOrder:         'MENUNGGU',
+        status:              'MENUNGGU',
+        buktiPembayaranUrl:   downloadURL,
+        buktiPembayaranPath:  storagePath,
         paymentProof: {
           url:        downloadURL,
           path:       storagePath,
@@ -888,15 +878,14 @@
         waktuUploadBukti: now,
         alasanReject:     '',
         catatanAdmin:     '',
-        date:       orderData.date || new Date().toISOString().slice(0,10),
-        createdAt:  now,
-        updatedAt:  now,
-        timestamp:  now
+        date:      orderData.date || new Date().toISOString().slice(0, 10),
+        createdAt: now,
+        updatedAt: now,
+        timestamp: now
       };
 
       await db.collection('orders').doc(orderId).set(finalOrder);
 
-      // Save active order to localStorage for banner
       try {
         localStorage.setItem('minbite_active_order', JSON.stringify({
           id:   orderId,
@@ -905,14 +894,11 @@
         }));
       } catch(e) {}
 
-      // Clear pending session
       sessionStorage.removeItem('mb_pending_order');
       if (timerInterval) clearInterval(timerInterval);
 
       showToast('Bukti berhasil dikirim! 🎉', 'ok');
-      setTimeout(function() {
-        window.location.href = 'order.html?id=' + orderId;
-      }, 900);
+      setTimeout(function() { window.location.href = 'order.html?id=' + orderId; }, 900);
 
     } catch(err) {
       console.error(err);
@@ -924,7 +910,7 @@
   }
 
   // ═══════════════════════════════════════
-  // REUPLOAD MODE (from order.html reject)
+  // REUPLOAD MODE (dari order.html reject)
   // ═══════════════════════════════════════
   async function submitReupload(existingOrderId) {
     if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
@@ -940,11 +926,11 @@
     pw.style.display = 'block';
 
     try {
-      var ext = (selectedFile.name.split('.').pop() || 'jpg').toLowerCase();
-      var randStr = Math.random().toString(36).slice(2, 10);
+      var ext       = selectedFile.name.split('.').pop() || 'jpg';
+      var randStr   = Math.random().toString(36).slice(2, 10);
       var storagePath = 'payments/' + existingOrderId + '/reupload_' + randStr + '.' + ext;
-      var storageRef = storage.ref(storagePath);
-      var uploadTask = storageRef.put(selectedFile);
+      var storageRef  = storage.ref(storagePath);
+      var uploadTask  = storageRef.put(selectedFile);
 
       uploadTask.on('state_changed',
         function(snapshot) {
@@ -981,9 +967,7 @@
       if (timerInterval) clearInterval(timerInterval);
 
       showToast('Bukti berhasil diupload ulang! 🎉', 'ok');
-      setTimeout(function() {
-        window.location.href = 'order.html?id=' + existingOrderId;
-      }, 900);
+      setTimeout(function() { window.location.href = 'order.html?id=' + existingOrderId; }, 900);
 
     } catch(err) {
       console.error(err);
@@ -998,7 +982,6 @@
   // REUPLOAD PAGE MODE
   // ═══════════════════════════════════════
   function initReupload(orderId) {
-    // Load order info from Firestore
     db.collection('orders').doc(orderId).get().then(function(snap) {
       if (!snap.exists) { document.getElementById('stateError').style.display = ''; return; }
       var d = snap.data();
@@ -1007,9 +990,8 @@
       document.getElementById('displayOrderId').textContent = orderId;
       document.getElementById('displayName').textContent = d.name || d.nama || '';
       var items = d.items || [];
-      document.getElementById('displayItems').textContent = items.slice(0,2).map(function(it){ return it.name + ' ×' + it.qty; }).join(' · ');
+      document.getElementById('displayItems').textContent = items.slice(0, 2).map(function(it) { return it.name + ' ×' + it.qty; }).join(' · ');
       document.getElementById('instrAmount').textContent = fmt(d.total || 0);
-      // Override submit to reupload mode
       document.getElementById('btnUpload').onclick = function() { submitReupload(orderId); };
       document.getElementById('btnUpload').textContent = 'Upload Ulang Bukti';
       startTimer();
@@ -1022,22 +1004,17 @@
   // NAVIGATION
   // ═══════════════════════════════════════
   function goBack() {
-    // If reupload mode, go back to order page
     var params = new URLSearchParams(window.location.search);
     var reuploadId = params.get('reupload');
-    if (reuploadId) {
-      window.location.href = 'order.html?id=' + reuploadId;
-    } else {
-      // Restore session so checkout form stays filled
-      window.history.back();
-    }
+    if (reuploadId) { window.location.href = 'order.html?id=' + reuploadId; }
+    else { window.history.back(); }
   }
 
   // ═══════════════════════════════════════
   // TOAST
   // ═══════════════════════════════════════
   function showToast(msg, type) {
-    var c = document.getElementById('toast-container');
+    var c  = document.getElementById('toast-container');
     var el = document.createElement('div');
     el.className = 'toast' + (type ? ' ' + type : '');
     el.textContent = msg;
@@ -1049,18 +1026,12 @@
   // ENTRY POINT
   // ═══════════════════════════════════════
   (function() {
-    var params = new URLSearchParams(window.location.search);
+    var params     = new URLSearchParams(window.location.search);
     var reuploadId = params.get('reupload');
-
     if (reuploadId) {
-      // Reupload mode — load from Firestore
-      if (db) {
-        initReupload(reuploadId);
-      } else {
-        document.getElementById('stateError').style.display = '';
-      }
+      if (db) { initReupload(reuploadId); }
+      else    { document.getElementById('stateError').style.display = ''; }
     } else {
-      // Normal checkout → payment flow
       init();
     }
   })();
