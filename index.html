@@ -391,6 +391,7 @@
 
     .product-image-wrap {
       min-height: 200px; position: relative; overflow: hidden; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
     .product-image-wrap::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0;
@@ -648,6 +649,22 @@
     .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow2); background: var(--surface); }
     .form-input::placeholder { color: var(--text3); font-size: 13px; }
     .form-input.error { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(230,57,70,0.1) !important; }
+
+    .btn-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+    .selector-btn {
+      flex: 1; padding: 10px 16px;
+      border: 2px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text2);
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t); min-width: 56px;
+    }
+    .selector-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .selector-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border-color: transparent; color: white;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+    .btn-selector.error .selector-btn { border-color: var(--red); }
     .form-input-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239a7a60' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; cursor: pointer; }
 
     /* Payment method card select */
@@ -1417,32 +1434,43 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Alamat</label>
-            <textarea class="form-input" id="fAlamat" placeholder="Kelas / lokasi pengambilan pesanan..." rows="3"></textarea>
+            <label class="form-label">Kelas</label>
+            <div class="btn-selector" id="kelasSelectorGroup">
+              <button type="button" class="selector-btn" onclick="selectKelas(this,'X')">X</button>
+              <button type="button" class="selector-btn" onclick="selectKelas(this,'XI')">XI</button>
+              <button type="button" class="selector-btn" onclick="selectKelas(this,'XII')">XII</button>
+            </div>
+            <input type="hidden" id="fAlamat"/>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Catatan <span style="font-weight:400;text-transform:none;font-size:0.7rem;letter-spacing:0;color:var(--text3)">(opsional)</span></label>
-            <textarea class="form-input" id="fCatatan" placeholder="Contoh: tanpa es, extra saus, dll..." rows="2"></textarea>
+            <label class="form-label">Jurusan</label>
+            <div class="btn-selector" id="jurusanSelectorGroup">
+              <button type="button" class="selector-btn" onclick="selectJurusan(this,'TKJ')">TKJ</button>
+              <button type="button" class="selector-btn" onclick="selectJurusan(this,'DKV')">DKV</button>
+              <button type="button" class="selector-btn" onclick="selectJurusan(this,'MP')">MP</button>
+              <button type="button" class="selector-btn" onclick="selectJurusan(this,'AK')">AK</button>
+            </div>
+            <input type="hidden" id="fCatatan"/>
           </div>
 
           <div class="form-group">
             <label class="form-label">Metode Pembayaran</label>
             <div class="payment-options">
               <label class="payment-option">
-                <input type="radio" name="paymentMethod" value="cash" checked onchange="onPaymentChange('cash')"/>
-                <div class="payment-option-card">
-                  <div class="payment-option-icon">💵</div>
-                  <div class="payment-option-label">Cash</div>
-                  <div class="payment-option-desc">Bayar langsung</div>
-                </div>
-              </label>
-              <label class="payment-option">
-                <input type="radio" name="paymentMethod" value="qris" onchange="onPaymentChange('qris')"/>
+                <input type="radio" name="paymentMethod" value="qris" checked onchange="onPaymentChange('qris')"/>
                 <div class="payment-option-card">
                   <div class="payment-option-icon">📲</div>
                   <div class="payment-option-label">QRIS</div>
                   <div class="payment-option-desc">Scan & bayar</div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="cash" onchange="onPaymentChange('cash')"/>
+                <div class="payment-option-card">
+                  <div class="payment-option-icon">💵</div>
+                  <div class="payment-option-label">Cash</div>
+                  <div class="payment-option-desc">Bayar langsung</div>
                 </div>
               </label>
             </div>
@@ -1466,10 +1494,10 @@
             <div class="summary-total-amount" id="summaryTotal">Rp0</div>
           </div>
           <div class="summary-payment-badge" id="summaryPaymentBadge">
-            <span class="badge-icon">💵</span>
+            <span class="badge-icon">📲</span>
             <div>
               <div class="summary-payment-text">Metode Pembayaran</div>
-              <div class="summary-payment-method" id="summaryPaymentMethod">Cash — Bayar langsung</div>
+              <div class="summary-payment-method" id="summaryPaymentMethod">QRIS — Scan & bayar</div>
             </div>
           </div>
         </div>
@@ -1683,7 +1711,7 @@
     let pendingOrderData = null; // holds data while waiting for QRIS confirm
     let detailIdx      = null;
     let detailQty      = 1;
-    let selectedPayment = 'cash';
+    let selectedPayment = 'qris';
 
     // ════════════════════════════════
     // THEME
@@ -1771,7 +1799,19 @@
         if (existing) existing.qty++;
         else cart.push({ ...p, qty: 1 });
       }
-      updateCartUI();
+      function selectKelas(btn, val) {
+      document.querySelectorAll('#kelasSelectorGroup .selector-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('fAlamat').value = val;
+      document.getElementById('kelasSelectorGroup').classList.remove('error');
+    }
+    function selectJurusan(btn, val) {
+      document.querySelectorAll('#jurusanSelectorGroup .selector-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('fCatatan').value = val;
+    }
+
+    updateCartUI();
       showToast(`${p.name} ×${detailQty} ditambahkan! 🛒`);
       closeDetail();
     }
@@ -1970,8 +2010,7 @@
       if (!normHP) { highlightError('fHP', 'Format nomor HP tidak valid — gunakan 08xxxx (10–13 digit)'); return; }
 
       // Validasi alamat
-      if (!alamat) { highlightError('fAlamat', 'Alamat / lokasi pengambilan tidak boleh kosong'); return; }
-      if (alamat.length < 5) { highlightError('fAlamat', 'Alamat terlalu pendek'); return; }
+      if (!alamat) { document.getElementById('kelasSelectorGroup').classList.add('error'); showToast('Pilih kelas terlebih dahulu'); return; }
 
       // Loading state
       const btn = document.getElementById('btnSubmit');
@@ -1996,46 +2035,70 @@
         }
       } catch(e) { /* lanjut kalau db error */ }
 
-      const orderData = {
-        id: orderId,
-        name: nama,
-        phone: normHP,
-        address: alamat,
-        notes: catatan,
-        payment: selectedPayment,
-        items: cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
-        subtotal,
-        total,
-        date: today,
-        status: 'MENUNGGU',
-        paymentStatus: selectedPayment === 'qris' ? 'menunggu_upload' : 'belum_dibayar',
-        paymentProof: null,
-        catatanAdmin: '',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      // QRIS: simpan order dulu, lalu tampilkan halaman QRIS
+      // ──────────────────────────────
+      // QRIS: simpan ke sessionStorage, redirect ke payment.html
+      // ──────────────────────────────
       if (selectedPayment === 'qris') {
+        const pendingOrder = {
+          id:       orderId,
+          name:     nama,
+          phone:    normHP,
+          address:  alamat,
+          notes:    catatan,
+          items:    cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
+          subtotal: subtotal,
+          total:    total,
+          date:     today
+        };
         try {
-          await db.collection('orders').doc(orderId).set(orderData);
-          pendingOrderData = orderData;
-          localStorage.setItem('minbite_active_order', JSON.stringify({ id: orderId, name: nama, date: today }));
-        } catch(err) {
-          showToast('Gagal menyimpan pesanan. Coba lagi.');
-          console.error(err);
+          sessionStorage.setItem('mb_pending_order', JSON.stringify(pendingOrder));
+        } catch(e) {
+          showToast('Gagal menyimpan sesi. Coba lagi.');
           btn.disabled = false;
           onPaymentChange(selectedPayment);
           return;
         }
-        btn.disabled = false;
-        onPaymentChange(selectedPayment);
-        showQrisPage(orderId, nama, total);
+        // Redirect ke payment.html — order dibuat di sana setelah upload bukti
+        window.location.href = 'payment.html';
         return;
       }
 
-      // Cash: langsung simpan ke Firebase
+      // ──────────────────────────────
+      // CASH: langsung buat order di Firestore
+      // ──────────────────────────────
+      const now = firebase.firestore.FieldValue.serverTimestamp();
+      const orderData = {
+        orderId:            orderId,
+        id:                 orderId,
+        nama:               nama,
+        name:               nama,
+        noHp:               normHP,
+        phone:              normHP,
+        kelas:              alamat,
+        address:            alamat,
+        jurusan:            catatan,
+        notes:              catatan,
+        items:              cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
+        subtotal:           subtotal,
+        total:              total,
+        date:               today,
+        metodePembayaran:   'cash',
+        payment:            'cash',
+        statusPembayaran:   'belum_dibayar',
+        paymentStatus:      'belum_dibayar',
+        statusOrder:        'MENUNGGU',
+        status:             'MENUNGGU',
+        buktiPembayaranUrl:  '',
+        buktiPembayaranPath: '',
+        paymentProof:       null,
+        waktuUploadBukti:   null,
+        alasanReject:       '',
+        catatanAdmin:       '',
+        timestamp:          now,
+        createdAt:          now,
+        updatedAt:          now
+      };
+
       try {
         await db.collection('orders').doc(orderId).set(orderData);
         localStorage.setItem('minbite_active_order', JSON.stringify({ id: orderId, name: nama, date: today }));
@@ -2061,138 +2124,8 @@
     // ════════════════════════════════
     // SECTION: QRIS PAYMENT PAGE
     // ════════════════════════════════
-    function showQrisPage(orderId, name, total) {
-      document.getElementById('checkoutPage').style.display = 'none';
-      document.getElementById('qrisPage').style.display = '';
-      document.getElementById('qrisAmountDisplay').textContent = fmt(total);
-      document.getElementById('qrisOrderId').textContent = orderId;
-      document.getElementById('qrisCustomerName').textContent = name;
-      // Reset upload state
-      removeUploadFile();
-    }
-
-    function backToCheckout() {
-      document.getElementById('qrisPage').style.display = 'none';
-      document.getElementById('checkoutPage').style.display = '';
-      // Jangan hapus pendingOrderData agar tidak perlu isi form ulang
-      // tapi jika user kembali, order yang sudah disimpan tetap ada
-    }
-
-    // ── File selection ──
-    let qrisSelectedFile = null;
-
-    function onQrisFileSelected(input) {
-      const file = input.files[0];
-      if (!file) return;
-      // Validasi tipe
-      if (!file.type.startsWith('image/')) {
-        showToast('File harus berupa gambar (JPG, PNG, dll)');
-        input.value = '';
-        return;
-      }
-      // Validasi ukuran (3 MB)
-      if (file.size > 3 * 1024 * 1024) {
-        showToast('Ukuran file terlalu besar — maksimal 3 MB');
-        input.value = '';
-        return;
-      }
-      qrisSelectedFile = file;
-      // Preview
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.getElementById('uploadPreviewImg').src = e.target.result;
-        document.getElementById('uploadPreviewWrap').style.display = 'block';
-        document.getElementById('uploadDropArea').style.display = 'none';
-        document.getElementById('btnUploadSubmit').disabled = false;
-      };
-      reader.readAsDataURL(file);
-      document.getElementById('uploadDropArea').classList.add('has-file');
-    }
-
-    function removeUploadFile() {
-      qrisSelectedFile = null;
-      document.getElementById('qrisFileInput').value = '';
-      document.getElementById('uploadPreviewImg').src = '';
-      document.getElementById('uploadPreviewWrap').style.display = 'none';
-      document.getElementById('uploadDropArea').style.display = 'block';
-      document.getElementById('uploadDropArea').classList.remove('has-file');
-      document.getElementById('uploadProgressWrap').style.display = 'none';
-      document.getElementById('uploadProgressFill').style.width = '0%';
-      document.getElementById('btnUploadSubmit').disabled = true;
-    }
-
-    // ── Upload + submit ──
-    async function submitQrisWithProof() {
-      if (!qrisSelectedFile) { showToast('Pilih foto bukti pembayaran dulu'); return; }
-      if (!pendingOrderData) { showToast('Data pesanan hilang. Ulangi dari checkout.'); return; }
-
-      const btn = document.getElementById('btnUploadSubmit');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Mengupload...';
-
-      const progressWrap = document.getElementById('uploadProgressWrap');
-      const progressFill = document.getElementById('uploadProgressFill');
-      const progressText = document.getElementById('uploadProgressText');
-      progressWrap.style.display = 'block';
-
-      try {
-        const orderId = pendingOrderData.id;
-        const ext = qrisSelectedFile.name.split('.').pop() || 'jpg';
-        const storagePath = `payment_proofs/${orderId}_${Date.now()}.${ext}`;
-        const storageRef = storage.ref(storagePath);
-        const uploadTask = storageRef.put(qrisSelectedFile);
-
-        // Track progress
-        uploadTask.on('state_changed',
-          snapshot => {
-            const pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100);
-            progressFill.style.width = pct + '%';
-            progressText.textContent = 'Mengupload ' + pct + '%...';
-          },
-          err => { throw err; }
-        );
-
-        await uploadTask;
-        const downloadURL = await storageRef.getDownloadURL();
-
-        // Update Firestore
-        const updateData = {
-          paymentStatus: 'menunggu_verifikasi',
-          paymentProof: {
-            url: downloadURL,
-            path: storagePath,
-            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-          },
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection('orders').doc(orderId).update(updateData);
-
-        progressFill.style.width = '100%';
-        progressText.textContent = 'Upload selesai!';
-
-        // Success
-        playSuccessSound();
-        cart = []; updateCartUI(); closeCheckout();
-        document.getElementById('popupOrderId').textContent = orderId;
-        document.getElementById('btnReturnPage').onclick = function() {
-          window.location.href = 'order.html?id=' + orderId;
-        };
-        document.getElementById('popupDesc').textContent = 'Bukti pembayaran QRIS berhasil dikirim. Admin akan memverifikasi pembayaranmu sebentar lagi.';
-        document.body.style.overflow = 'hidden';
-        document.getElementById('successPopup').classList.add('open');
-        spawnConfetti();
-        pendingOrderData = null;
-
-      } catch(err) {
-        showToast('Gagal upload bukti. Coba lagi.');
-        console.error(err);
-        progressWrap.style.display = 'none';
-        btn.disabled = false;
-        btn.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Kirim Bukti &amp; Konfirmasi Order`;
-      }
-    }
+    // QRIS checkout now handled by payment.html via sessionStorage mb_pending_order
+    // The qrisPage div is kept for structure but not used
 
     // ════════════════════════════════
     // GENERATE ORDER ID
@@ -2328,6 +2261,7 @@
     // INIT
     // ════════════════════════════════
     updateCartUI();
+    onPaymentChange('qris'); // Set QRIS as default UI state
 
     document.getElementById('checkoutModal').addEventListener('click', function(e) {
       // Tutup modal jika klik di luar box
