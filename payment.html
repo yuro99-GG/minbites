@@ -392,6 +392,13 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Upload progress detail */
+    .upload-speed {
+      font-size: 0.68rem; color: var(--text3);
+      text-align: center; margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* Toast */
     #toast-container {
       position: fixed; bottom: 28px; left: 50%;
@@ -558,11 +565,11 @@
           <div class="drop-sub"  id="dropSub">JPG, PNG · Otomatis dikompres</div>
         </div>
 
-        <!-- Progress: Kompres → Base64 → Simpan -->
+        <!-- Progress: Kompres → Upload → Simpan -->
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-phases">
             <div class="phase-item" id="phase1">Kompres</div>
-            <div class="phase-item" id="phase2">Base64</div>
+            <div class="phase-item" id="phase2">Upload</div>
             <div class="phase-item" id="phase3">Simpan</div>
           </div>
           <div class="progress-bar-track">
@@ -572,6 +579,7 @@
             <span class="progress-label" id="progressLabel">Mempersiapkan…</span>
             <span class="progress-pct"   id="progressPct">0%</span>
           </div>
+          <div class="upload-speed" id="uploadSpeed"></div>
         </div>
 
         <button class="btn-upload" id="btnUpload" disabled onclick="submitPayment()">
@@ -600,6 +608,11 @@
 <div id="toast-container"></div>
 
 <script>
+  /* ─── CONFIG ─── */
+  var CLOUDINARY_CLOUD = 'dwssvn6zo';
+  var CLOUDINARY_PRESET = 'minbite_bukti';
+  var CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
+
   /* ─── THEME ─── */
   (function() {
     document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
@@ -626,12 +639,9 @@
     }
   }
 
-  /* ─── COMPRESSION ───
-     Single-pass, fixed quality. Target 60 KB @ 500 px.
-     Falls back to a second pass at quality 0.25 only if the first
-     pass still exceeds 60 KB (rare on screenshots). No binary search. */
+  /* ─── COMPRESSION ─── */
   function compressImage(file, onProg) {
-    var MAX_KB = 60, MAX_W = 500;
+    var MAX_KB = 300, MAX_W = 1200; /* Lebih besar — Cloudinary handle kompresi CDN */
     return new Promise(function(resolve) {
       var objUrl = URL.createObjectURL(file);
       var img    = new Image();
@@ -646,38 +656,65 @@
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
 
-        /* Prefer WebP — ~40% smaller than JPEG at same quality */
         var testUrl = canvas.toDataURL('image/webp');
         var fmt = testUrl.startsWith('data:image/webp') ? 'image/webp' : 'image/jpeg';
         var ext = fmt === 'image/webp' ? 'webp' : 'jpg';
 
         onProg(16, 'Mengompres gambar…');
 
-        /* Pick starting quality from raw file size */
         var rawKB = file.size / 1024;
-        var q = rawKB < 500  ? 0.65
-              : rawKB < 2000 ? 0.45
-              :                0.30;
+        var q = rawKB < 500  ? 0.82
+              : rawKB < 2000 ? 0.70
+              :                0.55;
 
         canvas.toBlob(function(blob) {
-          if (blob.size / 1024 > MAX_KB) {
-            /* One retry at lower quality — covers large photos */
-            onProg(22, 'Mengompres lebih kecil…');
-            canvas.toBlob(function(b2) { finish(b2 || blob); }, fmt, 0.25);
-          } else {
-            finish(blob);
-          }
-
-          function finish(b) {
-            var name = file.name.replace(/\.[^.]+$/, '.' + ext);
-            resolve({
-              file:    new File([b], name, { type: fmt }),
-              blobUrl: URL.createObjectURL(b)
-            });
-          }
+          var name = file.name.replace(/\.[^.]+$/, '.' + ext);
+          var compressed = new File([blob], name, { type: fmt });
+          resolve({
+            file:    compressed,
+            blobUrl: URL.createObjectURL(blob)
+          });
         }, fmt, q);
       };
       img.src = objUrl;
+    });
+  }
+
+  /* ─── CLOUDINARY UPLOAD dengan XHR progress ─── */
+  function uploadToCloudinary(file, onProgress) {
+    return new Promise(function(resolve, reject) {
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      fd.append('folder', 'minbite/bukti');
+
+      var xhr = new XMLHttpRequest();
+      var startTime = Date.now();
+
+      xhr.upload.addEventListener('progress', function(e) {
+        if (!e.lengthComputable) return;
+        var pct  = (e.loaded / e.total) * 100;
+        var elapsed = (Date.now() - startTime) / 1000;
+        var speed = elapsed > 0 ? (e.loaded / 1024 / elapsed).toFixed(0) : 0;
+        onProgress(pct, speed);
+      });
+
+      xhr.addEventListener('load', function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            resolve(data.secure_url);
+          } catch(e) { reject(new Error('Response parse error')); }
+        } else {
+          reject(new Error('Upload gagal: HTTP ' + xhr.status));
+        }
+      });
+
+      xhr.addEventListener('error', function() { reject(new Error('Network error')); });
+      xhr.addEventListener('abort', function() { reject(new Error('Upload dibatalkan')); });
+
+      xhr.open('POST', CLOUDINARY_URL);
+      xhr.send(fd);
     });
   }
 
@@ -713,11 +750,12 @@
       da.style.display = 'none';
 
       document.getElementById('progressFill').classList.add('snappy');
-      setProgress(25, 'Siap dikirim ✓', 1);
+      setProgress(25, 'Siap diupload ✓', 1);
 
       setTimeout(function() {
         document.getElementById('progressWrap').style.display = 'none';
-      }, 900);
+        document.getElementById('uploadSpeed').textContent = '';
+      }, 800);
 
       document.getElementById('btnUpload').disabled = false;
 
@@ -734,6 +772,7 @@
     document.getElementById('previewImg').src             = '';
     document.getElementById('previewWrap').style.display  = 'none';
     document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('uploadSpeed').textContent    = '';
     document.getElementById('btnUpload').disabled         = true;
     resetDropArea();
   }
@@ -747,20 +786,7 @@
     document.getElementById('dropSub').textContent  = 'JPG, PNG · Otomatis dikompres';
   }
 
-  /* ─── FILE → BASE64 HELPER ─── */
-  function fileToBase64(file) {
-    return new Promise(function(resolve, reject) {
-      var reader = new FileReader();
-      reader.onload  = function() { resolve(reader.result); }; /* data:image/webp;base64,... */
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  /* ─── SUBMIT PAYMENT ───
-     No Firebase Storage. Converts compressed image to base64 locally
-     (no network), then writes everything in a single Firestore set().
-     Typical total time on mobile: 1-3 s vs the previous 8-20 s. */
+  /* ─── SUBMIT PAYMENT ─── */
   async function submitPayment() {
     if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
     if (!orderData)    { showToast('Data pesanan tidak valid', 'err'); return; }
@@ -768,19 +794,27 @@
 
     var btn = document.getElementById('btnUpload');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Mengirim…';
+    btn.innerHTML = '<span class="spinner"></span> Mengupload…';
 
     var pw = document.getElementById('progressWrap');
     pw.style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
-    setProgress(25, 'Mengubah ke base64…', 2);
+    setProgress(25, 'Mengupload ke Cloudinary…', 2);
 
     try {
-      /* Convert locally — zero network, completes in <100 ms */
-      var base64 = await fileToBase64(selectedFile);
+      /* ① Upload ke Cloudinary */
+      var imageUrl = await uploadToCloudinary(selectedFile, function(pct, speedKB) {
+        var mapped = 25 + (pct / 100) * 45; /* 25–70% */
+        document.getElementById('progressFill').style.width = mapped + '%';
+        document.getElementById('progressPct').textContent  = Math.round(mapped) + '%';
+        document.getElementById('progressLabel').textContent = 'Mengupload… ' + Math.round(pct) + '%';
+        document.getElementById('uploadSpeed').textContent  = speedKB > 0 ? speedKB + ' KB/s' : '';
+      });
 
-      setProgress(55, 'Menyimpan pesanan…', 3);
+      setProgress(72, 'Menyimpan pesanan…', 3);
+      document.getElementById('uploadSpeed').textContent = '';
 
+      /* ② Simpan ke Firestore — hanya URL, bukan base64 */
       var orderId = orderData.id;
       var now     = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -804,8 +838,8 @@
         paymentStatus:         'menunggu_verifikasi',
         statusOrder:           'MENUNGGU',
         status:                'MENUNGGU',
-        /* Base64 data URI — admin panel renders with <img src="..."> */
-        buktiPembayaranBase64: base64,
+        /* Cloudinary URL — ringan, cepat dibaca admin panel */
+        buktiPembayaranUrl:    imageUrl,
         waktuUploadBukti:      now,
         alasanReject:          '',
         catatanAdmin:          '',
@@ -832,8 +866,10 @@
 
     } catch(err) {
       console.error(err);
-      showToast('Gagal — coba lagi', 'err');
+      var msg = err.message && err.message.includes('Upload') ? err.message : 'Gagal upload — coba lagi';
+      showToast(msg, 'err');
       pw.style.display = 'none';
+      document.getElementById('uploadSpeed').textContent = '';
       btn.disabled = false;
       btn.innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:17px;height:17px">' +
@@ -850,27 +886,34 @@
 
     var btn = document.getElementById('btnUpload');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Mengirim…';
+    btn.innerHTML = '<span class="spinner"></span> Mengupload…';
 
     var pw = document.getElementById('progressWrap');
     pw.style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
-    setProgress(25, 'Mengubah ke base64…', 2);
+    setProgress(25, 'Mengupload ke Cloudinary…', 2);
 
     try {
-      var base64 = await fileToBase64(selectedFile);
+      var imageUrl = await uploadToCloudinary(selectedFile, function(pct, speedKB) {
+        var mapped = 25 + (pct / 100) * 45;
+        document.getElementById('progressFill').style.width = mapped + '%';
+        document.getElementById('progressPct').textContent  = Math.round(mapped) + '%';
+        document.getElementById('progressLabel').textContent = 'Mengupload… ' + Math.round(pct) + '%';
+        document.getElementById('uploadSpeed').textContent  = speedKB > 0 ? speedKB + ' KB/s' : '';
+      });
 
-      setProgress(55, 'Memperbarui pesanan…', 3);
+      setProgress(72, 'Memperbarui pesanan…', 3);
+      document.getElementById('uploadSpeed').textContent = '';
 
       var now = firebase.firestore.FieldValue.serverTimestamp();
       await db.collection('orders').doc(existingOrderId).update({
-        statusPembayaran:      'menunggu_verifikasi',
-        paymentStatus:         'menunggu_verifikasi',
-        buktiPembayaranBase64: base64,
-        waktuUploadBukti:      now,
-        alasanReject:          '',
-        catatanAdmin:          '',
-        updatedAt:             now
+        statusPembayaran:   'menunggu_verifikasi',
+        paymentStatus:      'menunggu_verifikasi',
+        buktiPembayaranUrl: imageUrl,
+        waktuUploadBukti:   now,
+        alasanReject:       '',
+        catatanAdmin:       '',
+        updatedAt:          now
       });
 
       document.getElementById('progressFill').classList.add('snappy');
@@ -885,8 +928,9 @@
 
     } catch(err) {
       console.error(err);
-      showToast('Gagal — coba lagi', 'err');
+      showToast('Gagal upload — coba lagi', 'err');
       pw.style.display = 'none';
+      document.getElementById('uploadSpeed').textContent = '';
       btn.disabled = false;
       btn.innerHTML = 'Upload Ulang Bukti';
     }
