@@ -804,56 +804,7 @@
     .ps-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
     .ps-reject { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
 
-    .proof-thumb {
-      width: 100%; cursor: pointer; border-radius: var(--radius-sm);
-      overflow: hidden; border: 1px solid var(--border);
-      background: var(--bg3); margin-top: 8px; position: relative;
-    }
-    .proof-thumb img { width: 100%; max-height: 180px; object-fit: contain; display: block; background: white; }
-    .proof-thumb-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,0.5);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity 0.2s;
-      font-size: 0.7rem; font-weight: 700; color: white;
-    }
-    .proof-thumb:hover .proof-thumb-overlay { opacity: 1; }
-    .proof-upload-time { font-size: 0.65rem; color: var(--text3); margin-top: 5px; }
-
-    .verify-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .btn-approve {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 14px; background: var(--green-bg); border: 1px solid var(--green-border);
-      color: var(--green); border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
-      cursor: pointer; transition: all var(--t);
-    }
-    .btn-approve:hover { background: var(--green); color: white; }
-    .btn-reject-pay {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 14px; background: var(--red-bg); border: 1px solid var(--red-border);
-      color: var(--red); border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
-      cursor: pointer; transition: all var(--t);
-    }
-    .btn-reject-pay:hover { background: var(--red); color: white; }
-
-    .reject-reason-wrap { margin-top: 8px; display: none; }
-    .reject-reason-input {
-      width: 100%; padding: 9px 12px;
-      background: var(--bg3); border: 1px solid var(--border2);
-      border-radius: var(--radius-sm); color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-      outline: none; resize: none;
-    }
-    .reject-reason-input:focus { border-color: var(--red); }
-    .btn-reject-confirm {
-      width: 100%; padding: 9px; margin-top: 6px;
-      background: var(--red); border: none;
-      border-radius: var(--radius-sm); color: white;
-      font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700;
-      cursor: pointer; transition: all var(--t);
-    }
-    .btn-reject-confirm:hover { background: #c02020; }
+    /* proof/verify/reject CSS now consolidated above */
 
     /* Proof lightbox in admin */
     .proof-lightbox-admin {
@@ -870,39 +821,7 @@
       font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
     }
 
-    /* ═══ PROOF SECTION ENHANCEMENTS ═══ */
-    .proof-section-wrap {
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 10px 12px; margin: 8px 0 2px;
-    }
-    .proof-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .proof-label { font-size: 0.64rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.09em; }
-    .proof-state-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 100px;
-      font-size: 0.62rem; font-weight: 700;
-    }
-    .proof-state-pending { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-    .proof-state-ok      { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-    .proof-state-reject  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border);   }
-
-    .proof-rejected-reason {
-      margin-top: 7px; padding: 8px 10px;
-      background: var(--red-bg); border: 1px solid var(--red-border);
-      border-radius: var(--radius-sm);
-      font-size: 0.73rem; color: var(--red); line-height: 1.5;
-    }
-    .proof-rejected-reason strong { font-weight: 700; display: block; margin-bottom: 2px; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    .btn-reapprove {
-      width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 8px 14px; margin-top: 8px;
-      background: var(--green-bg); border: 1px solid var(--green-border);
-      color: var(--green); border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif; font-size: 0.77rem; font-weight: 700;
-      cursor: pointer; transition: all var(--t);
-    }
-    .btn-reapprove:hover { background: var(--green); color: white; }
+    /* proof section enhancements — see consolidated CSS above */
 
     /* ═══ STATUS OVERRIDE ═══ */
     .status-override-wrap { position: relative; }
@@ -941,23 +860,178 @@
 
     /* ═══ CASH CONFIRM ═══ */
     .btn-cash-confirm {
-      display: flex; align-items: center; gap: 6px;
-      padding: 8px 14px;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      border: none; border-radius: var(--radius-sm);
-      color: white; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 16px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius-sm);
+      color: var(--green);
+      font-family: 'DM Sans', sans-serif; font-size: 0.77rem; font-weight: 700;
       cursor: pointer; transition: all var(--t);
-      box-shadow: 0 3px 10px rgba(34,197,94,0.3);
     }
-    .btn-cash-confirm:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(34,197,94,0.45); }
+    .btn-cash-confirm:hover {
+      background: var(--green); color: #fff; border-color: var(--green);
+      box-shadow: 0 4px 14px rgba(62,207,122,0.35);
+      transform: translateY(-1px);
+    }
     .btn-cash-confirm svg { width: 12px; height: 12px; }
 
+    /* ═══ CASH BANNER — refined ═══ */
     .cash-banner {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--amber-bg); border: 1px solid var(--amber-border);
-      border-radius: var(--radius-sm); padding: 8px 11px; margin: 8px 0 2px;
-      font-size: 0.74rem; color: var(--amber); font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(245,200,66,0.06);
+      border: 1px solid var(--amber-border);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius-sm); padding: 10px 13px; margin: 10px 0 2px;
     }
+    .cash-banner-icon {
+      width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+      background: var(--amber-bg); border: 1px solid var(--amber-border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cash-banner-icon svg { width: 13px; height: 13px; color: var(--amber); }
+    .cash-banner-text { flex: 1; min-width: 0; }
+    .cash-banner-label { font-size: 0.67rem; font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1px; }
+    .cash-banner-desc { font-size: 0.72rem; color: var(--text3); line-height: 1.4; }
+
+    /* ═══ PAYMENT SECTION IN CARD — overall wrap ═══ */
+    .pay-section-wrap {
+      margin: 10px 0 4px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    /* ═══ QRIS PROOF — refined ═══ */
+    .proof-section-wrap {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 12px 13px; margin: 10px 0 2px;
+      position: relative;
+    }
+    .proof-section-wrap::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .proof-section-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+    }
+    .proof-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.65rem; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.09em;
+    }
+    .proof-label svg { width: 11px; height: 11px; color: var(--blue); }
+    .proof-state-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 0.62rem; font-weight: 700;
+    }
+    .proof-state-pending { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+    .proof-state-ok      { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .proof-state-reject  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+
+    .proof-thumb {
+      width: 100%; cursor: pointer; border-radius: var(--radius-sm);
+      overflow: hidden; border: 1px solid var(--border2);
+      background: var(--bg4); position: relative;
+      transition: border-color var(--t);
+    }
+    .proof-thumb:hover { border-color: var(--accent); }
+    .proof-thumb img { width: 100%; max-height: 170px; object-fit: contain; display: block; background: #fff; }
+    .proof-thumb-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.18s;
+      font-size: 0.68rem; font-weight: 700; color: white; letter-spacing: 0.04em; gap: 5px;
+    }
+    .proof-thumb:hover .proof-thumb-overlay { opacity: 1; }
+    .proof-upload-time {
+      font-size: 0.62rem; color: var(--text3); margin-top: 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .proof-upload-time svg { width: 10px; height: 10px; }
+
+    /* ═══ VERIFY ACTIONS — professional ═══ */
+    .verify-actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px;
+    }
+    .btn-approve {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 12px;
+      background: var(--green-bg); border: 1px solid var(--green-border);
+      color: var(--green); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.76rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-approve svg { width: 12px; height: 12px; }
+    .btn-approve:hover { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 3px 12px rgba(62,207,122,0.3); }
+
+    .btn-reject-pay {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 12px;
+      background: var(--red-bg); border: 1px solid var(--red-border);
+      color: var(--red); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.76rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-reject-pay svg { width: 12px; height: 12px; }
+    .btn-reject-pay:hover { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 3px 12px rgba(245,81,81,0.3); }
+
+    /* ═══ REJECT REASON ═══ */
+    .reject-reason-wrap {
+      margin-top: 8px; display: none;
+      background: var(--bg4); border: 1px solid var(--red-border);
+      border-radius: var(--radius-sm); padding: 10px;
+    }
+    .reject-reason-input {
+      width: 100%; padding: 8px 10px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 6px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      outline: none; resize: none;
+      transition: border-color var(--t);
+    }
+    .reject-reason-input:focus { border-color: var(--red); }
+    .reject-reason-input::placeholder { color: var(--text3); }
+    .btn-reject-confirm {
+      width: 100%; padding: 8px; margin-top: 7px;
+      background: var(--red); border: none;
+      border-radius: 6px; color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 0.77rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .btn-reject-confirm svg { width: 11px; height: 11px; }
+    .btn-reject-confirm:hover { background: #c02020; }
+
+    /* ═══ PROOF REJECTED REASON ═══ */
+    .proof-rejected-reason {
+      margin-top: 8px; padding: 9px 11px;
+      background: rgba(245,81,81,0.07); border: 1px solid var(--red-border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-sm);
+      font-size: 0.74rem; color: var(--text2); line-height: 1.5;
+    }
+    .proof-rejected-reason strong {
+      font-weight: 700; display: flex; align-items: center; gap: 5px;
+      color: var(--red); font-size: 0.63rem; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 4px;
+    }
+    .proof-rejected-reason strong svg { width: 10px; height: 10px; }
+
+    .btn-reapprove {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 12px; margin-top: 8px;
+      background: var(--green-bg); border: 1px solid var(--green-border);
+      color: var(--green); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.76rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .btn-reapprove svg { width: 11px; height: 11px; }
+    .btn-reapprove:hover { background: var(--green); color: #fff; }
   </style>
 </head>
 <body>
@@ -1095,7 +1169,7 @@
       <button class="ftab" onclick="setFilter('DIPROSES')" data-filter="DIPROSES">Diproses</button>
       <button class="ftab" onclick="setFilter('SIAP DIAMBIL')" data-filter="SIAP DIAMBIL">Siap Diambil</button>
       <button class="ftab" onclick="setFilter('SELESAI')" data-filter="SELESAI">Selesai</button>
-      <button class="ftab" onclick="setFilter('QRIS_VERIFY')" data-filter="QRIS_VERIFY" id="tabQrisVerify" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)">📲 Verifikasi QRIS <span id="qrisVerifyCount" style="display:none;background:var(--amber);color:white;border-radius:100px;padding:1px 6px;font-size:0.6rem;margin-left:3px">0</span></button>
+      <button class="ftab" onclick="setFilter('QRIS_VERIFY')" data-filter="QRIS_VERIFY" id="tabQrisVerify" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)">Verifikasi QRIS <span id="qrisVerifyCount" style="display:none;background:var(--amber);color:white;border-radius:100px;padding:1px 6px;font-size:0.6rem;margin-left:3px">0</span></button>
     </div>
     <button class="btn-export" onclick="exportCSV()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1548,15 +1622,15 @@ function renderOrders(){
     var paymentHtml='';
     if(o.payment){
       var payClass = o.payment==='qris' ? 'pay-badge-qris' : 'pay-badge-cash';
-      var payLabel = o.payment==='qris' ? '📲 QRIS' : '💵 Cash';
+      var payLabel = o.payment==='qris' ? 'QRIS' : 'Cash';
       paymentHtml += '<span class="'+payClass+'">'+payLabel+'</span> ';
     }
     if(o.paymentStatus){
       var psMap={
-        'menunggu_upload':'⏳ Belum Upload',
-        'menunggu_verifikasi':'🔍 Verifikasi',
-        'diterima':'✓ Lunas',
-        'ditolak':'✕ Ditolak',
+        'menunggu_upload':'Belum Upload',
+        'menunggu_verifikasi':'Verifikasi',
+        'diterima':'Lunas',
+        'ditolak':'Ditolak',
         'belum_dibayar':'Bayar Cash'
       };
       var psCls={
@@ -1583,31 +1657,33 @@ function renderOrders(){
         proofUploadTime = o.waktuUploadBukti.toDate().toLocaleString('id-ID');
       }
       var stateBadge = '';
-      if(ps==='menunggu_verifikasi') stateBadge='<span class="proof-state-badge proof-state-pending">🔍 Perlu Verifikasi</span>';
-      else if(ps==='diterima')       stateBadge='<span class="proof-state-badge proof-state-ok">✓ Terverifikasi</span>';
-      else if(ps==='ditolak')        stateBadge='<span class="proof-state-badge proof-state-reject">✕ Ditolak</span>';
+      if(ps==='menunggu_verifikasi') stateBadge='<span class="proof-state-badge proof-state-pending">Perlu Verifikasi</span>';
+      else if(ps==='diterima')       stateBadge='<span class="proof-state-badge proof-state-ok">Terverifikasi</span>';
+      else if(ps==='ditolak')        stateBadge='<span class="proof-state-badge proof-state-reject">Ditolak</span>';
 
       proofHtml += '<div class="proof-section-wrap">';
-      proofHtml += '<div class="proof-section-header"><span class="proof-label">Bukti Pembayaran QRIS</span>'+stateBadge+'</div>';
+      proofHtml += '<div class="proof-section-header">'+
+        '<span class="proof-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Bukti QRIS</span>'+
+        stateBadge+'</div>';
       proofHtml += '<div class="proof-thumb" onclick="openAdminProofLightbox(\''+proofUrl+'\')">'+
         '<img src="'+proofUrl+'" alt="Bukti" loading="lazy"/>'+
-        '<div class="proof-thumb-overlay">🔍 Perbesar</div></div>';
-      if(proofUploadTime) proofHtml += '<div class="proof-upload-time">Diupload: '+proofUploadTime+'</div>';
+        '<div class="proof-thumb-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Perbesar</div></div>';
+      if(proofUploadTime) proofHtml += '<div class="proof-upload-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+proofUploadTime+'</div>';
 
       if(ps==='menunggu_verifikasi'){
         // Approve / Reject buttons
         proofHtml += '<div class="verify-actions">';
-        proofHtml += '<button class="btn-approve" onclick="approvePayment(\''+docId+'\')">✓ Approve</button>';
-        proofHtml += '<button class="btn-reject-pay" onclick="toggleRejectReason(\''+docId+'\')">✕ Tolak</button>';
+        proofHtml += '<button class="btn-approve" onclick="approvePayment(\''+docId+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Setujui</button>';
+        proofHtml += '<button class="btn-reject-pay" onclick="toggleRejectReason(\''+docId+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Tolak</button>';
         proofHtml += '</div>';
         proofHtml += '<div class="reject-reason-wrap" id="reject-'+docId+'">';
-        proofHtml += '<textarea class="reject-reason-input" id="reason-'+docId+'" placeholder="Alasan penolakan (wajib diisi)..." rows="2"></textarea>';
-        proofHtml += '<button class="btn-reject-confirm" onclick="rejectPayment(\''+docId+'\')">Kirim Penolakan</button>';
+        proofHtml += '<textarea class="reject-reason-input" id="reason-'+docId+'" placeholder="Tulis alasan penolakan..." rows="2"></textarea>';
+        proofHtml += '<button class="btn-reject-confirm" onclick="rejectPayment(\''+docId+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Kirim Penolakan</button>';
         proofHtml += '</div>';
       } else if(ps==='ditolak'){
         var alasan = escHtml(o.catatanAdmin || o.alasanReject || 'Tidak ada keterangan');
-        proofHtml += '<div class="proof-rejected-reason"><strong>Alasan Penolakan</strong>'+alasan+'</div>';
-        proofHtml += '<button class="btn-reapprove" onclick="approvePayment(\''+docId+'\')">↩ Re-Approve Pembayaran</button>';
+        proofHtml += '<div class="proof-rejected-reason"><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Alasan Penolakan</strong>'+alasan+'</div>';
+        proofHtml += '<button class="btn-reapprove" onclick="approvePayment(\''+docId+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Re-Approve</button>';
       }
       // diterima = read-only, no extra actions needed
       proofHtml += '</div>';
@@ -1616,7 +1692,10 @@ function renderOrders(){
     // ── CASH BANNER (for cash orders not yet picked up) ──
     var cashBannerHtml = '';
     if(o.payment==='cash' && ps==='belum_dibayar' && s!=='SELESAI'){
-      cashBannerHtml = '<div class="cash-banner">💵 Bayar di tempat — konfirmasi setelah pelanggan membayar cash</div>';
+      cashBannerHtml = '<div class="cash-banner">'+
+        '<div class="cash-banner-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>'+
+        '<div class="cash-banner-text"><div class="cash-banner-label">Bayar di Tempat</div><div class="cash-banner-desc">Konfirmasi setelah pelanggan membayar cash</div></div>'+
+        '</div>';
     }
 
     // ── ACTION BUTTONS ──
