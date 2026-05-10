@@ -454,7 +454,7 @@
     .drop-area:hover { border-color: var(--accent); border-style: solid; background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow2); }
     .drop-area.compressing { border-color: var(--accent); border-style: solid; background: var(--accent-light); pointer-events: none; }
     .drop-area.has-file { border-color: var(--green); border-style: solid; background: rgba(42,157,143,0.06); }
-    .drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-area input[type="file"] { display: none; }
     .drop-icon { font-size: 2.2rem; margin-bottom: 8px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); display: block; }
     .drop-area:hover .drop-icon { transform: translateY(-5px) scale(1.15); }
     .drop-text { font-size: 0.84rem; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
@@ -564,6 +564,26 @@
     .toast.ok  { background: var(--green); color: white; }
     @keyframes toastIn  { from{opacity:0;transform:translateY(20px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
     @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-8px)} }
+
+
+    /* ─── PICK BUTTONS ─── */
+    .pick-btns {
+      display: flex; gap: 10px; margin-bottom: 14px;
+    }
+    .pick-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 12px 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border2);
+      background: var(--bg2); color: var(--text2);
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t);
+    }
+    .pick-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--accent-glow2); }
+    .pick-gallery { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .pick-gallery:hover { background: var(--accent); color: white; }
+    .pick-camera  { border-color: var(--border2); background: var(--bg2); }
+    .pick-camera:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
     @media (max-width: 520px) {
       .qris-header { padding: 24px 20px 20px; }
@@ -727,11 +747,24 @@
           <button class="preview-remove" onclick="removeFile()" title="Hapus">✕</button>
         </div>
 
-        <div class="drop-area" id="dropArea">
-          <input type="file" id="fileInput" accept="image/*" onchange="onFileSelected(this)"/>
+        <!-- Hidden file inputs -->
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="onFileSelected(this)"/>
+        <input type="file" id="fileInputCamera" accept="image/*" capture="environment" style="display:none" onchange="onFileSelected(this)"/>
+
+        <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
           <span class="drop-icon" id="dropIcon">📷</span>
-          <div class="drop-text" id="dropText">Foto / Pilih dari Galeri</div>
+          <div class="drop-text" id="dropText">Pilih dari Galeri</div>
           <div class="drop-sub"  id="dropSub">JPG, PNG · Otomatis dikompres</div>
+        </div>
+        <div class="pick-btns" id="pickBtns">
+          <button class="pick-btn pick-gallery" onclick="document.getElementById('fileInput').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:15px;height:15px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Pilih dari Galeri
+          </button>
+          <button class="pick-btn pick-camera" onclick="document.getElementById('fileInputCamera').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:15px;height:15px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Buka Kamera
+          </button>
         </div>
 
         <div class="progress-wrap" id="progressWrap">
@@ -918,6 +951,8 @@
         document.getElementById('previewImg').src            = result.blobUrl;
         document.getElementById('previewWrap').style.display = 'block';
         da.style.display = 'none';
+        var pb = document.getElementById('pickBtns');
+        if (pb) pb.style.display = 'none';
         document.getElementById('progressFill').classList.add('snappy');
         setProgress(25, 'Siap diupload ✓', 1);
         setTimeout(function() {
@@ -947,8 +982,10 @@
     var da = document.getElementById('dropArea');
     da.style.display = 'block'; da.className = 'drop-area';
     document.getElementById('dropIcon').textContent = '📷';
-    document.getElementById('dropText').textContent = 'Foto / Pilih dari Galeri';
+    document.getElementById('dropText').textContent = 'Pilih dari Galeri';
     document.getElementById('dropSub').textContent  = 'JPG, PNG · Otomatis dikompres';
+    var pb = document.getElementById('pickBtns');
+    if (pb) pb.style.display = 'flex';
   }
 
   /* ─── SUBMIT PAYMENT ─── */
