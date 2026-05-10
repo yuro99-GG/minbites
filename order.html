@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Status Pesanan — MinBite</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -32,799 +30,265 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:           #f4efe8;
-      --bg2:          #ede6dc;
-      --surface:      #ffffff;
-      --surface2:     #faf7f3;
-      --accent:       #c0623a;
-      --accent-dark:  #a0502e;
-      --accent-light: #fae8df;
-      --accent-muted: rgba(192,98,58,0.12);
-      --text:         #1a120a;
-      --text2:        #5a3e2b;
-      --text3:        #9a8070;
-      --border:       #e4dbd0;
-      --border2:      #d0c4b4;
-      --shadow-sm:    0 2px 8px rgba(26,18,10,0.06);
-      --shadow:       0 4px 24px rgba(26,18,10,0.09);
-      --shadow-lg:    0 12px 48px rgba(26,18,10,0.14);
-      --shadow-xl:    0 24px 80px rgba(26,18,10,0.20);
-      --radius:       20px;
-      --radius-sm:    10px;
-      --radius-lg:    28px;
-      --t:            0.24s cubic-bezier(0.4,0,0.2,1);
-      --green:        #0d6b35;
-      --green-bg:     #e8f7ef;
-      --green-border: #a3dfc0;
-      --blue:         #1a47a0;
-      --blue-bg:      #eaf0fe;
-      --blue-border:  #b6d0fb;
-      --amber:        #92620a;
-      --amber-bg:     #fff8e8;
-      --amber-border: #f5dda0;
+      --bg: #f4efe8; --bg2: #ede6dc;
+      --surface: #fff; --surface2: #faf7f3;
+      --accent: #c0623a; --accent-dark: #a0502e;
+      --accent-light: #fae8df; --accent-muted: rgba(192,98,58,0.10);
+      --text: #1a120a; --text2: #5a3e2b; --text3: #9a8070;
+      --border: #e4dbd0; --border2: #d0c4b4;
+      --radius: 16px; --radius-sm: 10px;
+      --t: 0.2s ease;
+      --shadow: 0 4px 24px rgba(26,18,10,0.09);
+      --shadow-lg: 0 12px 40px rgba(26,18,10,0.13);
+      --green: #0d6b35; --green-bg: #e8f7ef; --green-border: #a3dfc0;
+      --blue: #1a47a0;  --blue-bg:  #eaf0fe; --blue-border:  #b6d0fb;
+      --amber: #92620a; --amber-bg: #fff8e8; --amber-border: #f5dda0;
+      --red: #c0272e;   --red-bg:   #fdecea; --red-border:   #f5b8bc;
     }
-
     [data-theme="dark"] {
-      --bg:           #130e09;
-      --bg2:          #1c1510;
-      --surface:      #231a12;
-      --surface2:     #2a2016;
-      --accent:       #d4784a;
-      --accent-dark:  #c0623a;
-      --accent-light: #3a2215;
-      --accent-muted: rgba(212,120,74,0.14);
-      --text:         #f0e8df;
-      --text2:        #c4a98a;
-      --text3:        #7a6050;
-      --border:       #352618;
-      --border2:      #4a3520;
-      --shadow-sm:    0 2px 8px rgba(0,0,0,0.30);
-      --shadow:       0 4px 24px rgba(0,0,0,0.40);
-      --shadow-lg:    0 12px 48px rgba(0,0,0,0.50);
-      --shadow-xl:    0 24px 80px rgba(0,0,0,0.60);
-      --green:        #5acd8a;
-      --green-bg:     #091e11;
-      --green-border: #1a5030;
-      --blue:         #7aacfb;
-      --blue-bg:      #08122a;
-      --blue-border:  #1a3060;
-      --amber:        #f5c842;
-      --amber-bg:     #1e1500;
-      --amber-border: #5a4000;
+      --bg: #130e09; --bg2: #1c1510;
+      --surface: #231a12; --surface2: #2a2016;
+      --accent: #d4784a; --accent-dark: #c0623a;
+      --accent-light: #3a2215; --accent-muted: rgba(212,120,74,0.12);
+      --text: #f0e8df; --text2: #c4a98a; --text3: #7a6050;
+      --border: #352618; --border2: #4a3520;
+      --shadow: 0 4px 24px rgba(0,0,0,0.35);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.50);
+      --green: #5acd8a; --green-bg: #091e11; --green-border: #1a5030;
+      --blue: #7aacfb;  --blue-bg:  #08122a; --blue-border:  #1a3060;
+      --amber: #f5c842; --amber-bg: #1e1500; --amber-border: #5a4000;
+      --red: #f07070;   --red-bg:   #1e0a0a; --red-border:   #6a2020;
     }
 
     html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      transition: background var(--t), color var(--t);
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
-    /* ═══════════ HEADER ═══════════ */
-    header {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .header-inner {
-      max-width: 580px; margin: 0 auto;
-      padding: 0 20px; height: 58px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo {
-      font-family: 'Fraunces', serif;
-      font-size: 1.45rem; font-weight: 700;
-      color: var(--accent); letter-spacing: -0.03em;
-      text-decoration: none;
-    }
-    .logo em { font-style: italic; color: var(--text); font-weight: 300; font-size: 0.82em; }
+    /* === ANIMATIONS — minimal, only 3 === */
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes cardIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastOut { from{opacity:1} to{opacity:0} }
+
+    /* HEADER */
+    header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px); }
+    .header-inner { max-width: 560px; margin: 0 auto; padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; text-decoration: none; }
+    .logo em { font-style: italic; color: var(--text); font-weight: 300; font-size: 0.8em; }
     .header-right { display: flex; align-items: center; gap: 8px; }
 
-    .realtime-pill {
-      display: none; align-items: center; gap: 5px;
-      padding: 4px 10px; background: var(--green-bg);
-      border: 1px solid var(--green-border); border-radius: 100px;
-      font-size: 0.68rem; font-weight: 700; color: var(--green);
-      letter-spacing: 0.04em; text-transform: uppercase;
-    }
-    .realtime-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); animation: rtpulse 1.8s ease infinite;
-    }
-    @keyframes rtpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.6)} }
+    .live-pill { display: none; align-items: center; gap: 5px; padding: 4px 10px; background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 100px; font-size: 0.67rem; font-weight: 700; color: var(--green); letter-spacing: 0.04em; text-transform: uppercase; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
 
-    .btn-back {
-      display: flex; align-items: center; gap: 5px;
-      padding: 6px 12px; border: 1.5px solid var(--border);
-      border-radius: 100px; background: var(--surface);
-      color: var(--text2); font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer;
-      text-decoration: none; transition: all var(--t);
-    }
+    .btn-back { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 100px; background: var(--surface); color: var(--text2); font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all var(--t); }
     .btn-back:hover { border-color: var(--accent); color: var(--accent); }
     .btn-back svg { width: 13px; height: 13px; }
-
-    .btn-theme {
-      width: 34px; height: 34px; border: 1.5px solid var(--border);
-      border-radius: 50%; background: var(--surface); color: var(--text2);
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all var(--t);
-    }
+    .btn-theme { width: 34px; height: 34px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--t); }
     .btn-theme:hover { border-color: var(--accent); color: var(--accent); }
     .btn-theme svg { width: 15px; height: 15px; }
 
-    /* ═══════════ MAIN ═══════════ */
-    .main { max-width: 580px; margin: 0 auto; padding: 24px 16px 80px; }
+    /* MAIN */
+    .main { max-width: 560px; margin: 0 auto; padding: 20px 16px 60px; }
 
-    /* ═══════════ LOADING ═══════════ */
-    .loading-wrap {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 100px 20px; gap: 18px;
-    }
-    .loading-ring {
-      width: 44px; height: 44px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.85s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 0.85rem; color: var(--text3); font-style: italic; }
+    /* LOADING */
+    .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 14px; }
+    .loading-ring { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .loading-text { font-size: 0.84rem; color: var(--text3); font-style: italic; }
 
-    /* ═══════════ ERROR ═══════════ */
-    .error-wrap {
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; padding: 80px 20px; gap: 14px;
-    }
-    .error-icon-ring {
-      width: 68px; height: 68px; border-radius: 50%;
-      background: var(--surface); border: 2px solid var(--border2);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .error-icon-ring svg { width: 28px; height: 28px; color: var(--text3); }
-    .error-title {
-      font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 600;
-      color: var(--text);
-    }
-    .error-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
+    /* ERROR */
+    .error-wrap { text-align: center; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .error-icon { font-size: 2.5rem; }
+    .error-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; }
+    .error-sub { font-size: 0.84rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
 
-    /* ═══════════ ORDER CARD ═══════════ */
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .order-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1);
-      transition: box-shadow var(--t);
-    }
-    @keyframes statusFlash {
-      0%   { box-shadow: 0 0 0 0 rgba(192,98,58,0.4), var(--shadow-lg); }
-      50%  { box-shadow: 0 0 0 8px rgba(192,98,58,0), var(--shadow-lg); }
-      100% { box-shadow: var(--shadow-lg); }
-    }
-    .order-card.status-changed { animation: statusFlash 0.9s ease; }
+    /* ORDER CARD */
+    .order-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-lg); overflow: hidden; animation: cardIn 0.4s ease; }
 
-    /* ─── STATUS HERO ─── */
-    .status-hero {
-      padding: 28px 28px 24px;
-      position: relative; overflow: hidden;
-      transition: background 0.5s ease;
-    }
-    .status-hero.sh-MENUNGGU  { background: linear-gradient(135deg, var(--amber-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--amber-border); }
-    .status-hero.sh-DIPROSES  { background: linear-gradient(135deg, var(--blue-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--blue-border); }
-    .status-hero.sh-SIAP      { background: linear-gradient(135deg, var(--green-bg) 0%, var(--surface) 100%); border-bottom: 1px solid var(--green-border); }
-    .status-hero.sh-SELESAI   { background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%); border-bottom: 1px solid var(--border); }
-
-    .status-hero::after {
-      content: ''; position: absolute;
-      top: -40px; right: -40px;
-      width: 160px; height: 160px; border-radius: 50%;
-      background: currentColor; opacity: 0.04; pointer-events: none;
-    }
-
-    .sh-eyebrow {
-      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .sh-eyebrow::before {
-      content: ''; width: 16px; height: 1.5px; background: var(--border2);
-      border-radius: 2px;
-    }
-
-    .sh-id {
-      font-family: 'Fraunces', serif;
-      font-size: 1.5rem; font-weight: 700;
-      color: var(--text); letter-spacing: -0.01em;
-      margin-bottom: 14px;
-    }
-
-    .sh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-
-    .sh-name {
-      font-size: 0.82rem; color: var(--text2); font-weight: 500;
-      display: flex; align-items: center; gap: 5px;
-    }
+    /* STATUS HERO */
+    .status-hero { padding: 24px 24px 20px; transition: background 0.35s ease; }
+    .sh-MENUNGGU { background: linear-gradient(135deg, var(--amber-bg), var(--surface)); border-bottom: 1px solid var(--amber-border); }
+    .sh-DIPROSES { background: linear-gradient(135deg, var(--blue-bg),  var(--surface)); border-bottom: 1px solid var(--blue-border); }
+    .sh-SIAP     { background: linear-gradient(135deg, var(--green-bg), var(--surface)); border-bottom: 1px solid var(--green-border); }
+    .sh-SELESAI  { background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .sh-eyebrow  { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+    .sh-id       { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; margin-bottom: 12px; }
+    .sh-meta     { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .sh-name     { font-size: 0.8rem; color: var(--text2); font-weight: 500; display: flex; align-items: center; gap: 5px; }
     .sh-name svg { width: 13px; height: 13px; color: var(--text3); flex-shrink: 0; }
 
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 13px; border-radius: 100px;
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      border: 1.5px solid transparent;
-    }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: 1.5px solid transparent; }
     .status-dot { width: 6px; height: 6px; border-radius: 50%; }
     .status-MENUNGGU { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
-    .status-MENUNGGU .status-dot { background: var(--amber); animation: sdot 1.6s ease infinite; }
-    .status-DIPROSES { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
-    .status-DIPROSES .status-dot { background: var(--blue); animation: sdot 1s ease infinite; }
-    .status-SIAP { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-    .status-SIAP .status-dot { background: var(--green); animation: sdot 0.9s ease infinite; }
-    .status-SELESAI { background: var(--surface2); color: var(--text3); border-color: var(--border); }
+    .status-MENUNGGU .status-dot { background: var(--amber); animation: pulse 1.6s ease infinite; }
+    .status-DIPROSES { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue-border); }
+    .status-DIPROSES .status-dot { background: var(--blue); animation: pulse 1.2s ease infinite; }
+    .status-SIAP     { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+    .status-SIAP .status-dot { background: var(--green); animation: pulse 1s ease infinite; }
+    .status-SELESAI  { background: var(--surface2); color: var(--text3); border-color: var(--border); }
     .status-SELESAI .status-dot { background: var(--text3); }
-    @keyframes sdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.65)} }
 
-    /* ─── PROGRESS TRACK ─── */
-    .progress-section {
-      padding: 22px 28px;
-      border-bottom: 1px solid var(--border);
-    }
-    .progress-steps {
-      display: flex; align-items: center;
-    }
-    .step {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 7px; flex: 1;
-    }
-    .step-circle {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 2px solid var(--border2);
-      background: var(--surface2);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; z-index: 2;
-      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-      flex-shrink: 0;
-    }
-    .step-circle svg { width: 13px; height: 13px; color: var(--text3); transition: color 0.2s; }
-    .step-circle.done { border-color: var(--accent); background: var(--accent); }
+    /* PROGRESS */
+    .progress-section { padding: 18px 24px; border-bottom: 1px solid var(--border); }
+    .progress-steps { display: flex; align-items: center; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border2); background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; transition: background 0.25s, border-color 0.25s, transform 0.25s; }
+    .step-circle svg { width: 12px; height: 12px; color: var(--text3); }
+    .step-circle.done   { border-color: var(--accent); background: var(--accent); }
     .step-circle.done svg { color: white; }
     .step-circle.active { border-color: var(--accent); background: var(--accent-light); transform: scale(1.1); }
     .step-circle.active svg { color: var(--accent); }
-
-    .step-label {
-      font-size: 0.6rem; font-weight: 700; color: var(--text3);
-      text-align: center; text-transform: uppercase; letter-spacing: 0.05em;
-      line-height: 1.3;
-    }
+    .step-label { font-size: 0.58rem; font-weight: 700; color: var(--text3); text-align: center; text-transform: uppercase; letter-spacing: 0.05em; }
     .step.done-step .step-label { color: var(--text2); }
     .step.active-step .step-label { color: var(--accent); }
-
-    .step-connector {
-      flex: 1; height: 2px; background: var(--border2);
-      margin-bottom: 26px; position: relative; overflow: hidden;
-      border-radius: 2px;
-    }
+    .step-connector { flex: 1; height: 2px; background: var(--border2); margin-bottom: 22px; border-radius: 2px; transition: background 0.3s ease; }
     .step-connector.filled { background: var(--accent); }
-    .step-connector.filling::after {
-      content: ''; position: absolute; inset: 0;
-      background: var(--accent);
-      animation: fillLine 0.5s ease forwards;
-    }
-    @keyframes fillLine { from{width:0} to{width:100%} }
 
-    /* ─── SECTION DIVIDER ─── */
-    .sec-divider {
-      width: 100%; height: 1px;
-      background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 5px, transparent 5px, transparent 9px);
-    }
+    /* STATUS CONTENT */
+    .status-section { padding: 28px 24px; text-align: center; display: none; flex-direction: column; align-items: center; gap: 12px; }
+    .status-section.active { display: flex; }
+    .status-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+    .icon-amber { background: var(--amber-bg); border: 1.5px solid var(--amber-border); }
+    .icon-blue  { background: var(--blue-bg);  border: 1.5px solid var(--blue-border);  }
+    .icon-green { background: var(--green-bg); border: 1.5px solid var(--green-border); }
+    .status-section-title { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
+    .status-section-desc  { font-size: 0.82rem; color: var(--text3); line-height: 1.7; max-width: 260px; }
 
-    /* ─── STATUS SECTIONS ─── */
+    .info-row { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.78rem; color: var(--text2); line-height: 1.5; text-align: left; }
+    .info-row-icon { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--blue-bg); color: var(--blue); }
+    .info-row-icon svg { width: 12px; height: 12px; }
+    .info-row strong { color: var(--text); }
 
-    /* MENUNGGU */
-    .waiting-section {
-      display: none; flex-direction: column; align-items: center;
-      padding: 32px 28px 28px; gap: 14px; text-align: center;
-    }
-    .waiting-anim {
-      width: 64px; height: 64px; position: relative;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .waiting-ring {
-      position: absolute; inset: 0; border-radius: 50%;
-      border: 2px solid var(--amber-border);
-      animation: wring 2s linear infinite;
-    }
-    .waiting-ring2 {
-      position: absolute; inset: 6px; border-radius: 50%;
-      border: 1.5px dashed var(--amber-border);
-      animation: wring 3s linear infinite reverse;
-    }
-    @keyframes wring { to { transform: rotate(360deg); } }
-    .waiting-icon {
-      width: 32px; height: 32px;
-      color: var(--amber);
-    }
-    .waiting-icon svg { width: 32px; height: 32px; }
-    .waiting-title {
-      font-family: 'Fraunces', serif;
-      font-size: 1.2rem; font-weight: 600; color: var(--text);
-    }
-    .waiting-desc { font-size: 0.82rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
-    .waiting-timer {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 7px 14px; background: var(--amber-bg);
-      border: 1px solid var(--amber-border); border-radius: 100px;
-      font-size: 0.75rem; color: var(--amber); font-weight: 600;
-    }
-    .waiting-timer svg { width: 13px; height: 13px; }
+    /* QR */
+    .qr-ready-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; background: var(--green-bg); border: 1.5px solid var(--green-border); border-radius: 100px; font-size: 0.68rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.06em; }
+    .qr-frame-wrap { position: relative; cursor: pointer; margin-top: 4px; }
+    .qr-frame-wrap:active { opacity: 0.88; }
+    .qr-frame { background: white; padding: 14px; border-radius: 16px; box-shadow: 0 4px 24px rgba(13,107,53,0.14); }
+    .qr-frame img { display: block; width: 200px; height: 200px; border-radius: 6px; }
+    .qr-tap-hint { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 0.62rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
 
-    /* DIPROSES */
-    .diproses-section {
-      display: none; flex-direction: column; align-items: center;
-      padding: 32px 28px 0; gap: 14px; text-align: center;
-    }
-    .cooking-anim {
-      width: 72px; height: 72px; position: relative;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .cooking-ring {
-      position: absolute; inset: 0; border-radius: 50%;
-      border: 2px solid var(--blue-border); animation: wring 2s linear infinite;
-    }
-    .cooking-icon {
-      width: 36px; height: 36px;
-      color: var(--blue);
-      animation: cookBounce 1.4s ease-in-out infinite;
-    }
-    .cooking-icon svg { width: 36px; height: 36px; }
-    @keyframes cookBounce {
-      0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
-    }
-    .diproses-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 14px; background: var(--blue-bg);
-      border: 1.5px solid var(--blue-border); border-radius: 100px;
-      font-size: 0.7rem; font-weight: 700; color: var(--blue);
-      text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .diproses-badge-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--blue); animation: sdot 1s ease infinite;
-    }
-    .diproses-title {
-      font-family: 'Fraunces', serif;
-      font-size: 1.2rem; font-weight: 600; color: var(--text);
-    }
-    .diproses-dots { display: flex; gap: 4px; justify-content: center; margin-top: -2px; }
-    .diproses-dots span {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--blue); opacity: 0;
-    }
-    .diproses-dots span:nth-child(1) { animation: dotBlink 1.4s ease-in-out 0s infinite; }
-    .diproses-dots span:nth-child(2) { animation: dotBlink 1.4s ease-in-out 0.22s infinite; }
-    .diproses-dots span:nth-child(3) { animation: dotBlink 1.4s ease-in-out 0.44s infinite; }
-    @keyframes dotBlink {
-      0%,80%,100%{opacity:0.15;transform:scale(0.8)} 40%{opacity:1;transform:scale(1.15)}
-    }
-    .diproses-desc { font-size: 0.82rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
-    .diproses-notice {
-      width: 100%; display: flex; align-items: flex-start; gap: 10px;
-      padding: 12px 16px; margin: 4px 0 0;
-      background: var(--accent-muted); border: 1px solid var(--accent-light);
-      border-radius: var(--radius-sm);
-      font-size: 0.78rem; color: var(--text2); line-height: 1.55; text-align: left;
-    }
-    .diproses-notice strong { color: var(--accent); }
-    [data-theme="dark"] .diproses-notice { border-color: rgba(192,98,58,0.25); }
-    .diproses-info-block {
-      width: 100%; padding: 20px 0 24px;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .diproses-info-row {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 10px 14px; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      font-size: 0.78rem; color: var(--text2); line-height: 1.5;
-    }
-    .diproses-info-row strong { color: var(--text); }
-    .di-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--blue-bg); color: var(--blue);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .di-icon svg { width: 13px; height: 13px; }
-
-    /* QR — SIAP DIAMBIL */
-    .qr-section {
-      display: none; flex-direction: column; align-items: center;
-      padding: 28px 28px 0; gap: 14px; text-align: center;
-    }
-    .qr-ready-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 16px; background: var(--green-bg);
-      border: 1.5px solid var(--green-border); border-radius: 100px;
-      font-size: 0.7rem; font-weight: 700; color: var(--green);
-      text-transform: uppercase; letter-spacing: 0.06em;
-      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .qr-ready-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); animation: sdot 1s ease infinite;
-    }
-    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
-
-    .qr-title {
-      font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--text);
-    }
-    .qr-subtitle { font-size: 0.8rem; color: var(--text3); max-width: 240px; line-height: 1.6; }
-
-    .qr-frame-wrap {
-      position: relative; cursor: pointer; margin-top: 4px;
-      animation: qrReveal 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    @keyframes qrReveal { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
-    .qr-frame-wrap:active { transform: scale(0.97); transition: transform 0.1s; }
-
-    .qr-frame {
-      background: white; padding: 14px; border-radius: 18px;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 16px 48px rgba(13,107,53,0.15);
-      position: relative;
-    }
-    .qr-frame img { display: block; width: 210px; height: 210px; border-radius: 6px; }
-
-    .qr-scan-label {
-      position: absolute; bottom: -14px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--text); color: var(--bg);
-      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
-      padding: 4px 12px; border-radius: 100px; white-space: nowrap;
-    }
-
-    .qr-steps {
-      width: 100%; display: flex; flex-direction: column; gap: 8px;
-      padding: 28px 0 24px;
-    }
-    .qr-step-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 11px 14px; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-    }
-    .qr-step-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--accent); color: white;
-      font-size: 0.68rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .qr-steps { width: 100%; display: flex; flex-direction: column; gap: 8px; padding-top: 20px; }
+    .qr-step { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: left; }
+    .qr-step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: white; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .qr-step-text { font-size: 0.78rem; color: var(--text2); line-height: 1.5; }
     .qr-step-text strong { color: var(--text); }
 
-    /* SELESAI */
-    .done-section {
-      display: none; flex-direction: column; align-items: center;
-      padding: 36px 28px 28px; gap: 16px; text-align: center;
-    }
-    .done-ring {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: var(--green-bg); border: 3px solid var(--green-border);
-      display: flex; align-items: center; justify-content: center;
-      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .done-ring svg { width: 34px; height: 34px; color: var(--green); }
-    .done-title {
-      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--text);
-    }
-    .done-sub { font-size: 0.83rem; color: var(--text3); line-height: 1.65; max-width: 260px; }
-
-    .rating-label { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
-    .rating-row { display: flex; gap: 6px; }
-    .star-btn {
-      width: 38px; height: 38px; border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); background: var(--surface2);
-      font-family: 'Fraunces', serif; font-size: 0.95rem; font-weight: 700;
-      color: var(--text3); cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .star-btn:hover, .star-btn.active {
-      background: var(--accent); border-color: var(--accent);
-      color: white; transform: scale(1.1);
-    }
+    /* DONE */
+    .done-ring { width: 72px; height: 72px; border-radius: 50%; background: var(--green-bg); border: 2.5px solid var(--green-border); display: flex; align-items: center; justify-content: center; }
+    .done-ring svg { width: 30px; height: 30px; color: var(--green); }
+    .rating-label { font-size: 0.7rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+    .rating-row { display: flex; gap: 6px; margin-top: 6px; }
+    .star-btn { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface2); color: var(--text3); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; justify-content: center; }
+    .star-btn:hover, .star-btn.active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.08); }
 
     .done-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .btn-act {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 10px 20px; border-radius: 100px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.8rem; font-weight: 700; cursor: pointer;
-      transition: all var(--t); border: 1.5px solid transparent;
-      text-decoration: none;
-    }
-    .btn-act svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn-act { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 100px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--t); border: 1.5px solid transparent; text-decoration: none; }
+    .btn-act svg { width: 14px; height: 14px; }
     .btn-act-primary { background: var(--accent); color: white; border-color: var(--accent); }
-    .btn-act-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(192,98,58,0.35); }
+    .btn-act-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
     .btn-act-ghost { background: var(--surface); color: var(--text2); border-color: var(--border); }
-    .btn-act-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-    .btn-act-ghost.copied { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+    .btn-act-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ─── SHARE BUTTON (QR section) ─── */
-    .btn-share-inline {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px; border-radius: 100px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer;
-      transition: all var(--t); border: 1.5px solid var(--border);
-      background: var(--surface); color: var(--text2);
-    }
-    .btn-share-inline:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-share-inline svg { width: 13px; height: 13px; }
-    .btn-share-inline.copied { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+    .btn-share { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 100px; font-size: 0.74rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); transition: all var(--t); }
+    .btn-share:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-share svg { width: 13px; height: 13px; }
+    .btn-share.copied { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
 
-    /* ─── ITEMS ─── */
-    .items-section { padding: 20px 28px; }
-    .sec-label {
-      font-size: 0.62rem; font-weight: 700; color: var(--text3);
-      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    /* DIVIDER */
+    .sec-divider { height: 1px; background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 5px, transparent 5px, transparent 10px); }
 
-    .order-item {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 11px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .order-item:last-child { border-bottom: none; }
-    .item-left { display: flex; align-items: center; gap: 12px; }
-    .item-icon {
-      width: 44px; height: 44px; background: var(--bg2);
-      border-radius: var(--radius-sm); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--border);
-    }
-    .item-icon svg { width: 38px; height: 38px; }
-    .item-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .item-qty { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
-    .item-subtotal { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+    /* PAYMENT */
+    .payment-section { padding: 16px 24px 18px; border-bottom: 1px solid var(--border); }
+    .sec-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 12px; }
+    .pay-method-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; }
+    .pay-icon  { font-size: 1.1rem; }
+    .pay-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
+    .pay-desc  { font-size: 0.7rem; color: var(--text3); }
 
-    /* ─── TOTAL ─── */
-    .total-section { padding: 4px 28px 20px; }
-    .total-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 5px 0; font-size: 0.82rem;
-    }
-    .total-row-label { color: var(--text3); }
-    .total-row-value { color: var(--text2); font-weight: 500; }
-    .total-row.discount .total-row-value { color: var(--green); font-weight: 700; }
-    .total-final {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 0 4px; margin-top: 8px;
-      border-top: 1.5px dashed var(--border2);
-    }
-    .total-final-label {
-      font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; color: var(--text);
-    }
-    .total-final-amount {
-      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent);
-    }
-
-
-
-    /* ═══════════ REALTIME BAR ═══════════ */
-    .realtime-bar {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      margin-top: 14px; padding: 10px 20px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 100px; font-size: 0.75rem; color: var(--text3);
-      font-weight: 500;
-    }
-    .realtime-bar-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); animation: rtpulse 1.8s ease infinite;
-    }
-
-    /* ═══════════ FULLSCREEN QR ═══════════ */
-    .qr-fullscreen {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.94); display: none;
-      flex-direction: column; align-items: center;
-      justify-content: center; gap: 20px; padding: 20px;
-      animation: fsIn 0.22s ease;
-    }
-    @keyframes fsIn { from{opacity:0} to{opacity:1} }
-    .qr-fullscreen.open { display: flex; }
-    .qr-fs-label {
-      color: rgba(255,255,255,0.5); font-size: 0.75rem;
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-    }
-    .qr-fs-id {
-      font-family: 'Fraunces', serif; color: white;
-      font-size: 1.1rem; font-weight: 600; opacity: 0.9;
-    }
-    .qr-fs-frame {
-      background: white; padding: 20px; border-radius: 22px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.7);
-    }
-    .qr-fs-frame img { display: block; width: min(280px, 78vw); height: min(280px, 78vw); border-radius: 8px; }
-    .qr-fs-close {
-      color: rgba(255,255,255,0.6); font-size: 0.8rem;
-      background: transparent; border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 100px; padding: 9px 22px;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all 0.2s;
-    }
-    .qr-fs-close:hover { color: white; border-color: rgba(255,255,255,0.5); }
-
-    /* ═══════════ TOAST ═══════════ */
-    #toast-container {
-      position: fixed; bottom: 28px; left: 50%;
-      transform: translateX(-50%); z-index: 500;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 8px; pointer-events: none;
-    }
-    .toast {
-      background: var(--text); color: var(--bg);
-      padding: 11px 22px; border-radius: 100px;
-      font-size: 0.82rem; font-weight: 600;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.22);
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.3s forwards;
-      white-space: nowrap;
-    }
-    .toast.success { background: var(--green); color: white; }
-    .toast.info    { background: var(--blue); color: white; }
-    @keyframes toastIn  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)} }
-
-    /* ═══════════ PAYMENT STATUS SECTION ═══════════ */
-    .payment-status-section {
-      padding: 18px 24px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .payment-status-title {
-      font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text3); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .payment-status-title svg { width: 13px; height: 13px; color: var(--accent); }
-
-    .payment-method-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px; background: var(--surface2);
-      border-radius: var(--radius-sm); border: 1px solid var(--border);
-      margin-bottom: 10px;
-    }
-    .payment-method-icon { font-size: 1.2rem; }
-    .payment-method-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
-    .payment-method-desc { font-size: 0.7rem; color: var(--text3); }
-
-    /* Payment status badges */
-    .ps-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 14px; border-radius: 100px;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
-      border: 1.5px solid transparent; text-transform: uppercase;
-    }
-    .ps-badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .ps-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; border: 1.5px solid transparent; text-transform: uppercase; }
+    .ps-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
     .ps-upload   { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
-    .ps-upload   .ps-badge-dot { background: var(--amber); animation: sdot 1.6s ease infinite; }
-    .ps-verify   { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
-    .ps-verify   .ps-badge-dot { background: var(--blue); animation: sdot 1.2s ease infinite; }
+    .ps-upload .ps-dot   { background: var(--amber); }
+    .ps-verify   { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue-border); }
+    .ps-verify .ps-dot   { background: var(--blue); }
     .ps-ok       { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-    .ps-ok       .ps-badge-dot { background: var(--green); }
+    .ps-ok .ps-dot       { background: var(--green); }
     .ps-cash     { background: var(--surface2); color: var(--text3); border-color: var(--border); }
-    .ps-cash     .ps-badge-dot { background: var(--text3); }
-    .ps-rejected {
-      background: rgba(230,57,70,0.08); color: #e63946;
-      border-color: rgba(230,57,70,0.3);
-    }
-    .ps-rejected .ps-badge-dot { background: #e63946; animation: sdot 1s ease infinite; }
+    .ps-cash .ps-dot     { background: var(--text3); }
+    .ps-rejected { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
+    .ps-rejected .ps-dot { background: var(--red); }
 
-    /* Rejection reason card */
-    .reject-card {
-      background: rgba(230,57,70,0.06); border: 1.5px solid rgba(230,57,70,0.25);
-      border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px;
-    }
-    .reject-card-title {
-      font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.08em; color: #e63946; margin-bottom: 5px;
-    }
+    .reject-card { background: var(--red-bg); border: 1.5px solid var(--red-border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px; }
+    .reject-card-title  { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); margin-bottom: 4px; }
     .reject-card-reason { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
 
-    /* Proof thumbnail */
-    .proof-thumb-section { margin-top: 10px; }
-    .proof-thumb-label {
-      font-size: 0.67rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px;
-    }
-    .proof-thumb-img {
-      border-radius: var(--radius-sm); overflow: hidden;
-      border: 1.5px solid var(--border); max-height: 180px;
-      cursor: pointer; position: relative; display: inline-block;
-    }
-    .proof-thumb-img img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
-    .proof-upload-time { font-size: 0.68rem; color: var(--text3); margin-top: 5px; }
+    .proof-thumb { border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); max-height: 160px; cursor: pointer; margin-top: 10px; }
+    .proof-thumb img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+    .proof-time { font-size: 0.67rem; color: var(--text3); margin-top: 4px; }
 
-    /* Proof Lightbox */
-    .proof-lightbox {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-      z-index: 9000; display: none; align-items: center; justify-content: center;
-      padding: 20px;
-    }
+    .info-note { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; line-height: 1.6; }
+    .note-blue  { background: var(--blue-bg);  border: 1px solid var(--blue-border);  color: var(--blue); }
+    .note-green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+    .note-gray  { background: var(--surface2); border: 1px solid var(--border);       color: var(--text2); }
+
+    /* RE-UPLOAD */
+    .reupload-section { padding: 14px 24px 18px; border-top: 1px dashed var(--border); }
+    .reupload-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--red); margin-bottom: 8px; }
+    .reupload-desc  { font-size: 0.78rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px; padding: 10px 14px; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-sm); }
+    .btn-reupload { display: inline-flex; align-items: center; gap: 8px; width: 100%; padding: 12px; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all var(--t); text-decoration: none; justify-content: center; }
+    .btn-reupload:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ITEMS */
+    .items-section { padding: 18px 24px 14px; }
+    .order-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .order-item:last-child { border-bottom: none; }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-img { width: 44px; height: 44px; border-radius: var(--radius-sm); flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; background: var(--bg2); display: flex; align-items: center; justify-content: center; }
+    .item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .item-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .item-qty  { font-size: 0.74rem; color: var(--text3); margin-top: 2px; }
+    .item-subtotal { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+
+    /* TOTAL */
+    .total-section { padding: 4px 24px 18px; }
+    .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 4px 0; }
+    .total-row-label { color: var(--text3); }
+    .total-row-value { color: var(--text2); font-weight: 500; }
+    .total-final { display: flex; justify-content: space-between; align-items: center; padding: 12px 0 4px; margin-top: 8px; border-top: 1.5px dashed var(--border2); }
+    .total-final-label  { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .total-final-amount { font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+
+    /* REALTIME BAR */
+    .realtime-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; padding: 9px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.74rem; color: var(--text3); font-weight: 500; }
+    .realtime-bar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
+
+    /* FULLSCREEN QR */
+    .qr-fullscreen { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.94); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 20px; }
+    .qr-fullscreen.open { display: flex; }
+    .qr-fs-label { color: rgba(255,255,255,0.5); font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .qr-fs-id    { font-family: 'Fraunces', serif; color: white; font-size: 1.05rem; font-weight: 600; }
+    .qr-fs-frame { background: white; padding: 18px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .qr-fs-frame img { display: block; width: min(260px, 76vw); height: min(260px, 76vw); border-radius: 8px; }
+    .qr-fs-close { color: rgba(255,255,255,0.6); background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px; padding: 8px 20px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; transition: all 0.15s; }
+    .qr-fs-close:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+    /* PROOF LIGHTBOX */
+    .proof-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; }
     .proof-lightbox.open { display: flex; }
-    .proof-lightbox img {
-      max-width: 100%; max-height: 85vh; border-radius: 12px;
-      object-fit: contain;
-    }
-    .proof-lightbox-close {
-      position: absolute; top: 16px; right: 16px;
-      width: 38px; height: 38px; border-radius: 50%;
-      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
-      color: white; cursor: pointer; font-size: 0.9rem;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .proof-lightbox img { max-width: 100%; max-height: 85vh; border-radius: 12px; object-fit: contain; }
+    .proof-lightbox-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* Re-upload section */
-    .reupload-section {
-      padding: 14px 24px 20px;
-      border-top: 1px dashed var(--border);
-    }
-    .reupload-title {
-      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.1em; color: #e63946; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .reupload-drop-area {
-      border: 2px dashed rgba(230,57,70,0.35); border-radius: var(--radius-sm);
-      padding: 18px 14px; text-align: center; cursor: pointer;
-      background: rgba(230,57,70,0.04); margin-bottom: 10px;
-      position: relative; transition: all 0.2s;
-    }
-    .reupload-drop-area:hover { border-color: #e63946; background: rgba(230,57,70,0.07); }
-    .reupload-drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .reupload-preview-wrap { display: none; margin-bottom: 10px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid #e63946; position: relative; }
-    .reupload-preview-wrap img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
-    .reupload-preview-remove {
-      position: absolute; top: 8px; right: 8px;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(0,0,0,0.6); color: white; border: none;
-      cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
-    }
-    .upload-progress-wrap { margin-bottom: 10px; }
-    .upload-progress-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
-    .upload-progress-fill { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent-dark)); border-radius: 3px; transition: width 0.3s; width: 0%; }
-    .upload-progress-text { font-size: 0.68rem; color: var(--text3); text-align: center; font-weight: 600; }
-    .btn-reupload {
-      width: 100%; padding: 13px; background: #e63946; color: white;
-      border: none; border-radius: var(--radius-sm);
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-      text-decoration: none;
-    }
-    .btn-reupload:hover:not(:disabled) { background: #c0272e; transform: translateY(-1px); }
-    .btn-reupload:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    /* TOAST */
+    #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+    .toast { background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 100px; font-size: 0.82rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: toastIn 0.25s ease, toastOut 0.25s ease 2.3s forwards; white-space: nowrap; }
+    .toast.success { background: var(--green); color: white; }
+    .toast.info    { background: var(--blue);  color: white; }
 
-    /* ═══════════ MOBILE ═══════════ */
-    @media (max-width: 520px) {
-      .main { padding: 18px 12px 60px; }
-      .status-hero { padding: 22px 20px 18px; }
-      .progress-section { padding: 18px 20px; }
-      .items-section { padding: 18px 20px; }
-      .total-section { padding: 4px 20px 18px; }
-      .waiting-section, .diproses-section, .qr-section { padding: 24px 20px 0; }
-      .done-section { padding: 28px 20px 22px; }
-      .qr-frame img { width: 190px; height: 190px; }
+    @media (max-width: 480px) {
+      .main { padding: 14px 12px 50px; }
+      .status-hero, .progress-section, .items-section, .total-section, .payment-section, .status-section { padding-left: 18px; padding-right: 18px; }
+      .qr-frame img { width: 180px; height: 180px; }
       .sh-id { font-size: 1.2rem; }
     }
   </style>
@@ -835,21 +299,14 @@
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite <em>order</em></a>
     <div class="header-right">
-      <div class="realtime-pill" id="realtimePill">
-        <div class="realtime-dot"></div>
-        Live
-      </div>
+      <div class="live-pill" id="livePill"><div class="live-dot"></div>Live</div>
       <a class="btn-back" href="index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Kembali
       </a>
-      <button class="btn-theme" onclick="toggleTheme()" title="Toggle tema">
-        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
-          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
+      <button class="btn-theme" onclick="toggleTheme()">
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
     </div>
   </div>
@@ -857,30 +314,23 @@
 
 <main class="main">
 
-  <!-- LOADING -->
   <div id="stateLoading" class="loading-wrap">
     <div class="loading-ring"></div>
     <span class="loading-text">Menghubungkan ke server…</span>
   </div>
 
-  <!-- ERROR -->
   <div id="stateError" style="display:none">
     <div class="error-wrap">
-      <div class="error-icon-ring">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-      </div>
+      <div class="error-icon">😕</div>
       <div class="error-title">Pesanan Tidak Ditemukan</div>
       <div class="error-sub" id="errorMsg">ID pesanan tidak valid atau pesanan tidak ada.</div>
-      <a class="btn-back" href="index.html" style="margin-top:6px;">
+      <a class="btn-back" href="index.html" style="margin-top:8px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         Ke Halaman Utama
       </a>
     </div>
   </div>
 
-  <!-- ORDER -->
   <div id="stateOrder" style="display:none">
     <div class="order-card">
 
@@ -935,158 +385,109 @@
 
       <div class="sec-divider"></div>
 
-      <!-- PAYMENT STATUS SECTION -->
-      <div class="payment-status-section" id="paymentStatusSection" style="display:none">
-        <div class="payment-status-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Pembayaran
-        </div>
-        <div class="payment-method-row" id="paymentMethodRow">
-          <span class="payment-method-icon" id="paymentMethodIcon">💵</span>
+      <!-- PAYMENT -->
+      <div class="payment-section" id="paymentSection" style="display:none">
+        <div class="sec-label">Pembayaran</div>
+        <div class="pay-method-row">
+          <span class="pay-icon" id="payIcon">💵</span>
           <div>
-            <div class="payment-method-label" id="paymentMethodLabel">Cash</div>
-            <div class="payment-method-desc" id="paymentMethodDesc">Bayar langsung di tempat</div>
+            <div class="pay-label" id="payLabel">Cash</div>
+            <div class="pay-desc"  id="payDesc">Bayar langsung di tempat</div>
           </div>
-          <div id="paymentStatusBadge"></div>
+          <div id="payStatusBadge"></div>
         </div>
-        <!-- Rejection reason (QRIS ditolak) -->
         <div class="reject-card" id="rejectCard" style="display:none">
-          <div class="reject-card-title">⚠️ Pembayaran Ditolak Admin</div>
+          <div class="reject-card-title">⚠️ Pembayaran Ditolak</div>
           <div class="reject-card-reason" id="rejectReason">—</div>
         </div>
-        <!-- Proof thumbnail (QRIS) -->
-        <div class="proof-thumb-section" id="proofThumbSection" style="display:none">
-          <div class="proof-thumb-label">Bukti Pembayaran Yang Diupload</div>
-          <div class="proof-thumb-img" onclick="openProofLightbox()">
-            <img id="proofThumbImg" src="" alt="Bukti Pembayaran"/>
+        <div id="proofSection" style="display:none">
+          <div class="proof-thumb" onclick="openProofLightbox()">
+            <img id="proofImg" src="" alt="Bukti Pembayaran"/>
           </div>
-          <div class="proof-upload-time" id="proofUploadTime"></div>
+          <div class="proof-time" id="proofTime"></div>
         </div>
-        <!-- QRIS verifikasi info -->
-        <div id="qrisVerifyInfo" style="display:none;margin-top:10px;background:var(--blue-bg);border:1.5px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--blue);line-height:1.6;">
-          🔍 <strong>Bukti pembayaran sedang diperiksa admin.</strong> Pesanan akan diproses setelah pembayaran diverifikasi.
-        </div>
-        <!-- QRIS diterima info -->
-        <div id="qrisAcceptedInfo" style="display:none;margin-top:10px;background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--green);line-height:1.6;">
-          ✅ <strong>Pembayaran berhasil diverifikasi.</strong> Pesananmu sedang diproses!
-        </div>
-        <!-- Cash info card -->
-        <div id="cashInfoCard" style="display:none;margin-top:10px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--text2);line-height:1.6;">
-          💵 <strong>Pembayaran dilakukan saat pengambilan / pengantaran.</strong> Siapkan uang pas ya!
-        </div>
+        <div class="info-note note-blue"  id="noteVerify"   style="display:none">🔍 <strong>Menunggu verifikasi admin.</strong> Pesanan diproses setelah pembayaran diterima.</div>
+        <div class="info-note note-green" id="noteAccepted" style="display:none">✅ <strong>Pembayaran diverifikasi.</strong> Pesananmu sedang disiapkan!</div>
+        <div class="info-note note-gray"  id="noteCash"     style="display:none">💵 Pembayaran dilakukan saat pengambilan. Siapkan uang pas ya!</div>
       </div>
 
-      <!-- RE-UPLOAD SECTION (show when rejected → redirect to payment.html) -->
+      <!-- RE-UPLOAD -->
       <div class="reupload-section" id="reuploadSection" style="display:none">
-        <div class="reupload-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Ulang Bukti Pembayaran
-        </div>
-        <div style="font-size:0.78rem;color:var(--text2);line-height:1.65;margin-bottom:14px;background:rgba(230,57,70,0.05);border:1.5px solid rgba(230,57,70,0.18);border-radius:var(--radius-sm);padding:12px 14px;">
-          Bukti pembayaranmu ditolak oleh admin. Silakan upload ulang foto bukti yang jelas dan valid.
-        </div>
-        <a class="btn-reupload" id="btnReuploadRedirect" href="#">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="reupload-label">⚠️ Upload Ulang Bukti</div>
+        <div class="reupload-desc">Bukti pembayaranmu ditolak admin. Silakan upload ulang foto yang jelas dan valid.</div>
+        <a class="btn-reupload" id="btnReupload" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:15px;height:15px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload Ulang Bukti
         </a>
       </div>
 
       <!-- MENUNGGU -->
-      <div class="waiting-section" id="waitingSection">
-        <div class="waiting-anim">
-          <div class="waiting-ring"></div>
-          <div class="waiting-ring2"></div>
-          <span class="waiting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-        </div>
-        <div class="waiting-title">Menunggu Konfirmasi</div>
-        <div class="waiting-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi admin. Halaman ini update otomatis.</div>
-        <div class="waiting-timer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Menunggu selama <strong id="waitingElapsed" style="margin-left:3px">0 detik</strong>
-        </div>
+      <div class="status-section" id="secMenunggu">
+        <div class="status-icon icon-amber">⏳</div>
+        <div class="status-section-title">Menunggu Konfirmasi</div>
+        <div class="status-section-desc">Pesananmu sudah masuk dan akan segera dikonfirmasi. Halaman ini update otomatis.</div>
       </div>
 
       <!-- DIPROSES -->
-      <div class="diproses-section" id="diprosesSection">
-        <div class="cooking-anim">
-          <div class="cooking-ring"></div>
-          <span class="cooking-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></span>
+      <div class="status-section" id="secDiproses">
+        <div class="status-icon icon-blue">🔄</div>
+        <div class="status-section-title">Sedang Disiapkan</div>
+        <div class="status-section-desc">Sabar ya, sebentar lagi siap! Kamu akan dihubungi saat pesanan bisa diambil.</div>
+        <div class="info-row">
+          <div class="info-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div>Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan siap diambil.</div>
         </div>
-        <div class="diproses-badge">
-          <span class="diproses-badge-dot"></span>
-          Sedang Disiapkan
-        </div>
-        <div class="diproses-title">Pesananmu Sedang Dibuat</div>
-        <div class="diproses-dots"><span></span><span></span><span></span></div>
-        <div class="diproses-desc">Sabar ya, sebentar lagi siap! Kamu akan dihubungi saat pesanan sudah bisa diambil.</div>
-        <div class="diproses-notice">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--accent)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Kamu akan <strong>dihubungi via WhatsApp</strong> saat pesanan siap diambil — pastikan HP aktif ya!
-        </div>
-        <div class="diproses-info-block">
-          <div class="diproses-info-row">
-            <div class="di-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            <div>Bazar berlangsung <strong>22 Mei</strong> — pesananmu siap selama acara berlangsung.</div>
-          </div>
-          <div class="diproses-info-row">
-            <div class="di-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            <div>Halaman ini <strong>update otomatis</strong> — QR langsung muncul tanpa perlu refresh.</div>
-          </div>
+        <div class="info-row">
+          <div class="info-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div>Halaman ini <strong>update otomatis</strong> — QR langsung muncul tanpa refresh.</div>
         </div>
       </div>
 
       <!-- SIAP DIAMBIL -->
-      <div class="qr-section" id="qrSection">
-        <div class="qr-ready-pill">
-          <span class="qr-ready-dot"></span>
+      <div class="status-section" id="secSiap">
+        <div class="qr-ready-badge">
+          <span class="status-dot" style="background:var(--green);animation:pulse 1s ease infinite"></span>
           Siap Diambil!
         </div>
-        <div class="qr-title">Tunjukkan QR ini ke penjual</div>
-        <div class="qr-subtitle">Tap QR untuk perbesar — layar lebih terang saat di-scan</div>
-
+        <div class="status-section-title">Tunjukkan QR ini ke penjual</div>
+        <div class="status-section-desc">Tap QR untuk perbesar agar lebih mudah di-scan</div>
         <div class="qr-frame-wrap" onclick="openFullscreenQR()">
           <div class="qr-frame">
-            <img id="qrImage" src="" alt="QR Code" />
+            <img id="qrImage" src="" alt="QR Code"/>
           </div>
-          <div class="qr-scan-label">⛶ Tap untuk perbesar</div>
+          <div class="qr-tap-hint">⛶ Tap untuk perbesar</div>
         </div>
-
         <div class="qr-steps">
-          <div class="qr-step-row">
+          <div class="qr-step">
             <div class="qr-step-num">1</div>
-            <div class="qr-step-text"><strong>Tap QR di atas</strong> untuk tampilan fullscreen, layar jadi lebih terang & mudah di-scan.</div>
+            <div class="qr-step-text"><strong>Tap QR</strong> untuk fullscreen, lebih mudah di-scan.</div>
           </div>
-          <div class="qr-step-row">
+          <div class="qr-step">
             <div class="qr-step-num">2</div>
             <div class="qr-step-text">Tunjukkan ke penjual — <strong>penjual tinggal scan</strong>, pesanan langsung selesai!</div>
           </div>
-          <div class="qr-step-row">
-            <div class="qr-step-num">3</div>
-            <div class="qr-step-text">Halaman ini <strong>update otomatis</strong> setelah scan berhasil. Selesai!</div>
-          </div>
         </div>
-
-        <button class="btn-share-inline" id="btnShareLinkQR" onclick="shareOrderLink()">
+        <button class="btn-share" id="btnShareQR" onclick="shareOrderLink()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Bagikan Link Pesanan
         </button>
       </div>
 
       <!-- SELESAI -->
-      <div class="done-section" id="doneSection">
+      <div class="status-section" id="secSelesai">
         <div class="done-ring">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div class="done-title">Pesanan Selesai!</div>
-        <div class="done-sub">Terima kasih sudah pesan di MinBite. Selamat menikmati sajianmu!</div>
+        <div class="status-section-title">Pesanan Selesai! 🎉</div>
+        <div class="status-section-desc">Terima kasih sudah pesan di MinBite. Selamat menikmati!</div>
         <div>
-          <div class="rating-label" style="margin-bottom:10px">Gimana pengalamanmu?</div>
-          <div class="rating-row" id="ratingWrap">
-            <button class="star-btn" onclick="rate(1)" title="Kurang">1</button>
-            <button class="star-btn" onclick="rate(2)" title="Biasa">2</button>
-            <button class="star-btn" onclick="rate(3)" title="Cukup">3</button>
-            <button class="star-btn" onclick="rate(4)" title="Bagus">4</button>
-            <button class="star-btn" onclick="rate(5)" title="Luar biasa">5</button>
+          <div class="rating-label">Gimana pengalamanmu?</div>
+          <div class="rating-row">
+            <button class="star-btn" onclick="rate(1)">1</button>
+            <button class="star-btn" onclick="rate(2)">2</button>
+            <button class="star-btn" onclick="rate(3)">3</button>
+            <button class="star-btn" onclick="rate(4)">4</button>
+            <button class="star-btn" onclick="rate(5)">5</button>
           </div>
         </div>
         <div class="done-actions">
@@ -1094,7 +495,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Pesan Lagi
           </a>
-          <button class="btn-act btn-act-ghost" id="btnShareLink" onclick="shareOrderLink()">
+          <button class="btn-act btn-act-ghost" id="btnShare" onclick="shareOrderLink()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Bagikan Link
           </button>
@@ -1104,24 +505,22 @@
       <div class="sec-divider"></div>
 
       <!-- ITEMS -->
-      <div class="items-section" id="itemsSectionWrap" style="display:none">
-        <div class="sec-label">Item Pesanan</div>
+      <div class="items-section" id="itemsSection" style="display:none">
+        <div class="sec-label" style="margin-bottom:12px">Item Pesanan</div>
         <div id="oItems"></div>
       </div>
 
       <!-- TOTAL -->
-      <div class="total-section" id="oTotalSection" style="display:none"></div>
+      <div class="total-section" id="totalSection" style="display:none"></div>
 
-
-
-    </div><!-- /order-card -->
+    </div>
 
     <div class="realtime-bar">
       <div class="realtime-bar-dot"></div>
-      Status dipantau <strong style="margin-left:3px">secara realtime</strong> — otomatis update
+      Status dipantau <strong style="margin-left:3px">secara realtime</strong>
     </div>
 
-  </div><!-- /stateOrder -->
+  </div>
 </main>
 
 <!-- FULLSCREEN QR -->
@@ -1129,12 +528,10 @@
   <div class="qr-fs-label">Tunjukkan ke Penjual</div>
   <div class="qr-fs-id" id="qrFsId"></div>
   <div class="qr-fs-frame" onclick="event.stopPropagation()">
-    <img id="qrFullImg" src="" alt="QR Fullscreen" />
+    <img id="qrFullImg" src="" alt="QR Fullscreen"/>
   </div>
   <button class="qr-fs-close" onclick="closeFullscreenQR()">✕ Tutup</button>
 </div>
-
-<div id="toast-container"></div>
 
 <!-- PROOF LIGHTBOX -->
 <div class="proof-lightbox" id="proofLightbox" onclick="closeProofLightbox()">
@@ -1142,12 +539,14 @@
   <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕</button>
 </div>
 
+<div id="toast-container"></div>
+
 <script>
-  // ── THEME ──
+  // THEME
   (function() {
     var t = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', t);
-    document.getElementById('iconSun').style.display = t === 'dark' ? 'block' : 'none';
+    document.getElementById('iconSun').style.display  = t === 'dark'  ? 'block' : 'none';
     document.getElementById('iconMoon').style.display = t === 'light' ? 'block' : 'none';
   })();
   function toggleTheme() {
@@ -1155,70 +554,44 @@
     var next = cur === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
-    document.getElementById('iconSun').style.display = next === 'dark' ? 'block' : 'none';
+    document.getElementById('iconSun').style.display  = next === 'dark'  ? 'block' : 'none';
     document.getElementById('iconMoon').style.display = next === 'light' ? 'block' : 'none';
   }
 
-  // ── UTILS ──
   function fmt(n) { return 'Rp' + Number(n).toLocaleString('id-ID'); }
+  function getOrderId() { return new URLSearchParams(window.location.search).get('id') || ''; }
 
   function showToast(msg, type) {
     var c = document.getElementById('toast-container');
     var el = document.createElement('div');
-    el.className = 'toast ' + (type || 'default');
+    el.className = 'toast ' + (type || '');
     el.textContent = msg;
     c.appendChild(el);
     setTimeout(function() { el.remove(); }, 2800);
   }
 
-  function getOrderId() {
-    return new URLSearchParams(window.location.search).get('id') || '';
+  function getItemImg(name) {
+    var n = (name || '').toLowerCase();
+    if (n.includes('oreo') || n.includes('bola')) return 'bola.jpg';
+    if (n.includes('thai') || n.includes('tea'))  return 'thai.jpg';
+    return 'bundle.jpg';
   }
 
-  // ── PROOF LIGHTBOX ──
   function openProofLightbox() {
-    var img = document.getElementById('proofThumbImg').src;
-    document.getElementById('proofLightboxImg').src = img;
+    document.getElementById('proofLightboxImg').src = document.getElementById('proofImg').src;
     document.getElementById('proofLightbox').classList.add('open');
   }
-  function closeProofLightbox() {
-    document.getElementById('proofLightbox').classList.remove('open');
-  }
+  function closeProofLightbox() { document.getElementById('proofLightbox').classList.remove('open'); }
 
-  // ── RE-UPLOAD → redirect to payment.html handled via btnReuploadRedirect link ──
-
-  // ── STATUS MAP ──
-  var STATUS_MAP = {
-    'MENUNGGU':     { step: 0, label: 'Menunggu',     cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' },
-    'DIPROSES':     { step: 1, label: 'Diproses',     cls: 'status-DIPROSES', hero: 'sh-DIPROSES' },
-    'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil', cls: 'status-SIAP',     hero: 'sh-SIAP'     },
-    'SELESAI':      { step: 3, label: 'Selesai',       cls: 'status-SELESAI', hero: 'sh-SELESAI'  }
-  };
-
-  // ── ITEM ICONS ──
-  function getItemIcon(name) {
-    var n = (name || '').toLowerCase();
-    if (n.includes('oreo') || n.includes('bola')) return '<img src="bola.jpg" alt="Bola Oreo" style="width:44px;height:44px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"/>';
-    if (n.includes('thai') || n.includes('tea')) return '<img src="thai.jpg" alt="Thai Tea" style="width:44px;height:44px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"/>';
-    return '<img src="bundle.jpg" alt="Bundle" style="width:44px;height:44px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"/>';
-  }
-
-  // ── QR FULLSCREEN ──
   var currentQrUrl = '';
   function openFullscreenQR() {
     if (!currentQrUrl) return;
     document.getElementById('qrFullImg').src = currentQrUrl;
     document.getElementById('qrFsId').textContent = getOrderId();
     document.getElementById('qrFullscreen').classList.add('open');
-    if (navigator.maxTouchPoints > 0 && screen.orientation) {
-      try { screen.orientation.lock('portrait'); } catch(e) {}
-    }
   }
-  function closeFullscreenQR() {
-    document.getElementById('qrFullscreen').classList.remove('open');
-  }
+  function closeFullscreenQR() { document.getElementById('qrFullscreen').classList.remove('open'); }
 
-  // ── SHARE LINK ──
   function shareOrderLink() {
     var url = window.location.href;
     if (navigator.share) {
@@ -1226,274 +599,158 @@
     } else {
       navigator.clipboard.writeText(url).then(function() {
         showToast('Link pesanan disalin!', 'success');
-        var btns = document.querySelectorAll('#btnShareLink, #btnShareLinkQR');
-        btns.forEach(function(b) {
-          b.classList.add('copied');
-          b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Tersalin!';
-          setTimeout(function() {
-            b.classList.remove('copied');
-            b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Bagikan Link';
-          }, 2500);
+        ['btnShare','btnShareQR'].forEach(function(id) {
+          var b = document.getElementById(id);
+          if (!b) return;
+          b.classList.add('copied'); b.textContent = '✓ Tersalin!';
+          setTimeout(function() { b.classList.remove('copied'); b.textContent = 'Bagikan Link'; }, 2500);
         });
       }).catch(function() { showToast('Gagal menyalin link.'); });
     }
   }
 
-  // ── RATING ──
   var rated = false;
   function rate(score) {
-    if (rated) return;
-    rated = true;
-    var btns = document.querySelectorAll('.star-btn');
-    btns.forEach(function(b, i) { if (i < score) b.classList.add('active'); });
-    var labels = ['Wah, sayang sekali 😔', 'Biasa aja 😐', 'Lumayan 😊', 'Asyik! 😁', 'Luar biasa! 🤩'];
-    showToast('Rating diterima: ' + labels[score - 1], 'success');
-    var orderId = getOrderId();
-    if (db && orderId) {
-      db.collection('orders').doc(orderId).update({ rating: score }).catch(function(e) {
-        console.warn('Gagal simpan rating:', e);
-      });
-    }
+    if (rated) return; rated = true;
+    document.querySelectorAll('.star-btn').forEach(function(b, i) { if (i < score) b.classList.add('active'); });
+    var labels = ['Kurang 😔','Biasa 😐','Lumayan 😊','Bagus 😁','Luar biasa! 🤩'];
+    showToast('Rating: ' + labels[score - 1], 'success');
+    var id = getOrderId();
+    if (db && id) db.collection('orders').doc(id).update({ rating: score }).catch(function() {});
   }
 
-  // ── RENDER ORDER ──
-  var prevStatus = null;
-  var prevPaymentStatus = null;
+  var STATUS_MAP = {
+    'MENUNGGU':     { step: 0, label: 'Menunggu',     cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' },
+    'DIPROSES':     { step: 1, label: 'Diproses',     cls: 'status-DIPROSES', hero: 'sh-DIPROSES' },
+    'SIAP DIAMBIL': { step: 2, label: 'Siap Diambil', cls: 'status-SIAP',     hero: 'sh-SIAP'     },
+    'SELESAI':      { step: 3, label: 'Selesai',      cls: 'status-SELESAI',  hero: 'sh-SELESAI'  }
+  };
+
+  var prevStatus = null, prevPayStatus = null;
+
   function renderOrder(data) {
     document.getElementById('stateLoading').style.display = 'none';
     document.getElementById('stateError').style.display = 'none';
     document.getElementById('stateOrder').style.display = 'block';
-    document.getElementById('realtimePill').style.display = 'flex';
+    document.getElementById('livePill').style.display = 'flex';
 
-    var rawStatus = (data.status || data.statusOrder || 'MENUNGGU').toUpperCase().trim();
-    var paymentMethod = (data.payment || data.metodePembayaran || 'cash').toLowerCase();
-    var paymentStatus = data.paymentStatus || data.statusPembayaran || (paymentMethod === 'cash' ? 'belum_dibayar' : 'menunggu_verifikasi');
+    var raw    = (data.status || data.statusOrder || 'MENUNGGU').toUpperCase().trim();
+    var method = (data.payment || data.metodePembayaran || 'cash').toLowerCase();
+    var paySt  = data.paymentStatus || data.statusPembayaran || (method === 'cash' ? 'belum_dibayar' : 'menunggu_verifikasi');
 
-    // Payment status change notifications
-    if (prevPaymentStatus !== null && prevPaymentStatus !== paymentStatus) {
-      var psMsg = {
-        'menunggu_verifikasi': 'Bukti diterima! Menunggu verifikasi admin.',
-        'diterima': 'Pembayaran diterima! Pesanan akan segera diproses.',
-        'ditolak': 'Pembayaran ditolak admin. Silakan upload ulang bukti.'
-      };
-      if (psMsg[paymentStatus]) showToast(psMsg[paymentStatus], paymentStatus === 'ditolak' ? 'default' : 'success');
+    // Toasts on change
+    if (prevPayStatus !== null && prevPayStatus !== paySt) {
+      var pm = { 'menunggu_verifikasi':'Bukti diterima! Menunggu verifikasi.', 'diterima':'✅ Pembayaran diterima!', 'ditolak':'❌ Pembayaran ditolak.' };
+      if (pm[paySt]) showToast(pm[paySt], paySt === 'diterima' ? 'success' : '');
     }
-    prevPaymentStatus = paymentStatus;
-
-    // Status changed
-    if (prevStatus !== null && prevStatus !== rawStatus) {
-      var msgs = {
-        'DIPROSES':     'Pesananmu sedang diproses!',
-        'SIAP DIAMBIL': 'Pesananmu siap diambil!',
-        'SELESAI':      'Pesanan selesai. Terima kasih!'
-      };
-      if (msgs[rawStatus]) {
-        showToast(msgs[rawStatus], rawStatus === 'SELESAI' ? 'success' : 'info');
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        var card = document.querySelector('.order-card');
-        card.classList.remove('status-changed');
-        void card.offsetWidth;
-        card.classList.add('status-changed');
-        setTimeout(function() { card.classList.remove('status-changed'); }, 1200);
-        if (rawStatus === 'SIAP DIAMBIL') {
-          setTimeout(function() {
-            document.getElementById('qrSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 400);
-        }
+    if (prevStatus !== null && prevStatus !== raw) {
+      var sm = { 'DIPROSES':'🔄 Pesananmu sedang diproses!', 'SIAP DIAMBIL':'✅ Pesananmu siap diambil!', 'SELESAI':'🎉 Pesanan selesai!' };
+      if (sm[raw]) {
+        showToast(sm[raw], raw === 'SELESAI' ? 'success' : 'info');
+        if (navigator.vibrate) navigator.vibrate([200, 80, 200]);
+        if (raw === 'SIAP DIAMBIL') setTimeout(function() { document.getElementById('secSiap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
       }
     }
-    prevStatus = rawStatus;
+    prevStatus = raw; prevPayStatus = paySt;
 
-    // ID & Name
-    document.getElementById('oId').textContent = data.id || data.orderId || 'N/A';
-    document.getElementById('oName').textContent = data.name || data.nama || '-';
+    // Header
+    document.getElementById('oId').textContent  = data.id || data.orderId || '—';
+    document.getElementById('oName').textContent = data.name || data.nama || '—';
 
-    // Status hero class
-    var statusInfo = STATUS_MAP[rawStatus] || { step: 0, label: rawStatus, cls: 'status-MENUNGGU', hero: 'sh-MENUNGGU' };
-    var hero = document.getElementById('statusHero');
-    hero.className = 'status-hero ' + statusInfo.hero;
-
-    // Status badge
+    // Status hero
+    var info = STATUS_MAP[raw] || STATUS_MAP['MENUNGGU'];
+    document.getElementById('statusHero').className = 'status-hero ' + info.hero;
     var badge = document.getElementById('oStatusBadge');
-    badge.className = 'status-badge ' + statusInfo.cls;
-    document.getElementById('oStatusText').textContent = statusInfo.label;
+    badge.className = 'status-badge ' + info.cls;
+    document.getElementById('oStatusText').textContent = info.label;
 
     // Progress
-    var steps = ['MENUNGGU', 'DIPROSES', 'SIAP DIAMBIL', 'SELESAI'];
-    var activeIdx = steps.indexOf(rawStatus);
+    var steps = ['MENUNGGU','DIPROSES','SIAP DIAMBIL','SELESAI'];
+    var ai = steps.indexOf(raw);
     for (var i = 0; i < 4; i++) {
-      var circle = document.getElementById('sc-' + i);
-      var stepEl = document.getElementById('step-' + i);
-      circle.classList.remove('done', 'active');
-      stepEl.classList.remove('done-step', 'active-step');
-      if (i < activeIdx) { circle.classList.add('done'); stepEl.classList.add('done-step'); }
-      else if (i === activeIdx) { circle.classList.add('active'); stepEl.classList.add('active-step'); }
+      var sc = document.getElementById('sc-' + i), st = document.getElementById('step-' + i);
+      sc.classList.remove('done','active'); st.classList.remove('done-step','active-step');
+      if (i < ai)       { sc.classList.add('done');   st.classList.add('done-step'); }
+      else if (i === ai) { sc.classList.add('active'); st.classList.add('active-step'); }
     }
-    for (var j = 0; j < 3; j++) {
-      var conn = document.getElementById('conn-' + j);
-      conn.classList.remove('filled', 'filling');
-      if (j < activeIdx) conn.classList.add('filled');
-      else if (j === activeIdx - 1) conn.classList.add('filling');
-    }
+    for (var j = 0; j < 3; j++) document.getElementById('conn-' + j).classList.toggle('filled', j < ai);
 
-    // ── PAYMENT STATUS SECTION ──
-    var psSection = document.getElementById('paymentStatusSection');
-    psSection.style.display = 'block';
+    // Payment
+    document.getElementById('paymentSection').style.display = 'block';
+    document.getElementById('payIcon').textContent  = method === 'qris' ? '📲' : '💵';
+    document.getElementById('payLabel').textContent = method === 'qris' ? 'QRIS' : 'Cash';
+    document.getElementById('payDesc').textContent  = method === 'qris' ? 'Scan QR Code' : 'Bayar langsung di tempat';
 
-    // Payment method display
-    document.getElementById('paymentMethodIcon').textContent = paymentMethod === 'qris' ? '📲' : '💵';
-    document.getElementById('paymentMethodLabel').textContent = paymentMethod === 'qris' ? 'QRIS' : 'Cash';
-    document.getElementById('paymentMethodDesc').textContent = paymentMethod === 'qris' ? 'Scan QR Code' : 'Bayar langsung di tempat';
-
-    // Payment status badge
     var psBadgeMap = {
-      'menunggu_upload':     { cls: 'ps-upload',   label: '⏳ Menunggu Upload Bukti' },
-      'menunggu_verifikasi': { cls: 'ps-verify',   label: '🔍 Menunggu Verifikasi Admin' },
-      'diterima':            { cls: 'ps-ok',       label: '✓ Pembayaran Diterima' },
-      'ditolak':             { cls: 'ps-rejected', label: '✕ Ditolak — Upload Ulang' },
-      'belum_dibayar':       { cls: 'ps-cash',     label: '💵 Bayar di Tempat' }
+      'menunggu_upload':     { cls:'ps-upload',   label:'⏳ Menunggu Upload' },
+      'menunggu_verifikasi': { cls:'ps-verify',   label:'🔍 Menunggu Verifikasi' },
+      'diterima':            { cls:'ps-ok',       label:'✓ Diterima' },
+      'ditolak':             { cls:'ps-rejected', label:'✕ Ditolak' },
+      'belum_dibayar':       { cls:'ps-cash',     label:'💵 Bayar di Tempat' }
     };
-    var psInfo = psBadgeMap[paymentStatus] || { cls: 'ps-cash', label: paymentStatus };
-    document.getElementById('paymentStatusBadge').innerHTML =
-      '<span class="ps-badge ' + psInfo.cls + '"><span class="ps-badge-dot"></span>' + psInfo.label + '</span>';
+    var psI = psBadgeMap[paySt] || { cls:'ps-cash', label: paySt };
+    document.getElementById('payStatusBadge').innerHTML = '<span class="ps-badge ' + psI.cls + '"><span class="ps-dot"></span>' + psI.label + '</span>';
 
-    // Rejection reason
-    var rejectCard = document.getElementById('rejectCard');
-    var rejectReason = data.alasanReject || data.catatanAdmin || '';
-    if (paymentStatus === 'ditolak') {
-      rejectCard.style.display = 'block';
-      document.getElementById('rejectReason').textContent = rejectReason || 'Tidak ada keterangan dari admin.';
-    } else {
-      rejectCard.style.display = 'none';
-    }
+    var rc = document.getElementById('rejectCard');
+    rc.style.display = paySt === 'ditolak' ? 'block' : 'none';
+    if (paySt === 'ditolak') document.getElementById('rejectReason').textContent = data.alasanReject || data.catatanAdmin || 'Tidak ada keterangan.';
 
-    // Proof thumbnail
-    var proofSection = document.getElementById('proofThumbSection');
-    var reuploadSection = document.getElementById('reuploadSection');
     var proofUrl = (data.paymentProof && data.paymentProof.url) ? data.paymentProof.url : (data.buktiPembayaranUrl || '');
-    if (paymentMethod === 'qris' && proofUrl) {
-      proofSection.style.display = 'block';
-      document.getElementById('proofThumbImg').src = proofUrl;
-      var uploadedAt = (data.paymentProof && data.paymentProof.uploadedAt) ? data.paymentProof.uploadedAt : data.waktuUploadBukti;
-      if (uploadedAt && uploadedAt.toDate) {
-        document.getElementById('proofUploadTime').textContent =
-          'Diupload: ' + uploadedAt.toDate().toLocaleString('id-ID');
-      }
-    } else {
-      proofSection.style.display = 'none';
-    }
+    var ps = document.getElementById('proofSection');
+    if (method === 'qris' && proofUrl) {
+      ps.style.display = 'block';
+      document.getElementById('proofImg').src = proofUrl;
+      var upAt = (data.paymentProof && data.paymentProof.uploadedAt) || data.waktuUploadBukti;
+      document.getElementById('proofTime').textContent = upAt && upAt.toDate ? 'Diupload: ' + upAt.toDate().toLocaleString('id-ID') : '';
+    } else { ps.style.display = 'none'; }
 
-    // Re-upload section
-    if (paymentMethod === 'qris' && paymentStatus === 'ditolak') {
-      reuploadSection.style.display = 'block';
-      // Set redirect URL for reupload button
-      var ordId = data.id || getOrderId();
-      document.getElementById('btnReuploadRedirect').href = 'payment.html?reupload=' + ordId;
-    } else {
-      reuploadSection.style.display = 'none';
-    }
+    var rs = document.getElementById('reuploadSection');
+    if (method === 'qris' && paySt === 'ditolak') {
+      rs.style.display = 'block';
+      document.getElementById('btnReupload').href = 'payment.html?reupload=' + (data.id || getOrderId());
+    } else { rs.style.display = 'none'; }
 
-    // Cash / QRIS info cards
-    var cashInfo    = document.getElementById('cashInfoCard');
-    var qrisVerify  = document.getElementById('qrisVerifyInfo');
-    var qrisAccepted= document.getElementById('qrisAcceptedInfo');
-    cashInfo.style.display     = 'none';
-    qrisVerify.style.display   = 'none';
-    qrisAccepted.style.display = 'none';
-    if (paymentMethod === 'cash') {
-      cashInfo.style.display = 'block';
-    } else if (paymentMethod === 'qris') {
-      if (paymentStatus === 'menunggu_verifikasi') {
-        qrisVerify.style.display = 'block';
-      } else if (paymentStatus === 'diterima') {
-        qrisAccepted.style.display = 'block';
-      }
+    document.getElementById('noteVerify').style.display   = (method==='qris' && paySt==='menunggu_verifikasi') ? 'block' : 'none';
+    document.getElementById('noteAccepted').style.display = (method==='qris' && paySt==='diterima') ? 'block' : 'none';
+    document.getElementById('noteCash').style.display     = method === 'cash' ? 'block' : 'none';
+
+    // Status sections
+    var n = raw.replace(/\s+/g,' ').trim();
+    ['secMenunggu','secDiproses','secSiap','secSelesai'].forEach(function(id) { document.getElementById(id).classList.remove('active'); });
+    if      (n === 'MENUNGGU')     document.getElementById('secMenunggu').classList.add('active');
+    else if (n === 'DIPROSES')     document.getElementById('secDiproses').classList.add('active');
+    else if (n === 'SIAP DIAMBIL') {
+      document.getElementById('secSiap').classList.add('active');
+      var oid = data.id || getOrderId();
+      var absUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + oid;
+      var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' + encodeURIComponent(absUrl);
+      if (currentQrUrl !== qrUrl) { currentQrUrl = qrUrl; document.getElementById('qrImage').src = qrUrl; }
     }
+    else if (n === 'SELESAI')      document.getElementById('secSelesai').classList.add('active');
 
     // Items
     var items = data.items || [];
-    var itemsHTML = '';
-    items.forEach(function(item) {
-      var sub = (item.price || 0) * (item.qty || 1);
-      itemsHTML += `<div class="order-item">
-        <div class="item-left">
-          <div class="item-icon">${getItemIcon(item.name)}</div>
-          <div>
-            <div class="item-name">${item.name || '-'}</div>
-            <div class="item-qty">${item.qty || 1} pcs &times; ${fmt(item.price || 0)}</div>
-          </div>
-        </div>
-        <div class="item-subtotal">${fmt(sub)}</div>
-      </div>`;
+    var iHtml = '';
+    items.forEach(function(it) {
+      var sub = (it.price||0) * (it.qty||1);
+      var imgSrc = getItemImg(it.name);
+      iHtml += '<div class="order-item"><div class="item-left"><div class="item-img"><img src="' + imgSrc + '" alt="' + (it.name||'') + '" onerror="this.style.display=\'none\'"/></div>' +
+               '<div><div class="item-name">' + (it.name||'—') + '</div><div class="item-qty">' + (it.qty||1) + ' pcs × ' + fmt(it.price||0) + '</div></div></div>' +
+               '<div class="item-subtotal">' + fmt(sub) + '</div></div>';
     });
-    document.getElementById('oItems').innerHTML = itemsHTML || '<div style="color:var(--text3);font-size:0.85rem;padding:8px 0">Tidak ada item</div>';
+    document.getElementById('oItems').innerHTML = iHtml || '<div style="color:var(--text3);font-size:0.84rem">Tidak ada item</div>';
+    document.getElementById('itemsSection').style.display = 'block';
 
     // Total
-    var subtotal = data.subtotal || (items.reduce(function(s, it) { return s + (it.price || 0) * (it.qty || 1); }, 0));
-    var discount = data.discount || 0;
-    var total = data.total || (subtotal - discount);
-    var totalHTML = '';
-    if (subtotal && subtotal !== total) totalHTML += `<div class="total-row"><span class="total-row-label">Subtotal</span><span class="total-row-value">${fmt(subtotal)}</span></div>`;
-    if (discount > 0) totalHTML += `<div class="total-row discount"><span class="total-row-label">Diskon Promo</span><span class="total-row-value">- ${fmt(discount)}</span></div>`;
-    totalHTML += `<div class="total-final"><span class="total-final-label">Total</span><span class="total-final-amount">${fmt(total)}</span></div>`;
-    document.getElementById('oTotalSection').innerHTML = totalHTML;
-
-    // Show items, total
-    document.getElementById('itemsSectionWrap').style.display = 'block';
-    document.getElementById('oTotalSection').style.display = 'block';
-
-    // Section display — QRIS menunggu upload/verifikasi blocks "MENUNGGU" flow section
-    var waitingSection    = document.getElementById('waitingSection');
-    var diprosesSection   = document.getElementById('diprosesSection');
-    var qrSection         = document.getElementById('qrSection');
-    var doneSection       = document.getElementById('doneSection');
-    var normalized = rawStatus.replace(/\s+/g, ' ').trim();
-
-    if (normalized === 'MENUNGGU') {
-      waitingSection.style.display = 'flex';
-      diprosesSection.style.display = 'none';
-      qrSection.style.display = 'none';
-      doneSection.style.display = 'none';
-      if (!window._waitingStartTime) {
-        window._waitingStartTime = Date.now();
-        window._waitingTimer = setInterval(function() {
-          var sec = Math.floor((Date.now() - window._waitingStartTime) / 1000);
-          var el = document.getElementById('waitingElapsed');
-          if (!el) { clearInterval(window._waitingTimer); return; }
-          if (sec < 60) el.textContent = sec + ' detik';
-          else if (sec < 3600) el.textContent = Math.floor(sec/60) + ' menit ' + (sec%60) + ' detik';
-          else el.textContent = Math.floor(sec/3600) + ' jam ' + Math.floor((sec%3600)/60) + ' menit';
-        }, 1000);
-      }
-    } else if (normalized === 'DIPROSES') {
-      waitingSection.style.display = 'none';
-      if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
-      diprosesSection.style.display = 'flex';
-      qrSection.style.display = 'none';
-      doneSection.style.display = 'none';
-    } else if (normalized === 'SIAP DIAMBIL') {
-      var orderId = data.id || getOrderId();
-      var absoluteUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'order.html?id=' + orderId;
-      var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' + encodeURIComponent(absoluteUrl);
-      document.getElementById('qrImage').src = qrUrl;
-      currentQrUrl = qrUrl;
-      waitingSection.style.display = 'none';
-      if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
-      diprosesSection.style.display = 'none';
-      qrSection.style.display = 'flex';
-      doneSection.style.display = 'none';
-    } else if (normalized === 'SELESAI') {
-      waitingSection.style.display = 'none';
-      if (window._waitingTimer) { clearInterval(window._waitingTimer); window._waitingTimer = null; }
-      diprosesSection.style.display = 'none';
-      qrSection.style.display = 'none';
-      doneSection.style.display = 'flex';
-    } else {
-      waitingSection.style.display = 'none';
-      diprosesSection.style.display = 'none';
-      qrSection.style.display = 'none';
-      doneSection.style.display = 'none';
-    }
+    var sub = data.subtotal || items.reduce(function(s,it){ return s+(it.price||0)*(it.qty||1); }, 0);
+    var disc = data.discount || 0;
+    var total = data.total || (sub - disc);
+    var tH = '';
+    if (sub && sub !== total) tH += '<div class="total-row"><span class="total-row-label">Subtotal</span><span class="total-row-value">' + fmt(sub) + '</span></div>';
+    if (disc > 0) tH += '<div class="total-row"><span class="total-row-label">Diskon</span><span class="total-row-value" style="color:var(--green)">- ' + fmt(disc) + '</span></div>';
+    tH += '<div class="total-final"><span class="total-final-label">Total</span><span class="total-final-amount">' + fmt(total) + '</span></div>';
+    document.getElementById('totalSection').innerHTML = tH;
+    document.getElementById('totalSection').style.display = 'block';
   }
 
   function showError(msg) {
@@ -1503,23 +760,21 @@
     document.getElementById('errorMsg').textContent = msg || 'ID pesanan tidak valid.';
   }
 
-  // ── REALTIME LISTENER ──
+  // REALTIME LISTENER
   var orderId = getOrderId();
-
-  function startRealtimeListener() {
-    if (!orderId) { showError('Tidak ada ID pesanan di URL. Pastikan link yang kamu buka sudah benar.'); return; }
-    if (!db) { showError('Koneksi ke server gagal.'); return; }
-
+  if (!orderId) {
+    showError('Tidak ada ID pesanan di URL.');
+  } else if (!db) {
+    showError('Koneksi ke server gagal.');
+  } else {
     db.collection('orders').doc(orderId).onSnapshot(function(snap) {
-      if (!snap.exists) { showError('Pesanan dengan ID "' + orderId + '" tidak ditemukan.'); return; }
+      if (!snap.exists) { showError('Pesanan "' + orderId + '" tidak ditemukan.'); return; }
       renderOrder(snap.data());
     }, function(err) {
       console.error(err);
       showError('Gagal memuat data. Cek koneksi internet kamu.');
     });
   }
-
-  startRealtimeListener();
 </script>
 </body>
 </html>
