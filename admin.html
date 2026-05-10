@@ -1555,10 +1555,9 @@ function showOrdersLoading(){
 }
 async function fetchOrders(){
   try {
-    // FIX BUG 3: use local WIB date instead of UTC toISOString()
-    var now=new Date();
-    var today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-    var snap=await db.collection('orders').where('date','==',today).get();
+    // FIX: hapus filter date — query semua pesanan agar tidak miss data apapun
+    // (BAZAR_DATE di form pelanggan bisa beda dengan hari ini, jadi filter date selalu kosong)
+    var snap=await db.collection('orders').get();
     var orders=[];
     snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id},doc.data())); });
     // FIX BUG 2: filter locally after delete — no second Firestore query
