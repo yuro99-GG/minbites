@@ -150,16 +150,6 @@
     .btn-back:hover { border-color: var(--accent); color: var(--accent); transform: translateX(-2px); }
     .btn-back svg { width: 13px; height: 13px; }
 
-    .btn-theme {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 1.5px solid var(--border); background: var(--surface);
-      color: var(--text2); cursor: pointer; transition: all var(--t);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; flex-shrink: 0;
-    }
-    .btn-theme:hover { border-color: var(--accent); transform: rotate(20deg) scale(1.08); }
-    .header-right { display: flex; align-items: center; gap: 8px; }
-
     /* ─── MAIN ─── */
     .main { max-width: 520px; margin: 0 auto; padding: 28px 16px 80px; position: relative; z-index: 1; }
 
@@ -214,13 +204,62 @@
     [data-theme="dark"] .qris-header {
       background: linear-gradient(160deg, #200808 0%, var(--bg2) 55%, var(--surface) 100%);
     }
-    /* Decorative rings */
+    /* ── Animated gradient mesh in QRIS header ── */
     .qris-header::before, .qris-header::after {
       content: ''; position: absolute; border-radius: 50%;
       border: 1px solid var(--border2); pointer-events: none;
     }
     .qris-header::before { width: 220px; height: 220px; top: -110px; right: -50px; opacity: 0.5; animation: rotateSlow 30s linear infinite; }
     .qris-header::after  { width: 140px; height: 140px; bottom: -70px; left: -30px; opacity: 0.35; animation: rotateSlow 20s linear infinite reverse; }
+    .qris-header-mesh {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+      border-radius: inherit;
+    }
+    .mesh-blob {
+      position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.18;
+      animation: meshFloat ease-in-out infinite;
+    }
+    .mesh-blob:nth-child(1) { width: 180px; height: 180px; background: #e8002d; top: -40px; right: -20px; animation-duration: 8s; }
+    .mesh-blob:nth-child(2) { width: 140px; height: 140px; background: #ff6b35; bottom: -30px; left: 10%; animation-duration: 10s; animation-delay: -3s; }
+    .mesh-blob:nth-child(3) { width: 100px; height: 100px; background: var(--accent); top: 20%; left: 40%; animation-duration: 7s; animation-delay: -5s; opacity: 0.12; }
+    @keyframes meshFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%  { transform: translate(15px,-12px) scale(1.08); }
+      66%  { transform: translate(-10px,18px) scale(0.94); }
+    }
+
+    /* ── Dark mode toggle ── */
+    .btn-theme {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: var(--surface);
+      cursor: pointer; transition: all var(--t);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; flex-shrink: 0;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .btn-theme:hover { border-color: var(--accent); transform: rotate(25deg) scale(1.1); box-shadow: 0 4px 16px var(--accent-glow); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ── Confetti particles ── */
+    .confetti-particle {
+      position: fixed; pointer-events: none; z-index: 9000;
+      border-radius: 3px; animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(var(--fall-y)) rotate(var(--rot)) scale(0.4); opacity: 0; }
+    }
+
+    /* ── Progress bar glow head ── */
+    .progress-bar-fill::after {
+      content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+      width: 20px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7));
+      border-radius: 0 6px 6px 0;
+      box-shadow: 0 0 12px rgba(42,157,143,0.8);
+    }
+
     @keyframes rotateSlow { to { transform: rotate(360deg); } }
 
     .qris-top-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; position: relative; }
@@ -315,32 +354,55 @@
     }
     .qr-frame img { width: 220px; height: 220px; display: block; border-radius: 12px; object-fit: cover; }
 
-    /* Scan line animation */
-    .qr-scan-line {
-      position: absolute; left: 15px; right: 15px; height: 2px;
-      background: linear-gradient(90deg, transparent 0%, rgba(232,0,45,0.9) 30%, rgba(232,0,45,1) 50%, rgba(232,0,45,0.9) 70%, transparent 100%);
-      border-radius: 2px; pointer-events: none; z-index: 2;
-      box-shadow: 0 0 10px rgba(232,0,45,0.6), 0 0 20px rgba(232,0,45,0.3);
-      animation: scanLine 2.8s cubic-bezier(0.4,0,0.6,1) infinite;
-    }
-    @keyframes scanLine {
-      0%   { top: 15px; opacity: 0; }
-      8%   { opacity: 1; }
-      88%  { opacity: 1; }
-      100% { top: calc(100% - 17px); opacity: 0; }
+    /* ── QR image wrapper for scan line containment ── */
+    .qr-img-wrap {
+      position: relative; border-radius: 12px; overflow: hidden;
+      width: 220px; height: 220px;
     }
 
-    /* Pulse ring on QR frame */
-    .qr-pulse-ring {
-      position: absolute; inset: -8px; border-radius: 28px; pointer-events: none;
-      border: 2px solid rgba(232,0,45,0.25);
-      animation: pulseRing 2.8s ease-out infinite;
+    /* ── Scan line ── */
+    .qr-scan-line {
+      position: absolute; left: 0; right: 0; height: 3px; z-index: 4;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(232,0,45,0.0) 5%,
+        rgba(232,0,45,1) 40%,
+        rgba(255,100,100,1) 50%,
+        rgba(232,0,45,1) 60%,
+        rgba(232,0,45,0.0) 95%,
+        transparent 100%);
+      filter: drop-shadow(0 0 6px rgba(232,0,45,0.9));
+      animation: scanLine 2.6s cubic-bezier(0.45,0,0.55,1) infinite;
+      pointer-events: none;
     }
-    .qr-pulse-ring:nth-child(2) { inset: -14px; border-radius: 32px; animation-delay: 0.8s; border-color: rgba(232,0,45,0.15); }
-    @keyframes pulseRing {
-      0%   { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.08); opacity: 0; }
+    @keyframes scanLine {
+      0%   { top: 0;   opacity: 0; }
+      6%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
     }
+
+    /* ── Corner brackets ── */
+    .qr-corner { position: absolute; width: 22px; height: 22px; z-index: 5; pointer-events: none; }
+    .qr-corner::before, .qr-corner::after {
+      content: ''; position: absolute; background: #e8002d; border-radius: 2px;
+    }
+    .qr-corner::before { width: 100%; height: 3px; top: 0; left: 0; }
+    .qr-corner::after  { width: 3px; height: 100%; top: 0; left: 0; }
+    .qr-corner.tr { right: 0; top: 0; transform: scaleX(-1); }
+    .qr-corner.bl { left: 0; bottom: 0; transform: scaleY(-1); }
+    .qr-corner.br { right: 0; bottom: 0; transform: scale(-1); }
+    .qr-corner.tl { left: 0; top: 0; }
+    .qr-corner { animation: cornerPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .qr-corner.tl { animation-delay: 0.6s; } .qr-corner.tr { animation-delay: 0.68s; }
+    .qr-corner.bl { animation-delay: 0.76s; } .qr-corner.br { animation-delay: 0.84s; }
+    @keyframes cornerPop {
+      from { opacity: 0; transform: scale(0); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .qr-corner.tr { transform-origin: right top; }
+    .qr-corner.bl { transform-origin: left bottom; }
+    .qr-corner.br { transform-origin: right bottom; }
     .qr-placeholder {
       width: 220px; height: 220px;
       background: linear-gradient(135deg, #f5f0ea 25%, #ede5d8 50%, #f5f0ea 75%);
@@ -573,16 +635,6 @@
     @keyframes shieldPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
     .verify-badge strong { color: var(--text2); }
 
-    /* Ripple on button */
-    .ripple-effect {
-      position: absolute; border-radius: 50%;
-      background: rgba(255,255,255,0.38); transform: scale(0);
-      animation: rippleAnim 0.6s linear; pointer-events: none;
-    }
-    @keyframes rippleAnim {
-      to { transform: scale(4); opacity: 0; }
-    }
-
     /* Spinner */
     .spinner {
       display: inline-block; width: 17px; height: 17px;
@@ -637,8 +689,8 @@
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite</a>
     <div class="header-right">
-      <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" title="Ganti tema" aria-label="Toggle dark mode">🌙</button>
-      <a class="btn-back" href="index.html" onclick="goBack(); return false;">
+      <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" aria-label="Toggle tema"></button>
+      <a class="btn-back" href="javascript:void(0)" onclick="goBack()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
@@ -664,6 +716,11 @@
 
       <!-- QRIS HEADER -->
       <div class="qris-header">
+        <div class="qris-header-mesh" aria-hidden="true">
+          <div class="mesh-blob"></div>
+          <div class="mesh-blob"></div>
+          <div class="mesh-blob"></div>
+        </div>
         <div class="qris-top-row">
           <div class="qris-wordmark">QRIS <span class="qris-badge-label">Standar</span></div>
         </div>
@@ -687,18 +744,22 @@
       <!-- QR CODE -->
       <div class="qr-section">
         <div class="qr-frame">
-          <div class="qr-pulse-ring"></div>
-          <div class="qr-pulse-ring"></div>
-          <div class="qr-scan-line"></div>
-          <img id="qrisImg" src="qris.jpg" alt="QRIS MinBite"
-            onerror="this.style.display='none';document.getElementById('qrisPlaceholder').style.display='flex'"/>
-          <div id="qrisPlaceholder" style="display:none" class="qr-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-              <path d="M14 14h.01M18 14h.01M14 18h.01M18 18h.01M14 14v4h4v-4z"/>
-            </svg>
-            <div class="qr-placeholder-text">Letakkan file <strong>qris.jpg</strong><br>di folder yang sama</div>
+          <div class="qr-corner tl"></div>
+          <div class="qr-corner tr"></div>
+          <div class="qr-corner bl"></div>
+          <div class="qr-corner br"></div>
+          <div class="qr-img-wrap">
+            <div class="qr-scan-line"></div>
+            <img id="qrisImg" src="qris.jpg" alt="QRIS MinBite"
+              onerror="this.style.display='none';document.getElementById('qrisPlaceholder').style.display='flex'"/>
+            <div id="qrisPlaceholder" style="display:none" class="qr-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <path d="M14 14h.01M18 14h.01M14 18h.01M18 18h.01M14 14v4h4v-4z"/>
+              </svg>
+              <div class="qr-placeholder-text">Letakkan file <strong>qris.jpg</strong><br>di folder yang sama</div>
+            </div>
           </div>
         </div>
         <div class="qr-scan-note">Scan dengan e-wallet favoritmu</div>
@@ -827,31 +888,66 @@
 
 <script>
   /* ─── THEME TOGGLE ─── */
-  function toggleTheme() {
-    var html = document.documentElement;
-    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    document.getElementById('btnTheme').textContent = next === 'dark' ? '☀️' : '🌙';
-  }
-  // Sync icon on load
-  (function() {
-    var t = document.documentElement.getAttribute('data-theme');
+  var THEME_ICONS = { light: '🌙', dark: '☀️' };
+  function setThemeIcon() {
+    var t = document.documentElement.getAttribute('data-theme') || 'light';
     var btn = document.getElementById('btnTheme');
-    if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
-  })();
+    if (btn) btn.textContent = THEME_ICONS[t];
+  }
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    setThemeIcon();
+  }
+  setThemeIcon();
 
-  /* ─── COUNT-UP ANIMATION ─── */
+  /* ─── CONFETTI BURST ─── */
+  var CONFETTI_COLORS = ['#e8002d','#c07a48','#2a9d8f','#f4a261','#e9c46a','#264653'];
+  function burstConfetti(originEl) {
+    var rect = originEl.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top  + rect.height / 2;
+    for (var i = 0; i < 52; i++) {
+      var p = document.createElement('div');
+      p.className = 'confetti-particle';
+      var size  = 6 + Math.random() * 8;
+      var angle = Math.random() * 360;
+      var dist  = 60 + Math.random() * 140;
+      var rad   = angle * Math.PI / 180;
+      var dx    = Math.cos(rad) * dist;
+      var dy    = Math.sin(rad) * dist;
+      var rot   = (Math.random() - 0.5) * 720 + 'deg';
+      var dur   = 0.55 + Math.random() * 0.45;
+      var color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      var aspect = Math.random() > 0.5 ? 1 : 2 + Math.random() * 2;
+      p.style.cssText = [
+        'width:'  + size + 'px',
+        'height:' + (size / aspect) + 'px',
+        'background:' + color,
+        'left:' + (cx - size / 2) + 'px',
+        'top:'  + (cy - size / 2) + 'px',
+        '--fall-y:' + dy + 'px',
+        '--rot:' + rot,
+        'animation-duration:' + dur + 's',
+        'transform-origin: center center'
+      ].join(';');
+      document.body.appendChild(p);
+      p.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      setTimeout(function(el) { el.remove(); }, dur * 1000 + 100, p);
+    }
+  }
+
+  /* ─── COUNT-UP ─── */
   function animateCountUp(el, target, duration) {
-    var start = 0, startTime = null;
+    var startTime = null;
     function step(ts) {
       if (!startTime) startTime = ts;
-      var progress = Math.min((ts - startTime) / duration, 1);
-      var eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      var value    = Math.round(eased * target);
-      el.textContent = 'Rp' + value.toLocaleString('id-ID');
-      if (progress < 1) requestAnimationFrame(step);
-      else el.textContent = 'Rp' + target.toLocaleString('id-ID');
+      var p = Math.min((ts - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - p, 4);
+      el.textContent = 'Rp' + Math.round(eased * target).toLocaleString('id-ID');
+      if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
@@ -859,20 +955,26 @@
   /* ─── RIPPLE ON BUTTON ─── */
   document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btnUpload');
-    if (btn) {
-      btn.addEventListener('click', function(e) {
-        if (btn.disabled) return;
-        var rect = btn.getBoundingClientRect();
-        var size = Math.max(rect.width, rect.height);
-        var x = e.clientX - rect.left - size / 2;
-        var y = e.clientY - rect.top  - size / 2;
-        var ripple = document.createElement('span');
-        ripple.className = 'ripple-effect';
-        ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;';
-        btn.appendChild(ripple);
-        setTimeout(function() { ripple.remove(); }, 650);
-      });
-    }
+    if (!btn) return;
+    btn.addEventListener('pointerdown', function(e) {
+      if (btn.disabled) return;
+      var r = btn.getBoundingClientRect();
+      var s = Math.max(r.width, r.height) * 2;
+      var x = e.clientX - r.left - s / 2;
+      var y = e.clientY - r.top  - s / 2;
+      var rip = document.createElement('span');
+      rip.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);pointer-events:none;' +
+        'width:' + s + 'px;height:' + s + 'px;left:' + x + 'px;top:' + y + 'px;' +
+        'animation:rippleAnim 0.7s ease forwards;';
+      if (!document.getElementById('rippleKF')) {
+        var st = document.createElement('style');
+        st.id = 'rippleKF';
+        st.textContent = '@keyframes rippleAnim{from{transform:scale(0);opacity:1}to{transform:scale(1);opacity:0}}';
+        document.head.appendChild(st);
+      }
+      btn.appendChild(rip);
+      setTimeout(function() { rip.remove(); }, 750);
+    });
   });
 
   /* ─── CONFIG ─── */
@@ -1001,6 +1103,7 @@
         var origKB = Math.round(file.size / 1024);
         var newKB  = Math.round(result.file.size / 1024);
         showToast('Siap: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
+        burstConfetti(document.getElementById('previewWrap'));
       });
   }
 
@@ -1147,9 +1250,9 @@
     var d = orderData;
     document.getElementById('statePayment').style.display  = '';
     var totalVal = d.total || 0;
-    var amountEl = document.getElementById('displayAmount');
-    amountEl.textContent = 'Rp0';
-    setTimeout(function() { animateCountUp(amountEl, totalVal, 900); }, 400);
+    var amtEl = document.getElementById('displayAmount');
+    amtEl.textContent = 'Rp0';
+    setTimeout(function() { animateCountUp(amtEl, totalVal, 950); }, 420);
     document.getElementById('displayOrderId').textContent  = d.id;
     document.getElementById('displayName').textContent     = d.name || '';
     var items = d.items || [];
