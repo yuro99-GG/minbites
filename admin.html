@@ -1459,6 +1459,12 @@ function _auth(){
     ov.style.transition='opacity 0.4s';ov.style.opacity='0';
     setTimeout(function(){ov.style.display='none';},420);
     err.textContent='';
+    // FIX BUG 1: fetch orders immediately after login, not rely on pre-login fetch
+    showOrdersLoading();
+    clearInterval(refreshInterval); clearInterval(countdownTimer);
+    fetchOrders();
+    startRefresh();
+    loadPromos();
   } else { err.textContent='Username atau password salah.'; document.getElementById('loginPass').value=''; }
 }
 function _logout(){
@@ -1518,6 +1524,7 @@ function updateSoundUI(){
 updateSoundUI();
 
 /* ══════════ AUTO DELETE EXPIRED ══════════ */
+// FIX BUG 2: return array of deleted docIds so fetchOrders can filter locally (no second Firestore query)
 async function autoDeleteExpiredOrders(orders){
   var now=Date.now(),LIMIT_MS=24*60*60*1000;
   var expired=orders.filter(function(o){
@@ -1528,25 +1535,37 @@ async function autoDeleteExpiredOrders(orders){
     else return false;
     return (now-ts)>LIMIT_MS;
   });
-  if(!expired.length) return;
+  if(!expired.length) return [];
+  var deletedIds=[];
   for(var i=0;i<expired.length;i++){
     var o=expired[i];
-    try{ await db.collection('orders').doc(o._docId).delete(); addLog('delete','Pesanan <strong>'+escHtml(o.id||o._docId)+'</strong> dihapus otomatis (>24 jam).'); }
-    catch(e){}
+    try{
+      await db.collection('orders').doc(o._docId).delete();
+      deletedIds.push(o._docId);
+      addLog('delete','Pesanan <strong>'+escHtml(o.id||o._docId)+'</strong> dihapus otomatis (>24 jam).');
+    }catch(e){}
   }
+  return deletedIds;
 }
 
 /* ══════════ FETCH ORDERS ══════════ */
+function showOrdersLoading(){
+  var el=document.getElementById('ordersList');
+  if(el) el.innerHTML='<div class="loading-wrap"><div class="loading-ring"></div><span style="font-size:0.82rem;color:var(--text3)">Memuat pesanan…</span></div>';
+}
 async function fetchOrders(){
   try {
-    var today=new Date().toISOString().slice(0,10);
+    // FIX BUG 3: use local WIB date instead of UTC toISOString()
+    var now=new Date();
+    var today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
     var snap=await db.collection('orders').where('date','==',today).get();
     var orders=[];
     snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id},doc.data())); });
-    await autoDeleteExpiredOrders(orders);
-    snap=await db.collection('orders').where('date','==',today).get();
-    orders=[];
-    snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id},doc.data())); });
+    // FIX BUG 2: filter locally after delete — no second Firestore query
+    var deletedIds=await autoDeleteExpiredOrders(orders);
+    if(deletedIds.length){
+      orders=orders.filter(function(o){ return deletedIds.indexOf(o._docId)===-1; });
+    }
     orders.sort(function(a,b){
       var ta=a.timestamp&&a.timestamp.toMillis?a.timestamp.toMillis():(a.timestamp&&a.timestamp.seconds?a.timestamp.seconds*1000:0);
       var tb=b.timestamp&&b.timestamp.toMillis?b.timestamp.toMillis():(b.timestamp&&b.timestamp.seconds?b.timestamp.seconds*1000:0);
@@ -2150,7 +2169,7 @@ function exportCSV(){
 function startRefresh(){
   clearInterval(refreshInterval); clearInterval(countdownTimer);
   countdownSec=10;
-  refreshInterval=setInterval(function(){ fetchOrders(); countdownSec=10; },10000);
+  refreshInterval=setInterval(function(){ showOrdersLoading(); fetchOrders(); countdownSec=10; },10000);
   countdownTimer=setInterval(function(){
     countdownSec--;
     var el=document.getElementById('refreshCountdown');
@@ -2316,9 +2335,12 @@ function fmtRp(n){return 'Rp'+Number(n||0).toLocaleString('id-ID');}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ══════════ INIT ══════════ */
-fetchOrders();
-startRefresh();
-loadPromos();
+// FIX BUG 1: only auto-start if session is already valid (returning user)
+if(_hsk()){
+  fetchOrders();
+  startRefresh();
+  loadPromos();
+}
 renderLog();
 
 document.getElementById('confirmModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
