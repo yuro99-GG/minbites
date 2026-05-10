@@ -609,7 +609,7 @@
 
 <script>
   /* ─── CONFIG ─── */
-  var CLOUDINARY_CLOUD = 'dwssvn6zo';
+  var _CLOUD = 'dwssvn6zo';
   var CLOUDINARY_PRESET = 'minbite_bukti';
   var CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
 
@@ -799,7 +799,7 @@
     var pw = document.getElementById('progressWrap');
     pw.style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
-    setProgress(25, 'Mengupload ke Cloudinary…', 2);
+    setProgress(25, 'Mengupload ke Server…', 2);
 
     try {
       /* ① Upload ke Cloudinary */
