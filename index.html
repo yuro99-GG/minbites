@@ -393,6 +393,9 @@
       min-height: 200px; position: relative; overflow: hidden; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
+    .product-image-wrap img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
     .product-image-wrap::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0;
       height: 40px; background: linear-gradient(to top, var(--surface), transparent);
@@ -1170,44 +1173,7 @@
         <span class="product-badge badge-favorit">⭐ Favorit</span>
         <div class="product-image-wrap oreo-bg" onclick="openDetail(0)">
           <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" width="200" height="155">
-            <ellipse cx="130" cy="177" rx="80" ry="9" fill="#B8A898" opacity="0.2"/>
-            <ellipse cx="130" cy="168" rx="82" ry="15" fill="#EEE6DA" stroke="#D5C9BA" stroke-width="2"/>
-            <ellipse cx="130" cy="163" rx="74" ry="11" fill="#F8F1E8"/>
-            <ellipse cx="130" cy="161" rx="62" ry="8" fill="none" stroke="#E8DFD3" stroke-width="1.2"/>
-            <g>
-              <ellipse cx="130" cy="76" rx="62" ry="13" fill="white" opacity="0.14"/>
-              <ellipse cx="87" cy="68" rx="5.2" ry="2.2" transform="rotate(-18,87,68)" fill="#FFF9F2" opacity="0.93"/>
-              <ellipse cx="104" cy="61" rx="4.2" ry="1.9" transform="rotate(22,104,61)" fill="#FFF9F2" opacity="0.90"/>
-              <ellipse cx="120" cy="56" rx="5.8" ry="2.1" transform="rotate(-6,120,56)" fill="#FFF9F2" opacity="0.94"/>
-              <ellipse cx="139" cy="60" rx="4.6" ry="2.2" transform="rotate(15,139,60)" fill="#FFF9F2" opacity="0.90"/>
-              <ellipse cx="155" cy="65" rx="5.0" ry="2.0" transform="rotate(-22,155,65)" fill="#FFF9F2" opacity="0.91"/>
-              <ellipse cx="173" cy="72" rx="3.8" ry="1.8" transform="rotate(10,173,72)" fill="#FFF9F2" opacity="0.87"/>
-              <circle cx="93" cy="75" r="1.3" fill="#FFF4EC" opacity="0.95"/>
-              <circle cx="127" cy="65" r="1.4" fill="#FFF4EC" opacity="0.92"/>
-              <circle cx="161" cy="75" r="1.2" fill="#FFF4EC" opacity="0.88"/>
-            </g>
-            <circle cx="90" cy="102" r="27" fill="#1C0D06" stroke="#0D0602" stroke-width="1.8"/>
-            <circle cx="82" cy="94" r="7" fill="#280F06" opacity="0.62"/>
-            <circle cx="77" cy="89" r="2.4" fill="#FFF2E8"/>
-            <circle cx="88" cy="84" r="2.1" fill="#FFF2E8"/>
-            <circle cx="170" cy="102" r="27" fill="#1A0B05" stroke="#0E0602" stroke-width="1.8"/>
-            <circle cx="162" cy="94" r="7" fill="#281005" opacity="0.62"/>
-            <circle cx="157" cy="89" r="2.4" fill="#FFF2E8"/>
-            <circle cx="168" cy="84" r="2.1" fill="#FFF2E8"/>
-            <circle cx="130" cy="92" r="27" fill="#1C0D06" stroke="#0D0602" stroke-width="1.8"/>
-            <circle cx="122" cy="84" r="7" fill="#280F06" opacity="0.62"/>
-            <circle cx="117" cy="79" r="2.4" fill="#FFF2E8"/>
-            <circle cx="128" cy="74" r="2.1" fill="#FFF2E8"/>
-            <circle cx="107" cy="133" r="27" fill="#220E07" stroke="#110703" stroke-width="1.8"/>
-            <circle cx="99" cy="125" r="7" fill="#301308" opacity="0.62"/>
-            <circle cx="94" cy="120" r="2.4" fill="#FFF2E8"/>
-            <circle cx="105" cy="115" r="2.1" fill="#FFF2E8"/>
-            <circle cx="153" cy="133" r="27" fill="#1A0B05" stroke="#0E0602" stroke-width="1.8"/>
-            <circle cx="145" cy="125" r="7" fill="#281005" opacity="0.62"/>
-            <circle cx="140" cy="120" r="2.4" fill="#FFF2E8"/>
-            <circle cx="151" cy="115" r="2.1" fill="#FFF2E8"/>
-          </svg>
+          <img src="bola.jpg" alt="Bola Oreo Susu" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
         </div>
         <div class="product-info">
           <div class="product-name">Bola Oreo Susu</div>
@@ -1231,25 +1197,7 @@
         <span class="product-badge badge-seger">🧊 Seger</span>
         <div class="product-image-wrap tea-bg" onclick="openDetail(1)">
           <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" width="200" height="155">
-            <ellipse cx="130" cy="184" rx="36" ry="6" fill="#C49060" opacity="0.18"/>
-            <path d="M84 44 L100 180 Q130 188 160 180 L176 44 Z" fill="#CF5E18"/>
-            <path d="M84 44 L84 68 Q130 78 176 68 L176 44 Z" fill="#F5E2B4"/>
-            <path d="M88 55 Q130 64 172 55" fill="none" stroke="#FFE8C0" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
-            <rect x="95" y="100" width="30" height="24" rx="5" fill="rgba(215,240,255,0.62)" stroke="rgba(190,225,255,0.85)" stroke-width="1.2"/>
-            <rect x="97" y="102" width="9" height="5" rx="2" fill="white" opacity="0.55"/>
-            <rect x="136" y="108" width="27" height="22" rx="5" fill="rgba(215,240,255,0.55)" stroke="rgba(190,225,255,0.78)" stroke-width="1.2"/>
-            <rect x="100" y="138" width="26" height="21" rx="5" fill="rgba(215,240,255,0.48)" stroke="rgba(190,225,255,0.7)" stroke-width="1"/>
-            <rect x="138" y="146" width="24" height="20" rx="5" fill="rgba(215,240,255,0.42)" stroke="rgba(190,225,255,0.6)" stroke-width="1"/>
-            <path d="M84 44 L100 180 L108 180 L92 50 Z" fill="white" opacity="0.13"/>
-            <path d="M84 44 L100 180 Q130 190 160 180 L176 44 Z" fill="none" stroke="#A04010" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M82 44 Q130 38 178 44" fill="none" stroke="#A04010" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="89" cy="110" r="2.2" fill="white" opacity="0.32"/>
-            <circle cx="87" cy="130" r="1.8" fill="white" opacity="0.26"/>
-            <circle cx="173" cy="120" r="1.8" fill="white" opacity="0.28"/>
-            <rect x="152" y="14" width="9" height="138" rx="4.5" fill="#D84E18"/>
-            <rect x="153" y="14" width="2.5" height="138" rx="1.2" fill="white" opacity="0.28"/>
-          </svg>
+          <img src="thai.jpg" alt="Thai Tea" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
         </div>
         <div class="product-info">
           <div class="product-name">Thai Tea</div>
@@ -1273,49 +1221,7 @@
         <span class="product-badge badge-bundle">🎁 Bundle</span>
         <div class="product-image-wrap bundle-bg" onclick="openDetail(2)">
           <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <svg viewBox="0 0 270 200" xmlns="http://www.w3.org/2000/svg" width="210" height="158">
-            <ellipse cx="73" cy="168" rx="58" ry="10" fill="#EEE6DA" stroke="#D5C9BA" stroke-width="1.5"/>
-            <ellipse cx="73" cy="163" rx="52" ry="7.5" fill="#F8F1E8"/>
-            <g>
-              <ellipse cx="73" cy="72" rx="44" ry="10" fill="white" opacity="0.13"/>
-              <ellipse cx="43" cy="64" rx="4.0" ry="1.7" transform="rotate(-16,43,64)" fill="#FFF9F2" opacity="0.92"/>
-              <ellipse cx="73" cy="54" rx="4.5" ry="1.8" transform="rotate(-5,73,54)" fill="#FFF9F2" opacity="0.93"/>
-              <ellipse cx="103" cy="64" rx="4.0" ry="1.6" transform="rotate(-20,103,64)" fill="#FFF9F2" opacity="0.89"/>
-              <circle cx="76" cy="63" r="1.2" fill="#FFF4EC" opacity="0.92"/>
-            </g>
-            <circle cx="52" cy="98" r="19" fill="#1C0D06" stroke="#0D0602" stroke-width="1.5"/>
-            <circle cx="45" cy="91" r="5" fill="#280F06" opacity="0.62"/>
-            <circle cx="41" cy="87" r="1.8" fill="#FFF2E8"/>
-            <circle cx="50" cy="84" r="1.6" fill="#FFF2E8"/>
-            <circle cx="94" cy="98" r="19" fill="#1A0B05" stroke="#0E0602" stroke-width="1.5"/>
-            <circle cx="87" cy="91" r="5" fill="#281005" opacity="0.62"/>
-            <circle cx="83" cy="87" r="1.8" fill="#FFF2E8"/>
-            <circle cx="92" cy="84" r="1.6" fill="#FFF2E8"/>
-            <circle cx="73" cy="90" r="19" fill="#1C0D06" stroke="#0D0602" stroke-width="1.5"/>
-            <circle cx="66" cy="83" r="5" fill="#280F06" opacity="0.62"/>
-            <circle cx="62" cy="79" r="1.8" fill="#FFF2E8"/>
-            <circle cx="71" cy="76" r="1.6" fill="#FFF2E8"/>
-            <circle cx="57" cy="122" r="20" fill="#220E07" stroke="#110703" stroke-width="1.5"/>
-            <circle cx="50" cy="115" r="5" fill="#301308" opacity="0.62"/>
-            <circle cx="46" cy="111" r="1.8" fill="#FFF2E8"/>
-            <circle cx="89" cy="122" r="20" fill="#1A0B05" stroke="#0E0602" stroke-width="1.5"/>
-            <circle cx="82" cy="115" r="5" fill="#281005" opacity="0.62"/>
-            <circle cx="78" cy="111" r="1.8" fill="#FFF2E8"/>
-            <rect x="127" y="108" width="16" height="5" rx="2.5" fill="#C8956C" opacity="0.7"/>
-            <rect x="132" y="100" width="5" height="21" rx="2.5" fill="#C8956C" opacity="0.7"/>
-            <ellipse cx="200" cy="184" rx="36" ry="6" fill="#C49060" opacity="0.18"/>
-            <path d="M168 44 L178 178 Q200 184 222 178 L232 44 Z" fill="#CF5E18"/>
-            <path d="M168 44 L168 64 Q200 72 232 64 L232 44 Z" fill="#F5E2B4"/>
-            <path d="M171 54 Q200 62 229 54" fill="none" stroke="#FFE8C0" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
-            <rect x="176" y="98" width="22" height="18" rx="4" fill="rgba(215,240,255,0.58)" stroke="rgba(190,225,255,0.8)" stroke-width="1"/>
-            <rect x="207" y="106" width="19" height="17" rx="4" fill="rgba(215,240,255,0.52)" stroke="rgba(190,225,255,0.72)" stroke-width="1"/>
-            <rect x="178" y="132" width="20" height="17" rx="4" fill="rgba(215,240,255,0.45)" stroke="rgba(190,225,255,0.65)" stroke-width="1"/>
-            <path d="M168 44 L178 178 L184 178 L174 50 Z" fill="white" opacity="0.12"/>
-            <path d="M168 44 L178 178 Q200 186 222 178 L232 44 Z" fill="none" stroke="#A04010" stroke-width="2.2" stroke-linejoin="round"/>
-            <path d="M166 44 Q200 38 234 44" fill="none" stroke="#A04010" stroke-width="2.5" stroke-linecap="round"/>
-            <rect x="218" y="16" width="7" height="112" rx="3.5" fill="#D84E18"/>
-            <rect x="219" y="16" width="2.5" height="112" rx="1.2" fill="white" opacity="0.28"/>
-          </svg>
+          <img src="bundle.jpg" alt="Bundle MinBite" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
         </div>
         <div class="product-info">
           <div class="product-name">Bundle MinBite</div>
@@ -1688,19 +1594,19 @@
       {
         id: 'bola-oreo', name: 'Bola Oreo Susu', price: 7000,
         thumb: '🍫', badge: '⭐ Favorit', badgeClass: 'badge-favorit',
-        imgBg: 'oreo-bg',
+        imgBg: 'oreo-bg', imgSrc: 'bola.jpg',
         desc: 'Lima bola cokelat lembut bertabur susu bubuk, gurih manis di setiap gigitan. Dibuat fresh setiap hari!'
       },
       {
         id: 'thai-tea', name: 'Thai Tea', price: 4000,
         thumb: '🧋', badge: '🧊 Segar', badgeClass: 'badge-seger',
-        imgBg: 'tea-bg',
+        imgBg: 'tea-bg', imgSrc: 'thai.jpg',
         desc: 'Teh khas Thailand berbalut krim lembut dan es batu. Manis, creamy, dan super segar!'
       },
       {
         id: 'bundle', name: 'Bundle MinBite', price: 10000,
         thumb: '🎁', badge: '🎁 Bundle', badgeClass: 'badge-bundle',
-        imgBg: 'bundle-bg',
+        imgBg: 'bundle-bg', imgSrc: 'bundle.jpg',
         desc: '1 Bola Oreo Susu + 1 Thai Tea dalam satu paket hemat. Lebih irit Rp1.000 dari harga satuan!'
       }
     ];
@@ -1758,11 +1664,6 @@
     // ════════════════════════════════
     // PRODUCT DETAIL POPUP
     // ════════════════════════════════
-    function getProductSvgById(idx, large) {
-      const svgEl = document.querySelectorAll('.product-image-wrap svg')[idx];
-      return svgEl ? svgEl.outerHTML : '';
-    }
-
     function openDetail(idx) {
       detailIdx = idx;
       detailQty = 1;
@@ -1772,7 +1673,7 @@
       badge.className = 'detail-badge ' + p.badgeClass;
       const imgArea = document.getElementById('detailImgArea');
       imgArea.className = 'detail-img-area ' + p.imgBg;
-      document.getElementById('detailSvg').innerHTML = getProductSvgById(idx, true);
+      document.getElementById('detailSvg').innerHTML = `<img src="${p.imgSrc}" alt="${p.name}" style="width:200px;height:160px;object-fit:cover;border-radius:12px" onerror="this.style.display='none'"/>`;
       document.getElementById('detailName').textContent  = p.name;
       document.getElementById('detailDesc').textContent  = p.desc;
       document.getElementById('detailPrice').textContent = fmt(p.price);
@@ -1859,7 +1760,9 @@
         cart.forEach(c => {
           html += `
             <div class="cart-item">
-              <div class="cart-item-thumb" style="background:var(--bg2);font-size:1.4rem;display:flex;align-items:center;justify-content:center">${c.thumb}</div>
+              <div class="cart-item-thumb" style="background:var(--bg2);overflow:hidden">
+            ${c.imgSrc ? `<img src="${c.imgSrc}" alt="${c.name}" style="width:54px;height:54px;object-fit:cover" onerror="this.style.display='none'"/>` : `<span style="font-size:1.4rem;display:flex;align-items:center;justify-content:center;height:100%">${c.thumb}</span>`}
+          </div>
               <div class="cart-item-info">
                 <div class="cart-item-name">${c.name}</div>
                 <div class="cart-item-price">${fmt(c.price)}</div>
@@ -2273,4 +2176,4 @@
     document.getElementById('successPopup').addEventListener('click', function(e) { /* don't close */ });
   </script>
 </body>
-                                                                            </html>
+            </html>
