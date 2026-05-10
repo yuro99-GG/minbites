@@ -349,8 +349,9 @@
     }
     @keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
     .order-card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
-    .order-card.is-new { border-color: rgba(232,119,58,0.4); }
-    .order-card.priority-high { border-left: 2px solid var(--amber); }
+    .order-card.is-new { border-color:rgba(232,119,58,0.4); }
+    .order-card.priority-high { border-left:2px solid var(--amber); }
+    .order-card.verify-pending { border-left:3px solid var(--amber); background:rgba(245,200,66,0.02); }
 
     .order-head {
       display: flex; align-items: center; justify-content: space-between;
@@ -1242,7 +1243,7 @@
 <div id="toast-container"></div>
 
 <!-- PROOF LIGHTBOX ADMIN -->
-<div class="proof-lightbox-admin" id="proofLightboxAdmin" onclick="closeAdminProofLightbox()">
+<div class="proof-lightbox-admin" id="proofLightboxAdmin" onclick="if(event.target===this)closeAdminProofLightbox()">
   <img id="proofLightboxAdminImg" src="" alt="Bukti Pembayaran"/>
   <button class="proof-lightbox-close-btn" onclick="closeAdminProofLightbox()">✕ Tutup</button>
 </div>
@@ -1477,34 +1478,58 @@ function renderOrders(){
       paymentHtml += '<span class="pay-status-badge '+(psCls[o.paymentStatus]||'')+'">'+(psMap[o.paymentStatus]||o.paymentStatus)+'</span>';
     }
 
-    // Proof section (visible when payment proof exists and status=menunggu_verifikasi or ditolak)
+    // Proof section — cek buktiPembayaranUrl (Cloudinary) ATAU paymentProof.url (lama)
     var proofHtml = '';
     var ps = o.paymentStatus || '';
-    if(o.paymentProof && o.paymentProof.url && (ps==='menunggu_verifikasi')){
+    var proofUrl = o.buktiPembayaranUrl || (o.paymentProof && o.paymentProof.url) || '';
+    if(proofUrl && (ps==='menunggu_verifikasi' || ps==='ditolak')){
       var proofUploadTime = '';
-      if(o.paymentProof.uploadedAt && o.paymentProof.uploadedAt.toDate){
-        proofUploadTime = o.paymentProof.uploadedAt.toDate().toLocaleString('id-ID');
+      var uploadedAtField = o.waktuUploadBukti || (o.paymentProof && o.paymentProof.uploadedAt);
+      if(uploadedAtField && uploadedAtField.toDate){
+        proofUploadTime = uploadedAtField.toDate().toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
       }
-      proofHtml += '<div style="margin:10px 0 2px">';
-      proofHtml += '<div class="proof-label">Bukti Pembayaran</div>';
-      proofHtml += '<div class="proof-thumb" onclick="openAdminProofLightbox(\''+escHtml(o.paymentProof.url)+'\')">'+
-        '<img src="'+escHtml(o.paymentProof.url)+'" alt="Bukti" loading="lazy"/>'+
-        '<div class="proof-thumb-overlay">🔍 Perbesar</div></div>';
-      if(proofUploadTime) proofHtml += '<div class="proof-upload-time">Diupload: '+proofUploadTime+'</div>';
+      var isReject = ps === 'ditolak';
+      var headerColor = isReject ? 'var(--red)' : 'var(--amber)';
+      var headerLabel = isReject ? '⚠️ Bukti Ditolak Sebelumnya — Review Ulang' : '🔍 Bukti Pembayaran — Perlu Verifikasi';
+      proofHtml += '<div style="margin:12px 0 2px;border:1px solid '+(isReject?'var(--red-border)':'var(--amber-border)')+';border-radius:var(--radius-sm);overflow:hidden">';
+      // header strip
+      proofHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:'+(isReject?'var(--red-bg)':'var(--amber-bg)')+';border-bottom:1px solid '+(isReject?'var(--red-border)':'var(--amber-border)')+';">';
+      proofHtml += '<span style="font-size:0.68rem;font-weight:700;color:'+headerColor+'">'+headerLabel+'</span>';
+      if(proofUploadTime) proofHtml += '<span style="font-size:0.62rem;color:var(--text3)">'+proofUploadTime+'</span>';
       proofHtml += '</div>';
-      // Verify/reject buttons
+      // rejected reason notice
+      if(isReject && o.catatanAdmin){
+        proofHtml += '<div style="padding:7px 12px;background:var(--red-bg);border-bottom:1px solid var(--red-border);font-size:0.72rem;color:var(--red);line-height:1.5">';
+        proofHtml += '<strong>Ditolak:</strong> '+escHtml(o.catatanAdmin)+'</div>';
+      }
+      // image
+      proofHtml += '<div style="padding:10px 12px 8px;background:var(--bg2)">';
+      proofHtml += '<div class="proof-thumb" onclick="openAdminProofLightbox(\''+escHtml(proofUrl)+'\')">'+
+        '<img src="'+escHtml(proofUrl)+'" alt="Bukti Pembayaran" loading="lazy" style="background:#fff"/>'+
+        '<div class="proof-thumb-overlay">🔍 Perbesar</div></div>';
+      // action buttons
       proofHtml += '<div class="verify-actions">';
-      proofHtml += '<button class="btn-approve" onclick="approvePayment(\''+docId+'\')">✓ Approve Pembayaran</button>';
-      proofHtml += '<button class="btn-reject-pay" onclick="toggleRejectReason(\''+docId+'\')">✕ Tolak</button>';
+      proofHtml += '<button class="btn-approve" onclick="approvePayment(\''+docId+'\')">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>'+
+        'Approve</button>';
+      proofHtml += '<button class="btn-reject-pay" onclick="toggleRejectReason(\''+docId+'\')">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
+        'Tolak</button>';
       proofHtml += '</div>';
       proofHtml += '<div class="reject-reason-wrap" id="reject-'+docId+'">';
-      proofHtml += '<textarea class="reject-reason-input" id="reason-'+docId+'" placeholder="Alasan penolakan (wajib diisi)..." rows="2"></textarea>';
+      proofHtml += '<textarea class="reject-reason-input" id="reason-'+docId+'" placeholder="Tulis alasan penolakan untuk pelanggan…" rows="2"></textarea>';
       proofHtml += '<button class="btn-reject-confirm" onclick="rejectPayment(\''+docId+'\')">Kirim Penolakan</button>';
       proofHtml += '</div>';
+      proofHtml += '</div></div>';
     }
 
+    /* Tombol "Proses" muncul jika:
+       - Cash (ps = 'belum_dibayar' atau kosong)
+       - QRIS sudah diapprove (ps = 'diterima')
+       Disembunyikan jika masih menunggu upload/verifikasi */
+    var payOk = ps==='diterima' || ps==='belum_dibayar' || ps==='' || !ps || o.payment==='cash';
     var actionBtns='';
-    if(s==='MENUNGGU' && ps!=='menunggu_upload' && ps!=='menunggu_verifikasi'){
+    if(s==='MENUNGGU' && payOk){
       actionBtns+='<button class="btn btn-process" onclick="changeStatus(\''+docId+'\',\'DIPROSES\')">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><path d="M12 2a10 10 0 1 0 10 10"/></svg>Proses</button>';
     }
@@ -1523,7 +1548,7 @@ function renderOrders(){
     actionBtns+='<a href="order.html?id='+encodeURIComponent(id)+'" target="_blank" class="btn btn-secondary" style="text-decoration:none">'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Detail</a>';
 
-    html+='<div class="order-card'+(o.is_new?' is-new':'')+(s==='MENUNGGU'?' priority-high':'')+(ps==='menunggu_verifikasi'?' is-new':'')+'">';
+    html+='<div class="order-card'+(o.is_new?' is-new':'')+(s==='MENUNGGU'&&payOk?' priority-high':'')+(ps==='menunggu_verifikasi'?' verify-pending':'')+'">';
     html+='<div class="order-head">';
     html+='<div><div class="order-id">'+escHtml(id)+'</div>';
     html+='<div class="order-meta"><strong>'+escHtml(o.name||'—')+'</strong>';
@@ -1561,7 +1586,10 @@ function setFilter(f){
 /* ══════════ CHANGE STATUS ══════════ */
 async function changeStatus(docId, newStatus){
   try{
-    await db.collection('orders').doc(docId).update({status:newStatus});
+    await db.collection('orders').doc(docId).update({
+      status: newStatus,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
     var idx=allOrders.findIndex(function(o){return o._docId===docId||o.id===docId;});
     var o=allOrders[idx];
     var id=o?o.id||docId:docId;
@@ -1940,12 +1968,11 @@ function playScanSuccessSound(){
 function openAdminProofLightbox(url){
   var lb=document.getElementById('proofLightboxAdmin');
   document.getElementById('proofLightboxAdminImg').src=url;
-  lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-  lb.onclick=closeAdminProofLightbox;
+  lb.classList.add('open');
 }
 function closeAdminProofLightbox(){
-  var lb=document.getElementById('proofLightboxAdmin');
-  lb.style.display='none';
+  document.getElementById('proofLightboxAdmin').classList.remove('open');
+  document.getElementById('proofLightboxAdminImg').src='';
 }
 function toggleRejectReason(docId){
   var wrap=document.getElementById('reject-'+docId);
@@ -1955,19 +1982,20 @@ function toggleRejectReason(docId){
 async function approvePayment(docId){
   var o=allOrders.find(function(x){return x._docId===docId||x.id===docId;});
   var id=o?(o.id||docId):docId;
-  if(!confirm('Approve pembayaran pesanan '+id+'?')) return;
   try{
     await db.collection('orders').doc(docId).update({
       paymentStatus:'diterima',
       status:'MENUNGGU',
+      alasanReject:'',
+      catatanAdmin:'',
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     var idx=allOrders.findIndex(function(x){return x._docId===docId||x.id===docId;});
-    if(idx!==-1){ allOrders[idx].paymentStatus='diterima'; }
-    addLog('status','Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → DITERIMA');
+    if(idx!==-1){ allOrders[idx].paymentStatus='diterima'; allOrders[idx].status='MENUNGGU'; }
+    addLog('status','✅ Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → DITERIMA · Siap diproses');
     if(soundEnabled) playNotifSound();
     updateStats(); renderOrders();
-    showToast('Pembayaran pesanan '+id+' diterima!');
+    showToast('✓ Pembayaran '+id+' diterima — pesanan siap diproses!');
   } catch(err){ console.error(err); showToast('Gagal approve. Coba lagi.'); }
 }
 async function rejectPayment(docId){
@@ -1979,11 +2007,12 @@ async function rejectPayment(docId){
     await db.collection('orders').doc(docId).update({
       paymentStatus:'ditolak',
       catatanAdmin:reason,
+      alasanReject:reason,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     var idx=allOrders.findIndex(function(x){return x._docId===docId||x.id===docId;});
     if(idx!==-1){ allOrders[idx].paymentStatus='ditolak'; allOrders[idx].catatanAdmin=reason; }
-    addLog('status','Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → DITOLAK: '+escHtml(reason));
+    addLog('delete','❌ QRIS <strong>'+escHtml(id)+'</strong> DITOLAK: '+escHtml(reason));
     updateStats(); renderOrders();
     showToast('Pembayaran pesanan '+id+' ditolak.');
   } catch(err){ console.error(err); showToast('Gagal reject. Coba lagi.'); }
