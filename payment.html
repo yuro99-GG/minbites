@@ -150,6 +150,16 @@
     .btn-back:hover { border-color: var(--accent); color: var(--accent); transform: translateX(-2px); }
     .btn-back svg { width: 13px; height: 13px; }
 
+    .btn-theme {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: var(--surface);
+      color: var(--text2); cursor: pointer; transition: all var(--t);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .btn-theme:hover { border-color: var(--accent); transform: rotate(20deg) scale(1.08); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
     /* ─── MAIN ─── */
     .main { max-width: 520px; margin: 0 auto; padding: 28px 16px 80px; position: relative; z-index: 1; }
 
@@ -304,6 +314,33 @@
       border-radius: 22px; background: white; z-index: -1;
     }
     .qr-frame img { width: 220px; height: 220px; display: block; border-radius: 12px; object-fit: cover; }
+
+    /* Scan line animation */
+    .qr-scan-line {
+      position: absolute; left: 15px; right: 15px; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(232,0,45,0.9) 30%, rgba(232,0,45,1) 50%, rgba(232,0,45,0.9) 70%, transparent 100%);
+      border-radius: 2px; pointer-events: none; z-index: 2;
+      box-shadow: 0 0 10px rgba(232,0,45,0.6), 0 0 20px rgba(232,0,45,0.3);
+      animation: scanLine 2.8s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+    @keyframes scanLine {
+      0%   { top: 15px; opacity: 0; }
+      8%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { top: calc(100% - 17px); opacity: 0; }
+    }
+
+    /* Pulse ring on QR frame */
+    .qr-pulse-ring {
+      position: absolute; inset: -8px; border-radius: 28px; pointer-events: none;
+      border: 2px solid rgba(232,0,45,0.25);
+      animation: pulseRing 2.8s ease-out infinite;
+    }
+    .qr-pulse-ring:nth-child(2) { inset: -14px; border-radius: 32px; animation-delay: 0.8s; border-color: rgba(232,0,45,0.15); }
+    @keyframes pulseRing {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.08); opacity: 0; }
+    }
     .qr-placeholder {
       width: 220px; height: 220px;
       background: linear-gradient(135deg, #f5f0ea 25%, #ede5d8 50%, #f5f0ea 75%);
@@ -536,6 +573,16 @@
     @keyframes shieldPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
     .verify-badge strong { color: var(--text2); }
 
+    /* Ripple on button */
+    .ripple-effect {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.38); transform: scale(0);
+      animation: rippleAnim 0.6s linear; pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
     /* Spinner */
     .spinner {
       display: inline-block; width: 17px; height: 17px;
@@ -589,12 +636,15 @@
 <header>
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite</a>
-    <a class="btn-back" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      Batal
-    </a>
+    <div class="header-right">
+      <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" title="Ganti tema" aria-label="Toggle dark mode">🌙</button>
+      <a class="btn-back" href="index.html" onclick="goBack(); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Batal
+      </a>
+    </div>
   </div>
 </header>
 
@@ -637,6 +687,9 @@
       <!-- QR CODE -->
       <div class="qr-section">
         <div class="qr-frame">
+          <div class="qr-pulse-ring"></div>
+          <div class="qr-pulse-ring"></div>
+          <div class="qr-scan-line"></div>
           <img id="qrisImg" src="qris.jpg" alt="QRIS MinBite"
             onerror="this.style.display='none';document.getElementById('qrisPlaceholder').style.display='flex'"/>
           <div id="qrisPlaceholder" style="display:none" class="qr-placeholder">
@@ -773,6 +826,55 @@
 <div id="toast-container"></div>
 
 <script>
+  /* ─── THEME TOGGLE ─── */
+  function toggleTheme() {
+    var html = document.documentElement;
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('btnTheme').textContent = next === 'dark' ? '☀️' : '🌙';
+  }
+  // Sync icon on load
+  (function() {
+    var t = document.documentElement.getAttribute('data-theme');
+    var btn = document.getElementById('btnTheme');
+    if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  })();
+
+  /* ─── COUNT-UP ANIMATION ─── */
+  function animateCountUp(el, target, duration) {
+    var start = 0, startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      var value    = Math.round(eased * target);
+      el.textContent = 'Rp' + value.toLocaleString('id-ID');
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = 'Rp' + target.toLocaleString('id-ID');
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ─── RIPPLE ON BUTTON ─── */
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('btnUpload');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        if (btn.disabled) return;
+        var rect = btn.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        var x = e.clientX - rect.left - size / 2;
+        var y = e.clientY - rect.top  - size / 2;
+        var ripple = document.createElement('span');
+        ripple.className = 'ripple-effect';
+        ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;';
+        btn.appendChild(ripple);
+        setTimeout(function() { ripple.remove(); }, 650);
+      });
+    }
+  });
+
   /* ─── CONFIG ─── */
   var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED */
   var CLOUDINARY_PRESET = 'minbite_bukti';
@@ -1044,7 +1146,10 @@
   function renderPage() {
     var d = orderData;
     document.getElementById('statePayment').style.display  = '';
-    document.getElementById('displayAmount').textContent   = fmt(d.total || 0);
+    var totalVal = d.total || 0;
+    var amountEl = document.getElementById('displayAmount');
+    amountEl.textContent = 'Rp0';
+    setTimeout(function() { animateCountUp(amountEl, totalVal, 900); }, 400);
     document.getElementById('displayOrderId').textContent  = d.id;
     document.getElementById('displayName').textContent     = d.name || '';
     var items = d.items || [];
