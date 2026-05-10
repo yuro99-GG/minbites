@@ -609,9 +609,9 @@
 
 <script>
   /* ─── CONFIG ─── */
-  var _CLOUD = 'dwssvn6zo';
+  var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED: nama konsisten */
   var CLOUDINARY_PRESET = 'minbite_bukti';
-  var CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
+  var CLOUDINARY_URL    = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
 
   /* ─── THEME ─── */
   (function() {
@@ -641,7 +641,7 @@
 
   /* ─── COMPRESSION ─── */
   function compressImage(file, onProg) {
-    var MAX_KB = 300, MAX_W = 1200; /* Lebih besar — Cloudinary handle kompresi CDN */
+    var MAX_KB = 300, MAX_W = 1200;
     return new Promise(function(resolve) {
       var objUrl = URL.createObjectURL(file);
       var img    = new Image();
@@ -804,7 +804,7 @@
     try {
       /* ① Upload ke Cloudinary */
       var imageUrl = await uploadToCloudinary(selectedFile, function(pct, speedKB) {
-        var mapped = 25 + (pct / 100) * 45; /* 25–70% */
+        var mapped = 25 + (pct / 100) * 45;
         document.getElementById('progressFill').style.width = mapped + '%';
         document.getElementById('progressPct').textContent  = Math.round(mapped) + '%';
         document.getElementById('progressLabel').textContent = 'Mengupload… ' + Math.round(pct) + '%';
@@ -814,7 +814,7 @@
       setProgress(72, 'Menyimpan pesanan…', 3);
       document.getElementById('uploadSpeed').textContent = '';
 
-      /* ② Simpan ke Firestore — hanya URL, bukan base64 */
+      /* ② Simpan ke Firestore */
       var orderId = orderData.id;
       var now     = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -838,7 +838,6 @@
         paymentStatus:         'menunggu_verifikasi',
         statusOrder:           'MENUNGGU',
         status:                'MENUNGGU',
-        /* Cloudinary URL — ringan, cepat dibaca admin panel */
         buktiPembayaranUrl:    imageUrl,
         waktuUploadBukti:      now,
         alasanReject:          '',
