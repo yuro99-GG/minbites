@@ -1555,12 +1555,10 @@ function showOrdersLoading(){
 }
 async function fetchOrders(){
   try {
-    // FIX: hapus filter date — query semua pesanan agar tidak miss data apapun
-    // (BAZAR_DATE di form pelanggan bisa beda dengan hari ini, jadi filter date selalu kosong)
+    // Query semua pesanan tanpa filter date (date di form pelanggan bisa hardcoded beda)
     var snap=await db.collection('orders').get();
     var orders=[];
     snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id},doc.data())); });
-    // FIX BUG 2: filter locally after delete — no second Firestore query
     var deletedIds=await autoDeleteExpiredOrders(orders);
     if(deletedIds.length){
       orders=orders.filter(function(o){ return deletedIds.indexOf(o._docId)===-1; });
@@ -1584,8 +1582,15 @@ async function fetchOrders(){
     renderOrders();
     renderMenuList();
   } catch(err){
-    console.error(err);
-    document.getElementById('ordersList').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem">Gagal memuat. Coba refresh.</div>';
+    console.error('fetchOrders error:', err);
+    // Tampilkan pesan error yang informatif + tombol retry
+    var errCode = err && err.code ? err.code : '';
+    var errMsg = errCode === 'permission-denied'
+      ? 'Akses ditolak Firestore.<br><small>Cek Security Rules di Firebase Console → Firestore → Rules.<br>Pastikan <code>allow read: if true;</code> pada collection orders.</small>'
+      : 'Gagal memuat pesanan.<br><small>'+(errCode||err.message||'Cek koneksi internet')+'</small>';
+    document.getElementById('ordersList').innerHTML=
+      '<div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem;line-height:1.7">⚠️ '+errMsg+
+      '<br><br><button onclick="showOrdersLoading();fetchOrders();" style="padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;font-weight:600">🔄 Coba Lagi</button></div>';
   }
 }
 
@@ -2168,7 +2173,8 @@ function exportCSV(){
 function startRefresh(){
   clearInterval(refreshInterval); clearInterval(countdownTimer);
   countdownSec=10;
-  refreshInterval=setInterval(function(){ showOrdersLoading(); fetchOrders(); countdownSec=10; },10000);
+  // FIX: hapus showOrdersLoading() dari interval — spinner tidak boleh reset tiap 10 detik
+  refreshInterval=setInterval(function(){ fetchOrders(); countdownSec=10; },10000);
   countdownTimer=setInterval(function(){
     countdownSec--;
     var el=document.getElementById('refreshCountdown');
