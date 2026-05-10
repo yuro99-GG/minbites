@@ -752,82 +752,75 @@
     }
     .reject-card-title {
       font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.08em; color: #e63946; margin-bottom: 5px;
+      letter-spacing: 0.08em; color: #e63946; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px;
     }
     .reject-card-reason { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
 
-    /* Proof thumbnail */
-    .proof-thumb-section { margin-top: 10px; }
-    .proof-thumb-label {
-      font-size: 0.67rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px;
+    /* ─── PAYMENT INFO BANNERS ─── */
+    .payment-info-banner {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-top: 12px; padding: 12px 14px;
+      border-radius: var(--radius-sm); border: 1.5px solid transparent;
+      animation: fadeUp 0.3s ease;
     }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+    .banner-blue  { background: var(--blue-bg);  border-color: var(--blue-border);  }
+    .banner-green { background: var(--green-bg); border-color: var(--green-border); }
+    .banner-neutral { background: var(--surface2); border-color: var(--border); }
+    .pib-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+    .pib-title { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .pib-desc  { font-size: 0.73rem; color: var(--text2); line-height: 1.55; }
+    .banner-blue .pib-title  { color: var(--blue); }
+    .banner-green .pib-title { color: var(--green); }
+
+    /* proof thumb overlay */
     .proof-thumb-img {
       border-radius: var(--radius-sm); overflow: hidden;
-      border: 1.5px solid var(--border); max-height: 180px;
-      cursor: pointer; position: relative; display: inline-block;
+      border: 1.5px solid var(--border); max-height: 200px;
+      cursor: pointer; position: relative; display: block; margin-bottom: 5px;
     }
-    .proof-thumb-img img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
-    .proof-upload-time { font-size: 0.68rem; color: var(--text3); margin-top: 5px; }
+    .proof-thumb-img img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+    .proof-thumb-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.38);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; opacity: 0; transition: opacity 0.2s;
+      font-size: 0.72rem; font-weight: 700; color: white; letter-spacing: 0.04em;
+    }
+    .proof-thumb-img:hover .proof-thumb-overlay { opacity: 1; }
+
+    /* reupload notice */
+    .reupload-notice {
+      font-size: 0.78rem; color: var(--text2); line-height: 1.65;
+      margin-bottom: 14px;
+      background: rgba(230,57,70,0.05); border: 1.5px solid rgba(230,57,70,0.18);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+
+    /* payment method icon wrap */
+    .payment-method-icon-wrap {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
 
     /* Proof Lightbox */
     .proof-lightbox {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.94);
       z-index: 9000; display: none; align-items: center; justify-content: center;
-      padding: 20px;
+      padding: 20px; flex-direction: column; gap: 16px;
     }
     .proof-lightbox.open { display: flex; }
-    .proof-lightbox img {
-      max-width: 100%; max-height: 85vh; border-radius: 12px;
-      object-fit: contain;
-    }
+    .proof-lightbox img { max-width: min(92vw, 600px); max-height: 78vh; border-radius: 12px; object-fit: contain; }
     .proof-lightbox-close {
-      position: absolute; top: 16px; right: 16px;
-      width: 38px; height: 38px; border-radius: 50%;
-      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
-      color: white; cursor: pointer; font-size: 0.9rem;
-      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.6); background: transparent;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
+      padding: 8px 22px; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem;
+      transition: all 0.2s;
     }
-
-    /* Re-upload section */
-    .reupload-section {
-      padding: 14px 24px 20px;
-      border-top: 1px dashed var(--border);
-    }
-    .reupload-title {
-      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.1em; color: #e63946; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .reupload-drop-area {
-      border: 2px dashed rgba(230,57,70,0.35); border-radius: var(--radius-sm);
-      padding: 18px 14px; text-align: center; cursor: pointer;
-      background: rgba(230,57,70,0.04); margin-bottom: 10px;
-      position: relative; transition: all 0.2s;
-    }
-    .reupload-drop-area:hover { border-color: #e63946; background: rgba(230,57,70,0.07); }
-    .reupload-drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .reupload-preview-wrap { display: none; margin-bottom: 10px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid #e63946; position: relative; }
-    .reupload-preview-wrap img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
-    .reupload-preview-remove {
-      position: absolute; top: 8px; right: 8px;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(0,0,0,0.6); color: white; border: none;
-      cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
-    }
-    .upload-progress-wrap { margin-bottom: 10px; }
-    .upload-progress-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
-    .upload-progress-fill { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent-dark)); border-radius: 3px; transition: width 0.3s; width: 0%; }
-    .upload-progress-text { font-size: 0.68rem; color: var(--text3); text-align: center; font-weight: 600; }
-    .btn-reupload {
-      width: 100%; padding: 13px; background: #e63946; color: white;
-      border: none; border-radius: var(--radius-sm);
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-      text-decoration: none;
-    }
-    .btn-reupload:hover:not(:disabled) { background: #c0272e; transform: translateY(-1px); }
-    .btn-reupload:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .proof-lightbox-close:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
 
     /* ═══════════ MOBILE ═══════════ */
     @media (max-width: 520px) {
@@ -954,51 +947,78 @@
       <div class="payment-status-section" id="paymentStatusSection" style="display:none">
         <div class="payment-status-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Pembayaran
+          Status Pembayaran
         </div>
+
+        <!-- Method + status row -->
         <div class="payment-method-row" id="paymentMethodRow">
-          <span class="payment-method-icon" id="paymentMethodIcon">💵</span>
-          <div>
+          <div class="payment-method-icon-wrap" id="paymentMethodIcon">
+            <span>💵</span>
+          </div>
+          <div style="flex:1">
             <div class="payment-method-label" id="paymentMethodLabel">Cash</div>
             <div class="payment-method-desc" id="paymentMethodDesc">Bayar langsung di tempat</div>
           </div>
           <div id="paymentStatusBadge"></div>
         </div>
-        <!-- Rejection reason (QRIS ditolak) -->
+
+        <!-- Rejection reason card -->
         <div class="reject-card" id="rejectCard" style="display:none">
-          <div class="reject-card-title">⚠️ Pembayaran Ditolak Admin</div>
+          <div class="reject-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Pembayaran Ditolak Admin
+          </div>
           <div class="reject-card-reason" id="rejectReason">—</div>
         </div>
-        <!-- Proof thumbnail (QRIS) -->
+
+        <!-- Proof thumbnail (QRIS — uploaded proof) -->
         <div class="proof-thumb-section" id="proofThumbSection" style="display:none">
-          <div class="proof-thumb-label">Bukti Pembayaran Yang Diupload</div>
+          <div class="proof-thumb-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Bukti Yang Diupload
+          </div>
           <div class="proof-thumb-img" onclick="openProofLightbox()">
             <img id="proofThumbImg" src="" alt="Bukti Pembayaran"/>
+            <div class="proof-thumb-overlay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Perbesar
+            </div>
           </div>
           <div class="proof-upload-time" id="proofUploadTime"></div>
         </div>
-        <!-- QRIS verifikasi info -->
-        <div id="qrisVerifyInfo" style="display:none;margin-top:10px;background:var(--blue-bg);border:1.5px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--blue);line-height:1.6;">
-          🔍 <strong>Bukti pembayaran sedang diperiksa admin.</strong> Pesanan akan diproses setelah pembayaran diverifikasi.
+
+        <!-- Info banners -->
+        <div id="qrisVerifyInfo" style="display:none" class="payment-info-banner banner-blue">
+          <div class="pib-icon">🔍</div>
+          <div>
+            <div class="pib-title">Menunggu Verifikasi Admin</div>
+            <div class="pib-desc">Bukti pembayaranmu sedang diperiksa. Pesanan diproses setelah terverifikasi — biasanya cepat!</div>
+          </div>
         </div>
-        <!-- QRIS diterima info -->
-        <div id="qrisAcceptedInfo" style="display:none;margin-top:10px;background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--green);line-height:1.6;">
-          ✅ <strong>Pembayaran berhasil diverifikasi.</strong> Pesananmu sedang diproses!
+        <div id="qrisAcceptedInfo" style="display:none" class="payment-info-banner banner-green">
+          <div class="pib-icon">✅</div>
+          <div>
+            <div class="pib-title">Pembayaran Terverifikasi</div>
+            <div class="pib-desc">Pembayaranmu sudah dikonfirmasi admin. Pesanan sedang diproses!</div>
+          </div>
         </div>
-        <!-- Cash info card -->
-        <div id="cashInfoCard" style="display:none;margin-top:10px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.78rem;color:var(--text2);line-height:1.6;">
-          💵 <strong>Pembayaran dilakukan saat pengambilan / pengantaran.</strong> Siapkan uang pas ya!
+        <div id="cashInfoCard" style="display:none" class="payment-info-banner banner-neutral">
+          <div class="pib-icon">💵</div>
+          <div>
+            <div class="pib-title">Bayar Saat Pengambilan</div>
+            <div class="pib-desc">Siapkan uang pas ya! Bayar langsung ke penjual saat mengambil pesanan.</div>
+          </div>
         </div>
       </div>
 
-      <!-- RE-UPLOAD SECTION (show when rejected → redirect to payment.html) -->
+      <!-- RE-UPLOAD SECTION -->
       <div class="reupload-section" id="reuploadSection" style="display:none">
         <div class="reupload-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload Ulang Bukti Pembayaran
         </div>
-        <div style="font-size:0.78rem;color:var(--text2);line-height:1.65;margin-bottom:14px;background:rgba(230,57,70,0.05);border:1.5px solid rgba(230,57,70,0.18);border-radius:var(--radius-sm);padding:12px 14px;">
-          Bukti pembayaranmu ditolak oleh admin. Silakan upload ulang foto bukti yang jelas dan valid.
+        <div class="reupload-notice">
+          Bukti pembayaran ditolak admin. Silakan foto/screenshot ulang yang jelas, lalu upload.
         </div>
         <a class="btn-reupload" id="btnReuploadRedirect" href="#">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -1163,9 +1183,9 @@
 <div id="toast-container"></div>
 
 <!-- PROOF LIGHTBOX -->
-<div class="proof-lightbox" id="proofLightbox" onclick="closeProofLightbox()">
+<div class="proof-lightbox" id="proofLightbox" onclick="if(event.target===this)closeProofLightbox()">
   <img id="proofLightboxImg" src="" alt="Bukti Pembayaran"/>
-  <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕</button>
+  <button class="proof-lightbox-close" onclick="closeProofLightbox()">✕ Tutup</button>
 </div>
 
 <script>
@@ -1373,7 +1393,8 @@
     // Payment method display
     document.getElementById('paymentMethodIcon').textContent = paymentMethod === 'qris' ? '📲' : '💵';
     document.getElementById('paymentMethodLabel').textContent = paymentMethod === 'qris' ? 'QRIS' : 'Cash';
-    document.getElementById('paymentMethodDesc').textContent = paymentMethod === 'qris' ? 'Scan QR Code' : 'Bayar langsung di tempat';
+    document.getElementById('paymentMethodDesc').textContent = paymentMethod === 'qris' ? 'Transfer via QR Code' : 'Bayar langsung di tempat';
+    document.getElementById('paymentMethodIcon').innerHTML = paymentMethod === 'qris' ? '<span>📲</span>' : '<span>💵</span>';
 
     // Payment status badge
     var psBadgeMap = {
@@ -1390,9 +1411,12 @@
     // Rejection reason
     var rejectCard = document.getElementById('rejectCard');
     var rejectReason = data.alasanReject || data.catatanAdmin || '';
-    if (paymentStatus === 'ditolak') {
+    if (paymentStatus === 'ditolak' && rejectReason) {
       rejectCard.style.display = 'block';
-      document.getElementById('rejectReason').textContent = rejectReason || 'Tidak ada keterangan dari admin.';
+      document.getElementById('rejectReason').textContent = rejectReason;
+    } else if (paymentStatus === 'ditolak') {
+      rejectCard.style.display = 'block';
+      document.getElementById('rejectReason').textContent = 'Admin tidak memberikan keterangan. Coba hubungi admin.';
     } else {
       rejectCard.style.display = 'none';
     }
@@ -1400,14 +1424,14 @@
     // Proof thumbnail
     var proofSection = document.getElementById('proofThumbSection');
     var reuploadSection = document.getElementById('reuploadSection');
-    var proofUrl = (data.paymentProof && data.paymentProof.url) ? data.paymentProof.url : (data.buktiPembayaranUrl || '');
+    var proofUrl = data.buktiPembayaranUrl || (data.paymentProof && data.paymentProof.url) || '';
     if (paymentMethod === 'qris' && proofUrl) {
       proofSection.style.display = 'block';
       document.getElementById('proofThumbImg').src = proofUrl;
-      var uploadedAt = (data.paymentProof && data.paymentProof.uploadedAt) ? data.paymentProof.uploadedAt : data.waktuUploadBukti;
+      var uploadedAt = data.waktuUploadBukti || (data.paymentProof && data.paymentProof.uploadedAt);
       if (uploadedAt && uploadedAt.toDate) {
         document.getElementById('proofUploadTime').textContent =
-          'Diupload: ' + uploadedAt.toDate().toLocaleString('id-ID');
+          'Diupload ' + uploadedAt.toDate().toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
       }
     } else {
       proofSection.style.display = 'none';
@@ -1554,4 +1578,4 @@
   startRealtimeListener();
 </script>
 </body>
-</html>
+  </html>
