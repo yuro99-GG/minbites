@@ -388,9 +388,39 @@
     .reject-card-title  { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); margin-bottom: 4px; }
     .reject-card-reason { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
 
-    .proof-thumb { border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); max-height: 160px; cursor: pointer; margin-top: 10px; }
-    .proof-thumb img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
-    .proof-time { font-size: 0.67rem; color: var(--text3); margin-top: 4px; }
+    /* Proof thumbnail card */
+    .proof-card {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 10px; padding: 10px 12px;
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); cursor: pointer;
+      transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+    }
+    .proof-card:hover { border-color: var(--accent); box-shadow: 0 3px 14px rgba(192,98,58,0.1); transform: translateY(-1px); }
+    .proof-card:active { transform: scale(0.98); }
+
+    .proof-img-thumb {
+      width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0;
+      border: 1.5px solid var(--border); overflow: hidden;
+      background: var(--bg2); position: relative;
+    }
+    .proof-img-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s ease;
+    }
+    .proof-card:hover .proof-img-thumb img { transform: scale(1.06); }
+
+    .proof-card-info { flex: 1; min-width: 0; }
+    .proof-card-label { font-size: 0.75rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .proof-card-sub   { font-size: 0.67rem; color: var(--text3); line-height: 1.5; }
+
+    .proof-card-action {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; font-weight: 700; color: var(--accent);
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .proof-card-action svg { width: 12px; height: 12px; }
+    .proof-time { font-size: 0.67rem; color: var(--text3); margin-top: 4px; display: none; }
 
     .info-note { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; line-height: 1.6; }
     .note-blue  { background: var(--blue-bg);  border: 1px solid var(--blue-border);  color: var(--blue); }
@@ -571,10 +601,19 @@
           <div class="reject-card-reason" id="rejectReason">—</div>
         </div>
         <div id="proofSection" style="display:none">
-          <div class="proof-thumb" onclick="openProofLightbox()">
-            <img id="proofImg" src="" alt="Bukti Pembayaran"/>
+          <div class="proof-card" onclick="openProofLightbox()">
+            <div class="proof-img-thumb">
+              <img id="proofImg" src="" alt="Bukti Pembayaran"/>
+            </div>
+            <div class="proof-card-info">
+              <div class="proof-card-label">Bukti Pembayaran</div>
+              <div class="proof-card-sub" id="proofTime">Menunggu verifikasi…</div>
+            </div>
+            <div class="proof-card-action">
+              Lihat
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </div>
           </div>
-          <div class="proof-time" id="proofTime"></div>
         </div>
         <div class="info-note note-blue"  id="noteVerify"   style="display:none">🔍 <strong>Menunggu verifikasi admin.</strong> Pesanan diproses setelah pembayaran diterima.</div>
         <div class="info-note note-green" id="noteAccepted" style="display:none">✅ <strong>Pembayaran diverifikasi.</strong> Pesananmu sedang disiapkan!</div>
@@ -886,7 +925,9 @@
       ps.style.display = 'block';
       document.getElementById('proofImg').src = proofUrl;
       var upAt = (data.paymentProof && data.paymentProof.uploadedAt) || data.waktuUploadBukti;
-      document.getElementById('proofTime').textContent = upAt && upAt.toDate ? 'Diupload: ' + upAt.toDate().toLocaleString('id-ID') : '';
+      document.getElementById('proofTime').textContent = upAt && upAt.toDate
+        ? 'Diupload ' + upAt.toDate().toLocaleString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })
+        : 'Tap untuk lihat foto';
     } else { ps.style.display = 'none'; }
 
     var rs = document.getElementById('reuploadSection');
