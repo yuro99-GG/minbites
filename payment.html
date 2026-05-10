@@ -175,6 +175,14 @@
       overflow: hidden;
       animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1);
     }
+    /* Thin premium accent line at very top of card */
+    .pay-card::before {
+      content: '';
+      display: block;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 50%, #d4956a 100%);
+      flex-shrink: 0;
+    }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(40px) scale(0.96); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -197,12 +205,12 @@
     /* ─── QRIS HEADER ─── */
     .qris-header {
       padding: 32px 28px 26px;
-      background: linear-gradient(160deg, #fff3f0 0%, var(--bg2) 55%, var(--surface) 100%);
+      background: linear-gradient(160deg, #faf5ef 0%, var(--bg2) 60%, var(--surface) 100%);
       border-bottom: 1px solid var(--border); text-align: center;
       position: relative; overflow: hidden;
     }
     [data-theme="dark"] .qris-header {
-      background: linear-gradient(160deg, #200808 0%, var(--bg2) 55%, var(--surface) 100%);
+      background: linear-gradient(160deg, #1e1810 0%, var(--bg2) 60%, var(--surface) 100%);
     }
     /* Decorative rings */
     .qris-header::before, .qris-header::after {
@@ -277,26 +285,25 @@
 
     /* ─── QR SECTION ─── */
     .qr-section {
-      padding: 28px 28px 20px;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      background: linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
+      padding: 32px 28px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      background: var(--surface);
     }
 
     /* QR frame with animated rotating border */
     .qr-frame {
-      background: white; border-radius: 22px; padding: 15px;
+      background: white; border-radius: 22px; padding: 16px;
       position: relative;
-      box-shadow: 0 12px 40px rgba(232,0,45,0.18), 0 4px 16px var(--shadow);
+      box-shadow: 0 8px 32px var(--shadow-md), 0 2px 8px var(--shadow);
       animation: qrEntrance 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+      border: 1px solid var(--border);
     }
     @keyframes qrEntrance {
       from { opacity: 0; transform: scale(0.85) rotate(-2deg); }
       to   { opacity: 1; transform: scale(1) rotate(0deg); }
     }
     .qr-frame::before {
-      content: ''; position: absolute; inset: -3px; border-radius: 24px;
-      background: conic-gradient(from 0deg, var(--qris-red), #ff6b6b, var(--qris-red), #c8001e, var(--qris-red));
-      z-index: -1; animation: rotateBorder 4s linear infinite;
+      display: none;
     }
     @keyframes rotateBorder { to { transform: rotate(360deg); } }
     .qr-frame::after {
@@ -374,21 +381,40 @@
       display: flex; align-items: center; gap: 7px;
     }
     .instructions-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .steps-list { display: flex; flex-direction: column; gap: 10px; }
+    .steps-list { display: flex; flex-direction: column; gap: 0; position: relative; }
+
+    /* Vertical connector line between step numbers */
+    .steps-list::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 33px;
+      bottom: 33px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--border2), var(--border));
+      z-index: 0;
+    }
+
     .step-item {
       display: flex; align-items: flex-start; gap: 12px;
-      padding: 10px 12px; border-radius: var(--radius-sm);
-      background: var(--bg2); border: 1px solid transparent;
-      transition: all 0.25s ease;
-      animation: stepSlideIn 0.4s ease both;
+      padding: 12px 12px; border-radius: 0;
+      background: transparent; border: none; border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+      position: relative; z-index: 1;
     }
-    .step-item:nth-child(1){animation-delay:0.55s} .step-item:nth-child(2){animation-delay:0.62s}
-    .step-item:nth-child(3){animation-delay:0.69s} .step-item:nth-child(4){animation-delay:0.76s}
-    @keyframes stepSlideIn {
-      from { opacity: 0; transform: translateX(-14px); }
-      to   { opacity: 1; transform: translateX(0); }
+    .step-item:last-child { border-bottom: none; }
+    .step-item:hover { background: var(--bg2); }
+
+    /* ─── DARK MODE TOGGLE ─── */
+    .btn-theme {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: var(--surface);
+      cursor: pointer; transition: all var(--t); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; box-shadow: 0 1px 4px var(--shadow);
     }
-    .step-item:hover { border-color: var(--border2); background: var(--accent-light); transform: translateX(4px); }
+    .btn-theme:hover { border-color: var(--accent); box-shadow: 0 2px 12px var(--accent-glow); transform: scale(1.08); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
     .step-num {
       width: 26px; height: 26px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent-dark));
@@ -589,12 +615,15 @@
 <header>
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite</a>
-    <a class="btn-back" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      Batal
-    </a>
+    <div class="header-right">
+      <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" aria-label="Ganti tema"></button>
+      <a class="btn-back" href="javascript:void(0)" onclick="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Batal
+      </a>
+    </div>
   </div>
 </header>
 
@@ -773,6 +802,32 @@
 <div id="toast-container"></div>
 
 <script>
+  /* ─── THEME TOGGLE ─── */
+  (function() {
+    function syncIcon() {
+      var btn = document.getElementById('btnTheme');
+      if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    }
+    syncIcon();
+    window.toggleTheme = function() {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      syncIcon();
+    };
+  })();
+
+  /* ─── COUNT-UP ANIMATION ─── */
+  function animateCountUp(el, target, ms) {
+    var t0 = performance.now();
+    (function tick(now) {
+      var p = Math.min((now - t0) / ms, 1);
+      var eased = 1 - Math.pow(1 - p, 4);
+      el.textContent = 'Rp' + Math.round(eased * target).toLocaleString('id-ID');
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+
   /* ─── CONFIG ─── */
   var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED */
   var CLOUDINARY_PRESET = 'minbite_bukti';
@@ -1044,7 +1099,9 @@
   function renderPage() {
     var d = orderData;
     document.getElementById('statePayment').style.display  = '';
-    document.getElementById('displayAmount').textContent   = fmt(d.total || 0);
+    var amtEl = document.getElementById('displayAmount');
+    amtEl.textContent = 'Rp0';
+    setTimeout(function() { animateCountUp(amtEl, d.total || 0, 900); }, 500);
     document.getElementById('displayOrderId').textContent  = d.id;
     document.getElementById('displayName').textContent     = d.name || '';
     var items = d.items || [];
