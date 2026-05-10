@@ -365,9 +365,21 @@
     /* PAYMENT */
     .payment-section { padding: 16px 24px 18px; border-bottom: 1px solid var(--border); }
     .sec-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 12px; }
-    .pay-method-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .pay-method-row:hover { transform: translateY(-1px); box-shadow: 0 3px 14px rgba(26,18,10,0.07); }
-    .pay-icon  { font-size: 1.1rem; }
+    .pay-method-row {
+      display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); margin-bottom: 2px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+    }
+    .pay-method-row:hover { transform: translateY(-1px); box-shadow: 0 3px 14px rgba(26,18,10,0.07); border-color: var(--border2); }
+    .pay-icon-wrap {
+      width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem;
+    }
+    .pay-icon-wrap.cash { background: var(--green-bg); border: 1px solid var(--green-border); }
+    .pay-icon-wrap.qris { background: var(--blue-bg);  border: 1px solid var(--blue-border); }
+    .pay-icon  { font-size: 1rem; }
     .pay-label { font-size: 0.82rem; font-weight: 700; color: var(--text); flex: 1; }
     .pay-desc  { font-size: 0.7rem; color: var(--text3); }
 
@@ -384,9 +396,17 @@
     .ps-rejected { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
     .ps-rejected .ps-dot { background: var(--red); }
 
-    .reject-card { background: var(--red-bg); border: 1.5px solid var(--red-border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px; }
+    .reject-card {
+      background: var(--red-bg); border: 1px solid var(--red-border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 10px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .reject-card-icon { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; background: rgba(192,39,46,0.12); display: flex; align-items: center; justify-content: center; }
+    .reject-card-icon svg { width: 13px; height: 13px; color: var(--red); }
+    .reject-card-content { flex: 1; min-width: 0; }
     .reject-card-title  { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); margin-bottom: 4px; }
-    .reject-card-reason { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+    .reject-card-reason { font-size: 0.81rem; color: var(--text2); line-height: 1.6; }
 
     /* Proof thumbnail card */
     .proof-card {
@@ -422,17 +442,62 @@
     .proof-card-action svg { width: 12px; height: 12px; }
     .proof-time { font-size: 0.67rem; color: var(--text3); margin-top: 4px; display: none; }
 
-    .info-note { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.78rem; line-height: 1.6; }
-    .note-blue  { background: var(--blue-bg);  border: 1px solid var(--blue-border);  color: var(--blue); }
-    .note-green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
-    .note-gray  { background: var(--surface2); border: 1px solid var(--border);       color: var(--text2); }
+    .info-note {
+      margin-top: 10px; padding: 11px 13px; border-radius: var(--radius-sm);
+      font-size: 0.77rem; line-height: 1.6;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .info-note-icon {
+      width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .info-note-icon svg { width: 13px; height: 13px; }
+    .info-note-body { flex: 1; min-width: 0; }
+    .note-blue  {
+      background: var(--blue-bg);
+      border: 1px solid var(--blue-border);
+      border-left: 3px solid var(--blue);
+      color: var(--blue);
+    }
+    .note-blue .info-note-icon { background: rgba(26,71,160,0.12); color: var(--blue); }
+    .note-green {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-left: 3px solid var(--green);
+      color: var(--green);
+    }
+    .note-green .info-note-icon { background: rgba(13,107,53,0.12); color: var(--green); }
+    .note-gray  {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--border2);
+      color: var(--text2);
+    }
+    .note-gray .info-note-icon { background: var(--bg2); color: var(--text3); }
 
     /* RE-UPLOAD */
     .reupload-section { padding: 14px 24px 18px; border-top: 1px dashed var(--border); }
-    .reupload-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--red); margin-bottom: 8px; }
-    .reupload-desc  { font-size: 0.78rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px; padding: 10px 14px; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-sm); }
-    .btn-reupload { display: inline-flex; align-items: center; gap: 8px; width: 100%; padding: 12px; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all var(--t); text-decoration: none; justify-content: center; }
-    .btn-reupload:hover { opacity: 0.88; transform: translateY(-1px); }
+    .reupload-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--red); margin-bottom: 8px;
+    }
+    .reupload-label svg { width: 12px; height: 12px; }
+    .reupload-desc  {
+      font-size: 0.77rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px;
+      padding: 10px 13px;
+      background: var(--red-bg); border: 1px solid var(--red-border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-sm);
+    }
+    .btn-reupload {
+      display: inline-flex; align-items: center; gap: 8px; width: 100%; padding: 12px;
+      background: var(--red-bg); color: var(--red);
+      border: 1px solid var(--red-border);
+      border-radius: var(--radius-sm);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: all var(--t); text-decoration: none; justify-content: center;
+    }
+    .btn-reupload:hover { background: var(--red); color: white; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,39,46,0.25); }
 
     /* ITEMS */
     .items-section { padding: 18px 24px 14px; }
@@ -589,7 +654,9 @@
       <div class="payment-section" id="paymentSection" style="display:none">
         <div class="sec-label">Pembayaran</div>
         <div class="pay-method-row">
-          <span class="pay-icon" id="payIcon">💵</span>
+          <div class="pay-icon-wrap" id="payIconWrap">
+            <span class="pay-icon" id="payIcon">💵</span>
+          </div>
           <div>
             <div class="pay-label" id="payLabel">Cash</div>
             <div class="pay-desc"  id="payDesc">Bayar langsung di tempat</div>
@@ -597,8 +664,11 @@
           <div id="payStatusBadge"></div>
         </div>
         <div class="reject-card" id="rejectCard" style="display:none">
-          <div class="reject-card-title">⚠️ Pembayaran Ditolak</div>
-          <div class="reject-card-reason" id="rejectReason">—</div>
+          <div class="reject-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="reject-card-content">
+            <div class="reject-card-title">Pembayaran Ditolak</div>
+            <div class="reject-card-reason" id="rejectReason">—</div>
+          </div>
         </div>
         <div id="proofSection" style="display:none">
           <div class="proof-card" onclick="openProofLightbox()">
@@ -615,18 +685,30 @@
             </div>
           </div>
         </div>
-        <div class="info-note note-blue"  id="noteVerify"   style="display:none">🔍 <strong>Menunggu verifikasi admin.</strong> Pesanan diproses setelah pembayaran diterima.</div>
-        <div class="info-note note-green" id="noteAccepted" style="display:none">✅ <strong>Pembayaran diverifikasi.</strong> Pesananmu sedang disiapkan!</div>
-        <div class="info-note note-gray"  id="noteCash"     style="display:none">💵 Pembayaran dilakukan saat pengambilan. Siapkan uang pas ya!</div>
+        <div class="info-note note-blue"  id="noteVerify"   style="display:none">
+          <div class="info-note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="info-note-body"><strong>Menunggu verifikasi admin.</strong> Pesanan diproses setelah pembayaran diterima.</div>
+        </div>
+        <div class="info-note note-green" id="noteAccepted" style="display:none">
+          <div class="info-note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="info-note-body"><strong>Pembayaran diverifikasi.</strong> Pesananmu sedang disiapkan!</div>
+        </div>
+        <div class="info-note note-gray"  id="noteCash"     style="display:none">
+          <div class="info-note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div class="info-note-body">Pembayaran dilakukan saat pengambilan. Siapkan uang pas ya!</div>
+        </div>
       </div>
 
       <!-- RE-UPLOAD -->
       <div class="reupload-section" id="reuploadSection" style="display:none">
-        <div class="reupload-label">⚠️ Upload Ulang Bukti</div>
+        <div class="reupload-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Upload Ulang Bukti
+        </div>
         <div class="reupload-desc">Bukti pembayaranmu ditolak admin. Silakan upload ulang foto yang jelas dan valid.</div>
         <a class="btn-reupload" id="btnReupload" href="#">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:15px;height:15px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload Ulang Bukti
+          Upload Ulang
         </a>
       </div>
 
@@ -901,6 +983,8 @@
 
     // Payment
     document.getElementById('paymentSection').style.display = 'block';
+    var payIconWrap = document.getElementById('payIconWrap');
+    payIconWrap.className = 'pay-icon-wrap ' + (method === 'qris' ? 'qris' : 'cash');
     document.getElementById('payIcon').textContent  = method === 'qris' ? '📲' : '💵';
     document.getElementById('payLabel').textContent = method === 'qris' ? 'QRIS' : 'Cash';
     document.getElementById('payDesc').textContent  = method === 'qris' ? 'Scan QR Code' : 'Bayar langsung di tempat';
