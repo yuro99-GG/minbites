@@ -403,6 +403,8 @@
       padding: 10px 16px; border-top: 1px solid var(--border); flex-wrap: wrap;
       background: rgba(0,0,0,0.1);
     }
+    .order-actions-main { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1; }
+    .order-actions-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto; }
 
     /* ═══════════════════════════════ BUTTONS ═══════════════════════════════ */
     .btn {
@@ -1570,11 +1572,15 @@ function renderOrders(){
     // ── PROOF SECTION (shown for all states if proof exists) ──
     var proofHtml = '';
     var ps = o.paymentStatus || '';
-    if(o.paymentProof && o.paymentProof.url){
-      var proofUrl = escHtml(o.paymentProof.url);
+    // Support both data structures: paymentProof.url OR buktiPembayaranUrl
+    var rawProofUrl = (o.paymentProof && o.paymentProof.url) ? o.paymentProof.url : (o.buktiPembayaranUrl || '');
+    if(rawProofUrl){
+      var proofUrl = escHtml(rawProofUrl);
       var proofUploadTime = '';
-      if(o.paymentProof.uploadedAt && o.paymentProof.uploadedAt.toDate){
+      if(o.paymentProof && o.paymentProof.uploadedAt && o.paymentProof.uploadedAt.toDate){
         proofUploadTime = o.paymentProof.uploadedAt.toDate().toLocaleString('id-ID');
+      } else if(o.waktuUploadBukti && o.waktuUploadBukti.toDate){
+        proofUploadTime = o.waktuUploadBukti.toDate().toLocaleString('id-ID');
       }
       var stateBadge = '';
       if(ps==='menunggu_verifikasi') stateBadge='<span class="proof-state-badge proof-state-pending">🔍 Perlu Verifikasi</span>';
@@ -1605,7 +1611,7 @@ function renderOrders(){
       }
       // diterima = read-only, no extra actions needed
       proofHtml += '</div>';
-    }
+    } // end rawProofUrl
 
     // ── CASH BANNER (for cash orders not yet picked up) ──
     var cashBannerHtml = '';
@@ -1614,32 +1620,34 @@ function renderOrders(){
     }
 
     // ── ACTION BUTTONS ──
-    var actionBtns='';
+    var mainBtns='';   // primary actions (process, ready, complete, cash)
+    var utilBtns='';   // utilities (override, delete, detail)
+
     // Status sequential flow
     if(s==='MENUNGGU' && ps!=='menunggu_upload' && ps!=='menunggu_verifikasi'){
-      actionBtns+='<button class="btn btn-process" onclick="changeStatus(\''+docId+'\',\'DIPROSES\')">'+
+      mainBtns+='<button class="btn btn-process" onclick="changeStatus(\''+docId+'\',\'DIPROSES\')">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><path d="M12 2a10 10 0 1 0 10 10"/></svg>Proses</button>';
     }
     if(s==='DIPROSES'){
-      actionBtns+='<button class="btn btn-ready" onclick="changeStatus(\''+docId+'\',\'SIAP DIAMBIL\')">'+
+      mainBtns+='<button class="btn btn-ready" onclick="changeStatus(\''+docId+'\',\'SIAP DIAMBIL\')">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Siap Diambil</button>';
     }
     if(s==='SIAP DIAMBIL'){
       if(o.payment==='cash'){
-        // Cash: confirm cash received → selesai
-        actionBtns+='<button class="btn-cash-confirm" onclick="confirmCash(\''+docId+'\')">'+
+        mainBtns+='<button class="btn-cash-confirm" onclick="confirmCash(\''+docId+'\')">'+
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Terima Cash & Selesai</button>';
       } else {
-        actionBtns+='<button class="btn btn-complete" onclick="showInvoiceModal(\''+docId+'\')">'+
+        mainBtns+='<button class="btn btn-complete" onclick="showInvoiceModal(\''+docId+'\')">'+
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>Selesaikan</button>';
       }
     }
-    // Manual status override (wrench icon dropdown)
+
+    // Utilities: override dropdown, delete, detail
     if(s!=='SELESAI'){
-      actionBtns+='<div class="status-override-wrap" id="ow-wrap-'+docId+'">' +
+      utilBtns+='<div class="status-override-wrap" id="ow-wrap-'+docId+'">' +
         '<button class="btn-override" onclick="toggleOverride(\''+docId+'\')" title="Ubah Status Manual">'+
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>'+
-          'Ubah Status'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>'+
+          'Status'+
         '</button>'+
         '<div class="override-dropdown" id="ow-dd-'+docId+'">'+
           '<div class="override-item'+(s==='MENUNGGU'?' active':'')+'" data-s="MENUNGGU" onclick="overrideStatus(\''+docId+'\',\'MENUNGGU\')"><span class="override-dot"></span>Menunggu</div>'+
@@ -1648,13 +1656,13 @@ function renderOrders(){
           '<div class="override-item" data-s="SELESAI" onclick="overrideStatus(\''+docId+'\',\'SELESAI\')"><span class="override-dot"></span>Selesai</div>'+
         '</div>'+
       '</div>';
-    }
-    if(s!=='SELESAI'){
-      actionBtns+='<button class="btn btn-danger" onclick="confirmDelete(\''+docId+'\',\''+escHtml(id)+'\')">'+
+      utilBtns+='<button class="btn btn-danger" onclick="confirmDelete(\''+docId+'\',\''+escHtml(id)+'\')">'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Hapus</button>';
     }
-    actionBtns+='<a href="order.html?id='+encodeURIComponent(id)+'" target="_blank" class="btn btn-secondary" style="text-decoration:none">'+
+    utilBtns+='<a href="order.html?id='+encodeURIComponent(id)+'" target="_blank" class="btn btn-secondary" style="text-decoration:none">'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Detail</a>';
+
+    var actionBtns='<div class="order-actions-main">'+mainBtns+'</div><div class="order-actions-right">'+utilBtns+'</div>';
 
     html+='<div class="order-card'+(o.is_new?' is-new':'')+(s==='MENUNGGU'?' priority-high':'')+(ps==='menunggu_verifikasi'?' is-new':'')+'">';
     html+='<div class="order-head">';
