@@ -2,7 +2,7 @@
 <html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5" />
   <title>Admin — MinBite</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -71,7 +71,6 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
       background-image:
         radial-gradient(ellipse 80% 50% at 10% 0%, rgba(232,119,58,0.04) 0%, transparent 60%),
@@ -195,6 +194,11 @@
     .btn-hdr:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
     .btn-hdr svg { width: 12px; height: 12px; }
     .btn-hdr.sound-on { border-color: var(--green); color: var(--green); }
+    .btn-hdr-scan { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+    .btn-hdr-scan:hover { background: var(--accent) !important; color: #fff !important; box-shadow: 0 4px 14px var(--accent-glow); }
+
+    /* FAB hidden — scan now in header */
+    .btn-scan { display: none !important; }
 
     .btn-logout {
       display: flex; align-items: center; gap: 6px;
@@ -1100,10 +1104,9 @@
         <div class="live-dot"></div>
         <span id="refreshCountdown">Live</span>
       </div>
-      <button class="btn-hdr" id="btnSound" onclick="toggleSound()" title="Toggle Notif Suara">
-        <svg id="soundIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-        <svg id="soundIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-        <span id="soundLabel">Suara</span>
+      <button class="btn-hdr btn-hdr-scan" onclick="openScanner()" title="Scan QR Pesanan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M18 14h.01M14 18h.01M18 18h.01M14 21h.01M21 14v7"/></svg>
+        Scan QR
       </button>
       <button class="btn-logout" onclick="_logout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
