@@ -113,33 +113,6 @@
       100% { transform: translate(0,0) scale(1); }
     }
 
-    /* Dark mode toggle */
-    .btn-theme {
-      width: 34px; height: 34px; border-radius: 50%;
-      border: 1.5px solid var(--border); background: var(--surface);
-      cursor: pointer; transition: all var(--t); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; box-shadow: 0 2px 6px var(--shadow);
-      color: var(--text2);
-    }
-    .btn-theme:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 14px var(--accent-glow);
-      transform: scale(1.1);
-    }
-    .header-right { display: flex; align-items: center; gap: 8px; }
-
-    /* Button ripple */
-    .btn-ripple {
-      position: absolute; border-radius: 50%; pointer-events: none;
-      background: rgba(255,255,255,0.32);
-      animation: rippleOut 0.65s ease forwards;
-    }
-    @keyframes rippleOut {
-      from { transform: scale(0); opacity: 1; }
-      to   { transform: scale(3.5); opacity: 0; }
-    }
-
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -278,22 +251,6 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       animation: countUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.5s both;
     }
-
-    /* Premium shimmer sweep across amount pill */
-    .qris-amount-pill::after {
-      content: ''; position: absolute;
-      top: 0; left: -60%; width: 40%; height: 100%;
-      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.38) 50%, transparent 100%);
-      transform: skewX(-15deg);
-      animation: pillShimmer 4s ease-in-out 1.2s infinite;
-      pointer-events: none;
-    }
-    @keyframes pillShimmer {
-      0%   { left: -60%; opacity: 0; }
-      8%   { opacity: 1; }
-      40%  { left: 130%; opacity: 0; }
-      100% { left: 130%; opacity: 0; }
-    }
     @keyframes countUp {
       from { opacity: 0; transform: scale(0.8); }
       to   { opacity: 1; transform: scale(1); }
@@ -338,9 +295,8 @@
     }
     .qr-frame::before {
       content: ''; position: absolute; inset: -3px; border-radius: 24px;
-      background: conic-gradient(from 0deg, var(--qris-red), rgba(232,0,45,0.4), var(--accent), rgba(232,0,45,0.4), var(--qris-red));
-      z-index: -1; animation: rotateBorder 12s linear infinite;
-      opacity: 0.85;
+      background: conic-gradient(from 0deg, var(--qris-red), #ff6b6b, var(--qris-red), #c8001e, var(--qris-red));
+      z-index: -1; animation: rotateBorder 4s linear infinite;
     }
     @keyframes rotateBorder { to { transform: rotate(360deg); } }
     .qr-frame::after {
@@ -633,15 +589,12 @@
 <header>
   <div class="header-inner">
     <a class="logo" href="index.html">MinBite</a>
-    <div class="header-right">
-      <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" aria-label="Ganti tema"></button>
-      <a class="btn-back" href="javascript:void(0)" onclick="goBack()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-        Batal
-      </a>
-    </div>
+    <a class="btn-back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Batal
+    </a>
   </div>
 </header>
 
@@ -820,53 +773,6 @@
 <div id="toast-container"></div>
 
 <script>
-  /* ─── THEME TOGGLE ─── */
-  (function() {
-    var t = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', t);
-    function syncIcon() {
-      var btn = document.getElementById('btnTheme');
-      if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
-    }
-    syncIcon();
-    window.toggleTheme = function() {
-      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      syncIcon();
-    };
-  })();
-
-  /* ─── COUNT-UP FOR AMOUNT ─── */
-  function animateCountUp(el, target, ms) {
-    var t0 = null;
-    (function step(ts) {
-      if (!t0) t0 = ts;
-      var pct = Math.min((ts - t0) / ms, 1);
-      var ease = 1 - Math.pow(1 - pct, 4);
-      el.textContent = 'Rp' + Math.round(ease * target).toLocaleString('id-ID');
-      if (pct < 1) requestAnimationFrame(step);
-    })(performance.now());
-  }
-
-  /* ─── BUTTON RIPPLE ─── */
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.btn-upload, .btn-cancel').forEach(function(btn) {
-      btn.addEventListener('pointerdown', function(e) {
-        if (btn.disabled) return;
-        var r = btn.getBoundingClientRect();
-        var size = Math.max(r.width, r.height);
-        var el = document.createElement('span');
-        el.className = 'btn-ripple';
-        el.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
-          + 'left:' + (e.clientX - r.left - size/2) + 'px;'
-          + 'top:'  + (e.clientY - r.top  - size/2) + 'px;';
-        btn.appendChild(el);
-        setTimeout(function() { el.remove(); }, 700);
-      });
-    });
-  });
-
   /* ─── CONFIG ─── */
   var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED */
   var CLOUDINARY_PRESET = 'minbite_bukti';
@@ -1138,10 +1044,7 @@
   function renderPage() {
     var d = orderData;
     document.getElementById('statePayment').style.display  = '';
-    var totalVal = d.total || 0;
-    var amtEl    = document.getElementById('displayAmount');
-    amtEl.textContent = 'Rp0';
-    setTimeout(function() { animateCountUp(amtEl, totalVal, 1000); }, 450);
+    document.getElementById('displayAmount').textContent   = fmt(d.total || 0);
     document.getElementById('displayOrderId').textContent  = d.id;
     document.getElementById('displayName').textContent     = d.name || '';
     var items = d.items || [];
