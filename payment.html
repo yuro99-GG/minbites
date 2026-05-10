@@ -80,18 +80,39 @@
     }
 
     html { scroll-behavior: smooth; }
+
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg); color: var(--text);
       min-height: 100vh; -webkit-font-smoothing: antialiased;
       overflow-x: hidden; transition: background 0.3s, color 0.3s;
     }
+
+    /* Grain overlay */
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-      opacity: 0.018;
+      opacity: 0.022;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 200px 200px;
     }
+
+    /* Floating ambient orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+      animation: floatOrb linear infinite; will-change: transform;
+    }
+    .orb:nth-child(1) { width: 320px; height: 320px; top: -80px; left: -80px; animation-duration: 18s; opacity: 0.5; }
+    .orb:nth-child(2) { width: 240px; height: 240px; bottom: 10%; right: -60px; animation-duration: 24s; animation-delay: -8s; opacity: 0.4; }
+    .orb:nth-child(3) { width: 180px; height: 180px; top: 40%; left: 20%; animation-duration: 20s; animation-delay: -4s; opacity: 0.3; }
+    @keyframes floatOrb {
+      0%   { transform: translate(0,0) scale(1); }
+      33%  { transform: translate(30px,-20px) scale(1.05); }
+      66%  { transform: translate(-20px,30px) scale(0.95); }
+      100% { transform: translate(0,0) scale(1); }
+    }
+
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -101,17 +122,20 @@
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
-      background: rgba(250,248,245,0.85); transition: background var(--t);
+      background: rgba(250,248,245,0.82); transition: background var(--t);
+      animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1);
     }
-    [data-theme="dark"] header { background: rgba(18,12,7,0.9); }
+    [data-theme="dark"] header { background: rgba(18,12,7,0.88); }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
     .header-inner {
-      max-width: 600px; margin: 0 auto;
-      padding: 0 20px; height: 58px;
+      max-width: 600px; margin: 0 auto; padding: 0 20px; height: 58px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem; font-weight: 700;
+      font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700;
       background: linear-gradient(135deg, var(--accent), var(--accent-dark));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text; text-decoration: none; letter-spacing: -0.03em;
@@ -123,264 +147,393 @@
       color: var(--text2); font-size: 0.76rem; font-weight: 600;
       cursor: pointer; text-decoration: none; transition: all var(--t);
     }
-    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); transform: translateX(-2px); }
     .btn-back svg { width: 13px; height: 13px; }
 
     /* ─── MAIN ─── */
-    .main { max-width: 520px; margin: 0 auto; padding: 28px 16px 80px; }
+    .main { max-width: 520px; margin: 0 auto; padding: 28px 16px 80px; position: relative; z-index: 1; }
 
     /* ERROR */
     .err-wrap {
       text-align: center; padding: 80px 20px;
       display: flex; flex-direction: column; align-items: center; gap: 16px;
+      animation: fadeUp 0.5s ease;
     }
     .err-icon {
       width: 64px; height: 64px; border-radius: 50%;
       background: var(--bg2); border: 2px solid var(--border);
       display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
     }
-    .err-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .err-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; }
     .err-sub { font-size: 0.85rem; color: var(--text3); line-height: 1.7; max-width: 280px; }
 
     /* ─── CARD ─── */
     .pay-card {
       background: var(--surface); border-radius: var(--radius-xl);
       border: 1px solid var(--border);
-      box-shadow: 0 8px 40px var(--shadow-lg), 0 2px 10px var(--shadow);
-      overflow: hidden; animation: cardIn 0.45s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 24px 64px var(--shadow-lg), 0 4px 16px var(--shadow);
+      overflow: hidden;
+      animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1);
     }
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Staggered section entrances */
+    .pay-card > * { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    .pay-card > *:nth-child(1) { animation-delay: 0.10s; }
+    .pay-card > *:nth-child(2) { animation-delay: 0.18s; }
+    .pay-card > *:nth-child(3) { animation-delay: 0.26s; }
+    .pay-card > *:nth-child(4) { animation-delay: 0.34s; }
+    .pay-card > *:nth-child(5) { animation-delay: 0.40s; }
+    .pay-card > *:nth-child(6) { animation-delay: 0.46s; }
+    .pay-card > *:nth-child(7) { animation-delay: 0.52s; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     /* ─── QRIS HEADER ─── */
     .qris-header {
-      padding: 28px 28px 22px;
-      background: linear-gradient(160deg, #fff5f5 0%, var(--bg2) 60%, var(--surface) 100%);
-      border-bottom: 1px solid var(--border);
-      text-align: center;
+      padding: 32px 28px 26px;
+      background: linear-gradient(160deg, #fff3f0 0%, var(--bg2) 55%, var(--surface) 100%);
+      border-bottom: 1px solid var(--border); text-align: center;
+      position: relative; overflow: hidden;
     }
     [data-theme="dark"] .qris-header {
-      background: linear-gradient(160deg, #1e0a0a 0%, var(--bg2) 60%, var(--surface) 100%);
+      background: linear-gradient(160deg, #200808 0%, var(--bg2) 55%, var(--surface) 100%);
     }
-    .qris-top-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; }
-    .qris-wordmark {
-      font-size: 1rem; font-weight: 900; letter-spacing: -0.04em; color: var(--text);
-      display: flex; align-items: center; gap: 6px;
+    /* Decorative rings */
+    .qris-header::before, .qris-header::after {
+      content: ''; position: absolute; border-radius: 50%;
+      border: 1px solid var(--border2); pointer-events: none;
     }
+    .qris-header::before { width: 220px; height: 220px; top: -110px; right: -50px; opacity: 0.5; animation: rotateSlow 30s linear infinite; }
+    .qris-header::after  { width: 140px; height: 140px; bottom: -70px; left: -30px; opacity: 0.35; animation: rotateSlow 20s linear infinite reverse; }
+    @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+    .qris-top-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; position: relative; }
+    .qris-wordmark { font-size: 1rem; font-weight: 900; letter-spacing: -0.04em; color: var(--text); display: flex; align-items: center; gap: 6px; }
     .qris-badge-label {
       background: var(--qris-red); color: white;
-      font-size: 0.58rem; font-weight: 900;
-      letter-spacing: 0.12em; padding: 2px 8px;
-      border-radius: 5px; text-transform: uppercase;
+      font-size: 0.58rem; font-weight: 900; letter-spacing: 0.12em;
+      padding: 2px 8px; border-radius: 5px; text-transform: uppercase;
+      animation: pulseBadge 3s ease infinite;
+    }
+    @keyframes pulseBadge {
+      0%,100% { box-shadow: 0 0 0 0 rgba(232,0,45,0); }
+      50%      { box-shadow: 0 0 0 6px rgba(232,0,45,0.1); }
     }
     .qris-merchant {
-      font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700;
-      color: var(--text); letter-spacing: -0.02em; margin-bottom: 2px;
+      font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.02em; margin-bottom: 2px; position: relative;
     }
-    .qris-nmid { font-size: 0.68rem; color: var(--text3); margin-bottom: 18px; }
+    .qris-nmid { font-size: 0.68rem; color: var(--text3); margin-bottom: 20px; }
     .qris-amount-pill {
       display: inline-flex; flex-direction: column; align-items: center;
       background: var(--surface); border: 2px solid var(--border2);
-      border-radius: 14px; padding: 10px 28px;
-      box-shadow: 0 2px 12px var(--accent-glow2);
+      border-radius: 16px; padding: 12px 32px;
+      box-shadow: 0 4px 20px var(--accent-glow2);
+      position: relative; overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .qris-amount-label {
-      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 2px;
+    .qris-amount-pill:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+    .qris-amount-pill::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(192,122,72,0.06) 100%);
+      pointer-events: none;
     }
+    .qris-amount-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 3px; }
     .qris-amount-value {
-      font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--accent);
+      font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: countUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.5s both;
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     /* ─── ORDER STRIP ─── */
     .order-strip {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 20px; background: var(--bg2);
+      padding: 10px 22px; background: var(--bg2);
       border-bottom: 1px solid var(--border); font-size: 0.75rem;
     }
-    .order-strip-id { font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
+    .order-strip-id {
+      font-weight: 800; color: var(--accent); letter-spacing: 0.04em; position: relative;
+    }
+    .order-strip-id::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 1.5px; background: var(--accent); border-radius: 2px;
+      transform: scaleX(0); transform-origin: left;
+      animation: lineGrow 0.4s ease 0.7s forwards;
+    }
+    @keyframes lineGrow { to { transform: scaleX(1); } }
     .order-strip-name { color: var(--text2); font-weight: 500; }
     .order-strip-items { color: var(--text3); }
 
     /* ─── QR SECTION ─── */
     .qr-section {
-      padding: 24px 28px 16px;
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      padding: 28px 28px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
     }
+
+    /* QR frame with animated rotating border */
     .qr-frame {
-      background: white; border-radius: 20px; padding: 14px;
-      border: 3px solid var(--qris-red);
-      box-shadow: 0 8px 32px rgba(232,0,45,0.14), 0 4px 16px var(--shadow);
+      background: white; border-radius: 22px; padding: 15px;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(232,0,45,0.18), 0 4px 16px var(--shadow);
+      animation: qrEntrance 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
     }
-    .qr-frame img { width: 220px; height: 220px; display: block; border-radius: 10px; object-fit: cover; }
+    @keyframes qrEntrance {
+      from { opacity: 0; transform: scale(0.85) rotate(-2deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .qr-frame::before {
+      content: ''; position: absolute; inset: -3px; border-radius: 24px;
+      background: conic-gradient(from 0deg, var(--qris-red), #ff6b6b, var(--qris-red), #c8001e, var(--qris-red));
+      z-index: -1; animation: rotateBorder 4s linear infinite;
+    }
+    @keyframes rotateBorder { to { transform: rotate(360deg); } }
+    .qr-frame::after {
+      content: ''; position: absolute; inset: -1px;
+      border-radius: 22px; background: white; z-index: -1;
+    }
+    .qr-frame img { width: 220px; height: 220px; display: block; border-radius: 12px; object-fit: cover; }
     .qr-placeholder {
       width: 220px; height: 220px;
       background: linear-gradient(135deg, #f5f0ea 25%, #ede5d8 50%, #f5f0ea 75%);
       background-size: 200% 200%; animation: shimmer 1.8s ease infinite;
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     }
     @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
     .qr-placeholder svg { width: 48px; height: 48px; color: var(--accent); opacity: 0.5; }
     .qr-placeholder-text { font-size: 0.7rem; color: var(--text3); font-weight: 600; text-align: center; padding: 0 16px; line-height: 1.5; }
-    .qr-scan-note { font-size: 0.74rem; font-weight: 600; color: var(--text3); text-align: center; }
+
+    .qr-scan-note {
+      font-size: 0.78rem; font-weight: 600; color: var(--text3); text-align: center;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .qr-scan-note::before, .qr-scan-note::after { content: ''; display: block; width: 28px; height: 1px; background: var(--border); }
+
     .qr-apps-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
     .app-chip {
-      padding: 3px 11px; border-radius: 100px; font-size: 0.63rem; font-weight: 700;
-      background: var(--bg2); border: 1px solid var(--border); color: var(--text3);
+      padding: 4px 12px; border-radius: 100px; font-size: 0.63rem; font-weight: 700;
+      background: var(--surface); border: 1px solid var(--border); color: var(--text3);
+      transition: all 0.2s ease; cursor: default;
+      animation: chipPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
     }
+    .app-chip:nth-child(1){animation-delay:0.5s} .app-chip:nth-child(2){animation-delay:0.55s}
+    .app-chip:nth-child(3){animation-delay:0.60s} .app-chip:nth-child(4){animation-delay:0.65s}
+    .app-chip:nth-child(5){animation-delay:0.70s}
+    @keyframes chipPop {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .app-chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
     /* ─── TIMER ─── */
     .timer-bar {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 8px 20px; background: var(--bg2);
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 10px 20px; background: var(--bg2);
       border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
       font-size: 0.76rem; color: var(--text3);
     }
-    .timer-bar svg { width: 14px; height: 14px; color: var(--accent); }
-    .timer-val { font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+    .timer-circle-wrap { position: relative; width: 38px; height: 38px; flex-shrink: 0; }
+    .timer-circle-wrap svg { width: 38px; height: 38px; transform: rotate(-90deg); }
+    .timer-track { fill: none; stroke: var(--border); stroke-width: 3; }
+    .timer-fill {
+      fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round;
+      stroke-dasharray: 100; stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+    }
+    .timer-fill.urgent { stroke: var(--red); }
+    .timer-icon-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .timer-icon-center svg { width: 14px; height: 14px; color: var(--accent); transition: color 0.5s; }
+    .timer-icon-center svg.urgent { color: var(--red); }
+    .timer-text { display: flex; flex-direction: column; }
+    .timer-label-small { font-size: 0.64rem; color: var(--text3); }
+    .timer-val {
+      font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums;
+      font-size: 1.05rem; letter-spacing: -0.02em; line-height: 1.1;
+      transition: color 0.5s;
+    }
     .timer-val.urgent { color: var(--red); animation: urgentPulse 0.8s ease infinite; }
-    @keyframes urgentPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @keyframes urgentPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 
     /* ─── INSTRUCTIONS ─── */
-    .instructions { padding: 18px 24px; border-bottom: 1px solid var(--border); }
+    .instructions { padding: 22px 24px; border-bottom: 1px solid var(--border); }
     .instructions-title {
       font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 12px;
+      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 14px;
       display: flex; align-items: center; gap: 7px;
     }
     .instructions-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .steps-list { display: flex; flex-direction: column; gap: 10px; }
-    .step-item { display: flex; align-items: flex-start; gap: 11px; }
+    .step-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: var(--bg2); border: 1px solid transparent;
+      transition: all 0.25s ease;
+      animation: stepSlideIn 0.4s ease both;
+    }
+    .step-item:nth-child(1){animation-delay:0.55s} .step-item:nth-child(2){animation-delay:0.62s}
+    .step-item:nth-child(3){animation-delay:0.69s} .step-item:nth-child(4){animation-delay:0.76s}
+    @keyframes stepSlideIn {
+      from { opacity: 0; transform: translateX(-14px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .step-item:hover { border-color: var(--border2); background: var(--accent-light); transform: translateX(4px); }
     .step-num {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: var(--accent-light); color: var(--accent);
-      font-size: 0.7rem; font-weight: 800;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white; font-size: 0.72rem; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; margin-top: 1px;
+      box-shadow: 0 3px 10px var(--accent-glow);
     }
-    .step-text { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+    .step-text { font-size: 0.8rem; color: var(--text2); line-height: 1.65; }
     .step-text strong { color: var(--text); font-weight: 700; }
 
     /* ─── UPLOAD SECTION ─── */
-    .upload-section { padding: 18px 24px 24px; }
+    .upload-section { padding: 20px 24px 26px; }
     .upload-title {
       font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 10px;
+      letter-spacing: 0.1em; color: var(--text3); margin-bottom: 12px;
       display: flex; align-items: center; gap: 7px;
     }
     .upload-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .upload-title svg { width: 13px; height: 13px; color: var(--accent); }
     .upload-note {
-      font-size: 0.73rem; color: var(--text3);
-      background: var(--accent-light); border: 1px solid var(--border2);
-      border-radius: var(--radius-sm); padding: 10px 14px;
-      margin-bottom: 14px; line-height: 1.65;
+      font-size: 0.73rem; color: var(--text2);
+      background: linear-gradient(135deg, var(--accent-light), var(--bg2));
+      border: 1px solid var(--border2); border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      margin-bottom: 16px; line-height: 1.7;
     }
     .upload-note strong { color: var(--accent-dark); }
 
     /* Preview */
     .preview-wrap {
       display: none; border-radius: var(--radius-sm);
-      overflow: hidden; border: 2px solid var(--green);
-      position: relative; margin-bottom: 12px;
-      animation: fadeIn 0.3s ease;
+      overflow: hidden; border: 2.5px solid var(--green);
+      position: relative; margin-bottom: 14px;
+      animation: previewIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 8px 24px rgba(42,157,143,0.2);
     }
-    @keyframes fadeIn { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+    @keyframes previewIn { from{opacity:0;transform:scale(0.9) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
     .preview-wrap img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
     .preview-remove {
       position: absolute; top: 8px; right: 8px;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(0,0,0,0.6); color: white;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(0,0,0,0.65); color: white;
       border: none; cursor: pointer; font-size: 0.85rem;
       display: flex; align-items: center; justify-content: center;
-      transition: background var(--t);
+      transition: all 0.2s ease;
     }
-    .preview-remove:hover { background: rgba(230,57,70,0.9); }
+    .preview-remove:hover { background: rgba(230,57,70,0.9); transform: scale(1.15) rotate(90deg); }
 
     /* Drop area */
     .drop-area {
       border: 2px dashed var(--border2); border-radius: var(--radius-sm);
-      padding: 28px 16px; text-align: center; cursor: pointer;
-      transition: all 0.2s ease; background: var(--bg2);
-      position: relative; margin-bottom: 12px;
+      padding: 32px 16px; text-align: center; cursor: pointer;
+      transition: all 0.3s ease; background: var(--bg2);
+      position: relative; margin-bottom: 14px; overflow: hidden;
     }
-    .drop-area:hover { border-color: var(--accent); background: var(--accent-light); }
+    .drop-area::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, var(--accent-glow2), transparent 70%);
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+    }
+    .drop-area:hover::before { opacity: 1; }
+    .drop-area:hover { border-color: var(--accent); border-style: solid; background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow2); }
     .drop-area.compressing { border-color: var(--accent); border-style: solid; background: var(--accent-light); pointer-events: none; }
     .drop-area.has-file { border-color: var(--green); border-style: solid; background: rgba(42,157,143,0.06); }
     .drop-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .drop-icon { font-size: 2rem; margin-bottom: 7px; transition: all 0.2s; }
-    .drop-text { font-size: 0.82rem; font-weight: 700; color: var(--text2); margin-bottom: 3px; }
+    .drop-icon { font-size: 2.2rem; margin-bottom: 8px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); display: block; }
+    .drop-area:hover .drop-icon { transform: translateY(-5px) scale(1.15); }
+    .drop-text { font-size: 0.84rem; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
     .drop-sub  { font-size: 0.68rem; color: var(--text3); }
 
     /* ─── PROGRESS ─── */
-    .progress-wrap { display: none; margin-bottom: 14px; }
-
+    .progress-wrap { display: none; margin-bottom: 16px; }
     .progress-phases {
-      display: flex; margin-bottom: 8px;
-      border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+      display: flex; margin-bottom: 10px;
+      border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
     }
     .phase-item {
-      flex: 1; padding: 6px 4px; text-align: center;
+      flex: 1; padding: 7px 4px; text-align: center;
       font-size: 0.62rem; font-weight: 700; letter-spacing: 0.02em;
       color: var(--text3); background: var(--bg2);
       border-right: 1px solid var(--border);
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.4s, color 0.4s;
     }
     .phase-item:last-child { border-right: none; }
     .phase-item.active { background: var(--accent-light); color: var(--accent); }
-    .phase-item.done   { background: rgba(42,157,143,0.1); color: var(--green); }
+    .phase-item.done   { background: rgba(42,157,143,0.12); color: var(--green); }
     .phase-item.done::after { content: ' ✓'; }
-
-    .progress-bar-track {
-      height: 8px; background: var(--border);
-      border-radius: 4px; overflow: hidden; margin-bottom: 6px;
+    .progress-bar-track { height: 9px; background: var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 7px; position: relative; }
+    .progress-bar-track::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressShine 1.5s ease infinite;
     }
+    @keyframes progressShine { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
     .progress-bar-fill {
-      height: 100%; border-radius: 4px;
+      height: 100%; border-radius: 6px;
       background: linear-gradient(90deg, var(--accent), var(--green));
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+      width: 0%; position: relative; z-index: 1;
     }
     .progress-bar-fill.snappy { transition: width 0.15s ease; }
-
-    .progress-detail {
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .progress-detail { display: flex; justify-content: space-between; align-items: center; }
     .progress-label { font-size: 0.72rem; color: var(--text3); font-weight: 600; }
     .progress-pct   { font-size: 0.72rem; color: var(--accent); font-weight: 800; font-variant-numeric: tabular-nums; }
+    .upload-speed { font-size: 0.68rem; color: var(--text3); text-align: center; margin-top: 5px; font-variant-numeric: tabular-nums; }
 
-    /* Buttons */
+    /* ─── BUTTONS ─── */
     .btn-upload {
-      width: 100%; padding: 15px;
-      background: linear-gradient(135deg, var(--green), #218a80);
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, var(--green), #1e8a7c);
       color: white; border: none; border-radius: var(--radius-sm);
       font-family: 'DM Sans', sans-serif; font-size: 0.94rem; font-weight: 700;
       cursor: pointer; transition: all var(--t); margin-bottom: 10px;
-      box-shadow: 0 6px 22px rgba(42,157,143,0.28);
+      box-shadow: 0 6px 24px rgba(42,157,143,0.3);
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.02em; position: relative; overflow: hidden;
     }
-    .btn-upload:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(42,157,143,0.38); }
-    .btn-upload:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-upload::before {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: left 0.5s ease;
+    }
+    .btn-upload:hover:not(:disabled)::before { left: 150%; }
+    .btn-upload:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(42,157,143,0.42); }
+    .btn-upload:active:not(:disabled) { transform: translateY(-1px); }
+    .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-cancel {
       width: 100%; padding: 12px; background: transparent; color: var(--text3);
       border: 1.5px solid var(--border); border-radius: var(--radius-sm);
       font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600;
       cursor: pointer; transition: all var(--t);
     }
-    .btn-cancel:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .btn-cancel:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); transform: translateY(-1px); }
 
     /* Verify badge */
     .verify-badge {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 20px; background: var(--bg2);
+      padding: 12px 22px; background: var(--bg2);
       border-top: 1px solid var(--border);
       font-size: 0.74rem; color: var(--text3);
     }
-    .verify-badge svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+    .verify-badge svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; animation: shieldPulse 3s ease infinite; }
+    @keyframes shieldPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
     .verify-badge strong { color: var(--text2); }
 
     /* Spinner */
@@ -391,13 +544,6 @@
       animation: spin 0.65s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Upload progress detail */
-    .upload-speed {
-      font-size: 0.68rem; color: var(--text3);
-      text-align: center; margin-top: 4px;
-      font-variant-numeric: tabular-nums;
-    }
 
     /* Toast */
     #toast-container {
@@ -411,24 +557,34 @@
       padding: 11px 24px; border-radius: 100px;
       font-size: 0.83rem; font-weight: 600;
       box-shadow: 0 8px 28px rgba(0,0,0,0.22);
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.4s forwards;
+      animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1), toastOut 0.3s ease 2.4s forwards;
       white-space: nowrap; max-width: calc(100vw - 40px);
     }
     .toast.err { background: var(--red); color: white; }
     .toast.ok  { background: var(--green); color: white; }
-    @keyframes toastIn  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(20px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
     @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-8px)} }
 
     @media (max-width: 520px) {
-      .qris-header { padding: 22px 20px 18px; }
-      .qr-section  { padding: 20px 16px 12px; }
+      .qris-header { padding: 24px 20px 20px; }
+      .qr-section  { padding: 22px 16px 14px; }
       .qr-frame img { width: 190px; height: 190px; }
       .qr-placeholder { width: 190px; height: 190px; }
-      .instructions, .upload-section { padding: 16px 20px 20px; }
+      .instructions, .upload-section { padding: 16px 18px 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
+
+<div class="bg-orbs" aria-hidden="true">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
 
 <header>
   <div class="header-inner">
@@ -504,10 +660,22 @@
 
       <!-- COUNTDOWN -->
       <div class="timer-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-        Selesaikan pembayaran dalam &nbsp;<span class="timer-val" id="timerDisplay">10:00</span>
+        <div class="timer-circle-wrap">
+          <svg viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="timer-track" cx="18" cy="18" r="15.9"/>
+            <circle class="timer-fill" id="timerCircleFill" cx="18" cy="18" r="15.9"
+              style="stroke-dasharray:100;stroke-dashoffset:0;"/>
+          </svg>
+          <div class="timer-icon-center">
+            <svg id="timerIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+        </div>
+        <div class="timer-text">
+          <span class="timer-label-small">Selesaikan dalam</span>
+          <span class="timer-val" id="timerDisplay">10:00</span>
+        </div>
       </div>
 
       <!-- INSTRUCTIONS -->
@@ -527,11 +695,11 @@
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
-            <div class="step-text">Pastikan jumlah yang tertera sesuai <strong id="instrAmount">—</strong>, lalu konfirmasi pembayaran</div>
+            <div class="step-text">Pastikan jumlah sesuai <strong id="instrAmount">—</strong>, lalu konfirmasi pembayaran</div>
           </div>
           <div class="step-item">
             <div class="step-num">4</div>
-            <div class="step-text"><strong>Screenshot / foto</strong> bukti pembayaranmu, lalu upload di bawah ini untuk konfirmasi pesanan</div>
+            <div class="step-text"><strong>Screenshot / foto</strong> bukti pembayaran, lalu upload di bawah untuk konfirmasi pesanan</div>
           </div>
         </div>
       </div>
@@ -551,21 +719,18 @@
           Admin akan <strong>memverifikasi secara manual</strong> sebelum pesanan diproses.
         </div>
 
-        <!-- Preview -->
         <div class="preview-wrap" id="previewWrap">
           <img id="previewImg" src="" alt="Preview Bukti"/>
           <button class="preview-remove" onclick="removeFile()" title="Hapus">✕</button>
         </div>
 
-        <!-- Drop area -->
         <div class="drop-area" id="dropArea">
           <input type="file" id="fileInput" accept="image/*" onchange="onFileSelected(this)"/>
-          <div class="drop-icon" id="dropIcon">📷</div>
+          <span class="drop-icon" id="dropIcon">📷</span>
           <div class="drop-text" id="dropText">Foto / Pilih dari Galeri</div>
           <div class="drop-sub"  id="dropSub">JPG, PNG · Otomatis dikompres</div>
         </div>
 
-        <!-- Progress: Kompres → Upload → Simpan -->
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-phases">
             <div class="phase-item" id="phase1">Kompres</div>
@@ -609,7 +774,7 @@
 
 <script>
   /* ─── CONFIG ─── */
-  var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED: nama konsisten */
+  var CLOUDINARY_CLOUD  = 'dwssvn6zo';           /* ✅ FIXED */
   var CLOUDINARY_PRESET = 'minbite_bukti';
   var CLOUDINARY_URL    = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
 
@@ -624,6 +789,7 @@
   var previewBlobUrl = null;
   var timerInterval  = null;
   var TIMER_SECS     = 600;
+  var timerTotal     = 600;
 
   function fmt(n) { return 'Rp' + Number(n).toLocaleString('id-ID'); }
 
@@ -641,7 +807,7 @@
 
   /* ─── COMPRESSION ─── */
   function compressImage(file, onProg) {
-    var MAX_KB = 300, MAX_W = 1200;
+    var MAX_W = 1200;
     return new Promise(function(resolve) {
       var objUrl = URL.createObjectURL(file);
       var img    = new Image();
@@ -649,70 +815,51 @@
       img.onload  = function() {
         URL.revokeObjectURL(objUrl);
         onProg(10, 'Menyesuaikan ukuran…');
-
         var canvas = document.createElement('canvas');
         var w = img.width, h = img.height;
         if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-
         var testUrl = canvas.toDataURL('image/webp');
         var fmt = testUrl.startsWith('data:image/webp') ? 'image/webp' : 'image/jpeg';
         var ext = fmt === 'image/webp' ? 'webp' : 'jpg';
-
         onProg(16, 'Mengompres gambar…');
-
         var rawKB = file.size / 1024;
-        var q = rawKB < 500  ? 0.82
-              : rawKB < 2000 ? 0.70
-              :                0.55;
-
+        var q = rawKB < 500 ? 0.82 : rawKB < 2000 ? 0.70 : 0.55;
         canvas.toBlob(function(blob) {
           var name = file.name.replace(/\.[^.]+$/, '.' + ext);
           var compressed = new File([blob], name, { type: fmt });
-          resolve({
-            file:    compressed,
-            blobUrl: URL.createObjectURL(blob)
-          });
+          resolve({ file: compressed, blobUrl: URL.createObjectURL(blob) });
         }, fmt, q);
       };
       img.src = objUrl;
     });
   }
 
-  /* ─── CLOUDINARY UPLOAD dengan XHR progress ─── */
+  /* ─── CLOUDINARY UPLOAD ─── */
   function uploadToCloudinary(file, onProgress) {
     return new Promise(function(resolve, reject) {
       var fd = new FormData();
       fd.append('file', file);
       fd.append('upload_preset', CLOUDINARY_PRESET);
       fd.append('folder', 'minbite/bukti');
-
       var xhr = new XMLHttpRequest();
       var startTime = Date.now();
-
       xhr.upload.addEventListener('progress', function(e) {
         if (!e.lengthComputable) return;
-        var pct  = (e.loaded / e.total) * 100;
+        var pct = (e.loaded / e.total) * 100;
         var elapsed = (Date.now() - startTime) / 1000;
         var speed = elapsed > 0 ? (e.loaded / 1024 / elapsed).toFixed(0) : 0;
         onProgress(pct, speed);
       });
-
       xhr.addEventListener('load', function() {
         if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            var data = JSON.parse(xhr.responseText);
-            resolve(data.secure_url);
-          } catch(e) { reject(new Error('Response parse error')); }
-        } else {
-          reject(new Error('Upload gagal: HTTP ' + xhr.status));
-        }
+          try { resolve(JSON.parse(xhr.responseText).secure_url); }
+          catch(e) { reject(new Error('Response parse error')); }
+        } else { reject(new Error('Upload gagal: HTTP ' + xhr.status)); }
       });
-
       xhr.addEventListener('error', function() { reject(new Error('Network error')); });
       xhr.addEventListener('abort', function() { reject(new Error('Upload dibatalkan')); });
-
       xhr.open('POST', CLOUDINARY_URL);
       xhr.send(fd);
     });
@@ -724,45 +871,35 @@
     if (!file) return;
     if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar', 'err'); input.value = ''; return; }
     if (file.size > 20 * 1024 * 1024)   { showToast('File terlalu besar — maks 20 MB', 'err'); input.value = ''; return; }
-
     var da = document.getElementById('dropArea');
     da.classList.add('compressing');
     document.getElementById('dropIcon').textContent = '⏳';
     document.getElementById('dropText').textContent = 'Mengompres gambar…';
     document.getElementById('dropSub').textContent  = 'Sebentar ya';
     document.getElementById('btnUpload').disabled   = true;
-
     document.getElementById('progressWrap').style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
     setProgress(3, 'Membaca file…', 1);
-
-    compressImage(file, function(pct, label) {
-      setProgress(pct, label, 1);
-    }).then(function(result) {
-      if (!result) { showToast('Gagal memproses gambar', 'err'); resetDropArea(); return; }
-
-      if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
-      previewBlobUrl = result.blobUrl;
-      selectedFile   = result.file;
-
-      document.getElementById('previewImg').src            = result.blobUrl;
-      document.getElementById('previewWrap').style.display = 'block';
-      da.style.display = 'none';
-
-      document.getElementById('progressFill').classList.add('snappy');
-      setProgress(25, 'Siap diupload ✓', 1);
-
-      setTimeout(function() {
-        document.getElementById('progressWrap').style.display = 'none';
-        document.getElementById('uploadSpeed').textContent = '';
-      }, 800);
-
-      document.getElementById('btnUpload').disabled = false;
-
-      var origKB = Math.round(file.size / 1024);
-      var newKB  = Math.round(result.file.size / 1024);
-      showToast('Siap: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
-    });
+    compressImage(file, function(pct, label) { setProgress(pct, label, 1); })
+      .then(function(result) {
+        if (!result) { showToast('Gagal memproses gambar', 'err'); resetDropArea(); return; }
+        if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+        previewBlobUrl = result.blobUrl;
+        selectedFile   = result.file;
+        document.getElementById('previewImg').src            = result.blobUrl;
+        document.getElementById('previewWrap').style.display = 'block';
+        da.style.display = 'none';
+        document.getElementById('progressFill').classList.add('snappy');
+        setProgress(25, 'Siap diupload ✓', 1);
+        setTimeout(function() {
+          document.getElementById('progressWrap').style.display = 'none';
+          document.getElementById('uploadSpeed').textContent = '';
+        }, 800);
+        document.getElementById('btnUpload').disabled = false;
+        var origKB = Math.round(file.size / 1024);
+        var newKB  = Math.round(result.file.size / 1024);
+        showToast('Siap: ' + origKB + ' KB → ' + newKB + ' KB ✓', 'ok');
+      });
   }
 
   function removeFile() {
@@ -779,8 +916,7 @@
 
   function resetDropArea() {
     var da = document.getElementById('dropArea');
-    da.style.display = 'block';
-    da.className = 'drop-area';
+    da.style.display = 'block'; da.className = 'drop-area';
     document.getElementById('dropIcon').textContent = '📷';
     document.getElementById('dropText').textContent = 'Foto / Pilih dari Galeri';
     document.getElementById('dropSub').textContent  = 'JPG, PNG · Otomatis dikompres';
@@ -791,18 +927,14 @@
     if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
     if (!orderData)    { showToast('Data pesanan tidak valid', 'err'); return; }
     if (!db)           { showToast('Koneksi Firebase gagal', 'err'); return; }
-
     var btn = document.getElementById('btnUpload');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Mengupload…';
-
     var pw = document.getElementById('progressWrap');
     pw.style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
     setProgress(25, 'Mengupload ke Server…', 2);
-
     try {
-      /* ① Upload ke Cloudinary */
       var imageUrl = await uploadToCloudinary(selectedFile, function(pct, speedKB) {
         var mapped = 25 + (pct / 100) * 45;
         document.getElementById('progressFill').style.width = mapped + '%';
@@ -810,59 +942,37 @@
         document.getElementById('progressLabel').textContent = 'Mengupload… ' + Math.round(pct) + '%';
         document.getElementById('uploadSpeed').textContent  = speedKB > 0 ? speedKB + ' KB/s' : '';
       });
-
       setProgress(72, 'Menyimpan pesanan…', 3);
       document.getElementById('uploadSpeed').textContent = '';
-
-      /* ② Simpan ke Firestore */
       var orderId = orderData.id;
       var now     = firebase.firestore.FieldValue.serverTimestamp();
-
       await db.collection('orders').doc(orderId).set({
-        orderId:               orderId,
-        id:                    orderId,
-        nama:                  orderData.name    || '',
-        name:                  orderData.name    || '',
-        noHp:                  orderData.phone   || '',
-        phone:                 orderData.phone   || '',
-        kelas:                 orderData.address || '',
-        address:               orderData.address || '',
-        jurusan:               orderData.notes   || '',
-        notes:                 orderData.notes   || '',
-        items:                 orderData.items   || [],
-        subtotal:              orderData.subtotal || 0,
-        total:                 orderData.total   || 0,
-        metodePembayaran:      'qris',
-        payment:               'qris',
-        statusPembayaran:      'menunggu_verifikasi',
-        paymentStatus:         'menunggu_verifikasi',
-        statusOrder:           'MENUNGGU',
-        status:                'MENUNGGU',
-        buktiPembayaranUrl:    imageUrl,
-        waktuUploadBukti:      now,
-        alasanReject:          '',
-        catatanAdmin:          '',
-        date:                  orderData.date || new Date().toISOString().slice(0, 10),
-        createdAt:             now,
-        updatedAt:             now,
-        timestamp:             now
+        orderId: orderId, id: orderId,
+        nama: orderData.name || '', name: orderData.name || '',
+        noHp: orderData.phone || '', phone: orderData.phone || '',
+        kelas: orderData.address || '', address: orderData.address || '',
+        jurusan: orderData.notes || '', notes: orderData.notes || '',
+        items: orderData.items || [],
+        subtotal: orderData.subtotal || 0, total: orderData.total || 0,
+        metodePembayaran: 'qris', payment: 'qris',
+        statusPembayaran: 'menunggu_verifikasi', paymentStatus: 'menunggu_verifikasi',
+        statusOrder: 'MENUNGGU', status: 'MENUNGGU',
+        buktiPembayaranUrl: imageUrl, waktuUploadBukti: now,
+        alasanReject: '', catatanAdmin: '',
+        date: orderData.date || new Date().toISOString().slice(0, 10),
+        createdAt: now, updatedAt: now, timestamp: now
       });
-
       document.getElementById('progressFill').classList.add('snappy');
       setProgress(100, 'Berhasil! Mengalihkan…', 3);
-
       try {
         localStorage.setItem('minbite_active_order',
           JSON.stringify({ id: orderId, name: orderData.name, date: orderData.date }));
       } catch(e) {}
-
       sessionStorage.removeItem('mb_pending_order');
       if (timerInterval) clearInterval(timerInterval);
       if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
-
       showToast('Bukti berhasil dikirim! 🎉', 'ok');
       setTimeout(function() { window.location.href = 'order.html?id=' + orderId; }, 900);
-
     } catch(err) {
       console.error(err);
       var msg = err.message && err.message.includes('Upload') ? err.message : 'Gagal upload — coba lagi';
@@ -882,16 +992,13 @@
   async function submitReupload(existingOrderId) {
     if (!selectedFile) { showToast('Pilih foto bukti pembayaran dulu', 'err'); return; }
     if (!db)           { showToast('Koneksi Firebase gagal', 'err'); return; }
-
     var btn = document.getElementById('btnUpload');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Mengupload…';
-
     var pw = document.getElementById('progressWrap');
     pw.style.display = 'block';
     document.getElementById('progressFill').classList.remove('snappy');
     setProgress(25, 'Mengupload ke Cloudinary…', 2);
-
     try {
       var imageUrl = await uploadToCloudinary(selectedFile, function(pct, speedKB) {
         var mapped = 25 + (pct / 100) * 45;
@@ -900,31 +1007,21 @@
         document.getElementById('progressLabel').textContent = 'Mengupload… ' + Math.round(pct) + '%';
         document.getElementById('uploadSpeed').textContent  = speedKB > 0 ? speedKB + ' KB/s' : '';
       });
-
       setProgress(72, 'Memperbarui pesanan…', 3);
       document.getElementById('uploadSpeed').textContent = '';
-
       var now = firebase.firestore.FieldValue.serverTimestamp();
       await db.collection('orders').doc(existingOrderId).update({
-        statusPembayaran:   'menunggu_verifikasi',
-        paymentStatus:      'menunggu_verifikasi',
-        buktiPembayaranUrl: imageUrl,
-        waktuUploadBukti:   now,
-        alasanReject:       '',
-        catatanAdmin:       '',
-        updatedAt:          now
+        statusPembayaran: 'menunggu_verifikasi', paymentStatus: 'menunggu_verifikasi',
+        buktiPembayaranUrl: imageUrl, waktuUploadBukti: now,
+        alasanReject: '', catatanAdmin: '', updatedAt: now
       });
-
       document.getElementById('progressFill').classList.add('snappy');
       setProgress(100, 'Berhasil!', 3);
-
       sessionStorage.removeItem('mb_pending_order');
       if (timerInterval) clearInterval(timerInterval);
       if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
-
       showToast('Bukti berhasil diupload ulang! 🎉', 'ok');
       setTimeout(function() { window.location.href = 'order.html?id=' + existingOrderId; }, 900);
-
     } catch(err) {
       console.error(err);
       showToast('Gagal upload — coba lagi', 'err');
@@ -953,8 +1050,8 @@
     var items = d.items || [];
     var lbl   = items.slice(0, 2).map(function(it) { return it.name + ' ×' + it.qty; }).join(' · ');
     if (items.length > 2) lbl += ' …';
-    document.getElementById('displayItems').textContent   = lbl || '-';
-    document.getElementById('instrAmount').textContent    = fmt(d.total || 0);
+    document.getElementById('displayItems').textContent = lbl || '-';
+    document.getElementById('instrAmount').textContent  = fmt(d.total || 0);
     startTimer();
   }
 
@@ -967,11 +1064,11 @@
       document.getElementById('displayOrderId').textContent  = orderId;
       document.getElementById('displayName').textContent     = d.name || d.nama || '';
       var items = d.items || [];
-      document.getElementById('displayItems').textContent   =
+      document.getElementById('displayItems').textContent =
         items.slice(0, 2).map(function(it) { return it.name + ' ×' + it.qty; }).join(' · ');
-      document.getElementById('instrAmount').textContent    = fmt(d.total || 0);
-      document.getElementById('btnUpload').onclick          = function() { submitReupload(orderId); };
-      document.getElementById('btnUpload').innerHTML        =
+      document.getElementById('instrAmount').textContent = fmt(d.total || 0);
+      document.getElementById('btnUpload').onclick = function() { submitReupload(orderId); };
+      document.getElementById('btnUpload').innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:17px;height:17px">' +
         '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>' +
         '<polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
@@ -980,17 +1077,28 @@
     }).catch(function() { document.getElementById('stateError').style.display = ''; });
   }
 
-  /* ─── TIMER ─── */
+  /* ─── TIMER with circular SVG progress ─── */
   function startTimer() {
     var remaining = TIMER_SECS;
-    var el = document.getElementById('timerDisplay');
+    var el        = document.getElementById('timerDisplay');
+    var fillEl    = document.getElementById('timerCircleFill');
+    var iconEl    = document.getElementById('timerIcon');
+    var CIRC      = 100;
+
     function tick() {
       var m = Math.floor(remaining / 60), s = remaining % 60;
       el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-      el.classList.toggle('urgent', remaining <= 60);
+      var pct    = remaining / timerTotal;
+      var offset = CIRC - (pct * CIRC);
+      fillEl.style.strokeDashoffset = offset;
+      var isUrgent = remaining <= 60;
+      el.classList.toggle('urgent', isUrgent);
+      fillEl.classList.toggle('urgent', isUrgent);
+      iconEl.classList.toggle('urgent', isUrgent);
       if (remaining <= 0) {
         clearInterval(timerInterval);
         el.textContent = '0:00';
+        fillEl.style.strokeDashoffset = CIRC;
         showToast('Waktu pembayaran habis. Silakan coba lagi.', 'err');
       }
       remaining--;
@@ -1009,7 +1117,7 @@
   function showToast(msg, type) {
     var c  = document.getElementById('toast-container');
     var el = document.createElement('div');
-    el.className  = 'toast' + (type ? ' ' + type : '');
+    el.className   = 'toast' + (type ? ' ' + type : '');
     el.textContent = msg;
     c.appendChild(el);
     setTimeout(function() { el.remove(); }, 2800);
