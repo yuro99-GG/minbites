@@ -1265,12 +1265,17 @@ function setFilter(f){
 /* ══ CHANGE STATUS ══ */
 async function changeStatus(docId,newStatus){
   try{
-    await db.collection('orders').doc(docId).update({status:newStatus});
+    /* Update both status fields so order.html (which reads status||statusOrder) stays in sync */
+    await db.collection('orders').doc(docId).update({
+      status: newStatus,
+      statusOrder: newStatus,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
     var idx=allOrders.findIndex(function(o){return o._docId===docId||o.id===docId;});
     var o=allOrders[idx];
     var id=o?o.id||docId:docId;
     var name=o?o.name||'Anonim':'Anonim';
-    if(idx!==-1) allOrders[idx].status=newStatus;
+    if(idx!==-1){ allOrders[idx].status=newStatus; allOrders[idx].statusOrder=newStatus; }
     var logType=newStatus==='SELESAI'?'complete':'status';
     addLog(logType,'Pesanan <strong>'+escHtml(id)+'</strong> → <strong>'+newStatus+'</strong>');
     if(newStatus==='SIAP DIAMBIL'){
@@ -1319,16 +1324,23 @@ async function approveFromModal(){
   try{
     await db.collection('orders').doc(docId).update({
       paymentStatus:'diterima',
+      statusPembayaran:'diterima',
       status:'MENUNGGU',
+      statusOrder:'MENUNGGU',
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     var idx=allOrders.findIndex(function(x){return x._docId===docId||x.id===docId;});
-    if(idx!==-1){ allOrders[idx].paymentStatus='diterima'; }
+    if(idx!==-1){
+      allOrders[idx].paymentStatus='diterima';
+      allOrders[idx].statusPembayaran='diterima';
+      allOrders[idx].status='MENUNGGU';
+      allOrders[idx].statusOrder='MENUNGGU';
+    }
     addLog('status','💳 Pembayaran QRIS <strong>'+escHtml(id)+'</strong> → <strong>DITERIMA</strong>');
     if(soundEnabled) playNotifSound();
     closeQrisModal();
     updateStats(); renderOrders();
-    showToast('✓ Pembayaran pesanan '+id+' diterima!');
+    showToast('✓ Pembayaran pesanan '+id+' diterima! Sekarang bisa diproses.');
   } catch(err){ console.error(err); showToast('Gagal approve. Coba lagi.'); }
 }
 async function declineFromModal(){
@@ -1697,4 +1709,4 @@ document.getElementById('confirmModal').addEventListener('click',function(e){if(
 document.getElementById('invoiceModal').addEventListener('click',function(e){if(e.target===this)closeInvoiceModal();});
 </script>
 </body>
-</html>
+  </html>
