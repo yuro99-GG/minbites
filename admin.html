@@ -15,12 +15,12 @@
     var db, storage;
     try {
       var firebaseConfig = {
-        apiKey: "AIzaSyDX70_NVuPtnUvxwALxn5fSnjj2H8pgSu0",
-        authDomain: "planning-with-ai-d8ea1.firebaseapp.com",
-        projectId: "planning-with-ai-d8ea1",
-        storageBucket: "planning-with-ai-d8ea1.firebasestorage.app",
-        messagingSenderId: "975523910853",
-        appId: "1:975523910853:web:af7350de88ce5d9e668cac"
+        apiKey: "AIzaSyCDcIS4u82C8TgvyVcGsJ7T4D91x7J3uC8",
+        authDomain: "cuki-b9ea2.firebaseapp.com",
+        projectId: "cuki-b9ea2",
+        storageBucket: "cuki-b9ea2.firebasestorage.app",
+        messagingSenderId: "161705040606",
+        appId: "1:161705040606:web:ae2f2a9593450c45fa004f"
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
@@ -200,6 +200,7 @@
     .order-card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
     .order-card.is-new { border-color: rgba(232,119,58,0.35); }
     .order-card.has-qris-pending { border-left: 2px solid var(--amber); }
+    .status-seg-btn.qris-locked { color: var(--amber) !important; border-color: var(--amber-border) !important; opacity: 0.7; cursor: not-allowed; }
 
     /* Card Header */
     .order-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 12px 14px 10px; border-bottom: 1px solid var(--border); gap: 8px; }
@@ -1169,15 +1170,19 @@ function renderOrders(){
       payBadges+='<span class="pay-status-badge '+(psCls[ps]||'')+'">'+(psMap[ps]||ps)+'</span>';
     }
 
-    /* QRIS proof compact row */
+    /* QRIS proof compact row — support both paymentProof.url and buktiPembayaranUrl */
+    var proofUrl=(o.paymentProof&&o.paymentProof.url)||o.buktiPembayaranUrl||'';
     var proofHtml='';
-    if(o.paymentProof&&o.paymentProof.url&&ps==='menunggu_verifikasi'){
+    if(proofUrl&&ps==='menunggu_verifikasi'){
       var uploadTime='';
-      if(o.paymentProof.uploadedAt&&o.paymentProof.uploadedAt.toDate){
+      if(o.paymentProof&&o.paymentProof.uploadedAt&&o.paymentProof.uploadedAt.toDate){
         var d=o.paymentProof.uploadedAt.toDate();
         uploadTime=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      } else if(o.waktuUploadBukti&&o.waktuUploadBukti.toDate){
+        var d=o.waktuUploadBukti.toDate();
+        uploadTime=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
       }
-      var encUrl=escHtml(o.paymentProof.url);
+      var encUrl=escHtml(proofUrl);
       var encDocId=escHtml(docId);
       var encId=escHtml(id);
       var encName=escHtml(o.name||'—');
@@ -1187,7 +1192,7 @@ function renderOrders(){
       if(uploadTime) proofHtml+='<span class="proof-upload-time">'+uploadTime+'</span>';
       proofHtml+='</div>';
     }
-    if(o.paymentProof&&o.paymentProof.url&&ps==='ditolak'&&o.catatanAdmin){
+    if(proofUrl&&ps==='ditolak'&&o.catatanAdmin){
       proofHtml+='<div class="rejected-note"><div class="rejected-note-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Ditolak: '+escHtml(o.catatanAdmin)+'</span></div></div>';
     }
 
@@ -1196,12 +1201,14 @@ function renderOrders(){
 
     /* Segmented status progress buttons */
     if(s!=='SELESAI'){
-      var canProc=(s==='MENUNGGU')&&ps!=='menunggu_upload'&&ps!=='menunggu_verifikasi';
+      var qrisPending=ps==='menunggu_upload'||ps==='menunggu_verifikasi';
+      var canProc=(s==='MENUNGGU')&&!qrisPending;
       var canReady=s==='DIPROSES';
       var canDone=s==='SIAP DIAMBIL';
+      var procTitle=qrisPending?'Approve/Decline QRIS dulu sebelum proses':'';
       actionBtns+='<div class="status-actions">';
-      actionBtns+='<button class="status-seg-btn'+(s==='DIPROSES'?' seg-active-proc':'')+'" '+(canProc?'onclick="changeStatus(\''+escHtml(docId)+'\',\'DIPROSES\')"':'disabled')+'>'+
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg>Proses</button>';
+      actionBtns+='<button class="status-seg-btn'+(s==='DIPROSES'?' seg-active-proc':'')+(qrisPending?' qris-locked':'')+'" '+(canProc?'onclick="changeStatus(\''+escHtml(docId)+'\',\'DIPROSES\')"':'disabled')+(procTitle?' title="'+procTitle+'"':'')+'>'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg>'+(qrisPending?'⏳ Approve QRIS':'Proses')+'</button>';
       actionBtns+='<button class="status-seg-btn'+(s==='SIAP DIAMBIL'?' seg-active-ready':'')+'" '+(canReady?'onclick="changeStatus(\''+escHtml(docId)+'\',\'SIAP DIAMBIL\')"':'disabled')+'>'+
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>Siap</button>';
       actionBtns+='<button class="status-seg-btn" '+(canDone?'onclick="showInvoiceModal(\''+escHtml(docId)+'\')"':'disabled')+'>'+
