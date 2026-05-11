@@ -1208,7 +1208,7 @@ function renderOrders(){
 
     /* Segmented status progress buttons */
     if(s!=='SELESAI'){
-      var canProc=(s==='MENUNGGU')&&ps!=='menunggu_upload'&&ps!=='menunggu_verifikasi';
+      var canProc=(s==='MENUNGGU');
       var canReady=s==='DIPROSES';
       var canDone=s==='SIAP DIAMBIL';
       actionBtns+='<div class="status-actions">';
