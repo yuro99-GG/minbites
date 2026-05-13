@@ -2,7 +2,7 @@
 <html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MinBite - Menu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -107,9 +107,6 @@
       transition: background 0.3s, color 0.3s;
       overflow-x: hidden;
     }
-
-    /* Safeguard: semua gambar tidak boleh meluber keluar container */
-    img { max-width: 100%; height: auto; display: block; }
 
     /* Grain overlay */
     body::before {
@@ -615,7 +612,7 @@
     /* Checkout two-column layout */
     .checkout-layout {
       display: grid;
-      grid-template-columns: 1fr 300px; /* sedikit lebih kecil dari 320px */
+      grid-template-columns: 1fr 320px;
       min-height: 0;
     }
 
@@ -649,8 +646,7 @@
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'DM Sans', sans-serif;
-      font-size: 16px; /* ← min 16px agar iOS tidak auto-zoom saat focus */
-      transition: all var(--t); outline: none;
+      font-size: 15px; transition: all var(--t); outline: none;
       resize: none;
     }
     .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow2); background: var(--surface); }
@@ -800,19 +796,18 @@
     .qris-amount-value { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--accent); }
 
     .qris-qr-area {
-      padding: 20px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 0;
+      padding: 20px 32px 16px; display: flex; flex-direction: column; align-items: center; gap: 0;
     }
     .qris-qr-frame {
       background: white; border-radius: 20px;
       padding: 14px; border: 3px solid #e8002d;
       box-shadow: 0 8px 32px rgba(232,0,45,0.12), 0 4px 16px var(--shadow);
       position: relative; overflow: hidden;
-      width: min(254px, 100%); /* responsif: max 254px tapi tidak meluber */
     }
     .qris-qr-frame img {
-      width: 100%; height: auto; display: block; /* responsif, tidak fixed 220px */
+      width: 220px; height: 220px; display: block;
       border-radius: 10px;
-      aspect-ratio: 1; object-fit: cover;
+      object-fit: cover;
     }
     .qris-scan-label { font-size: 0.75rem; font-weight: 700; color: var(--text3); margin-top: 12px; text-align: center; }
     .qris-apps-row { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
@@ -1046,9 +1041,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap; /* ← wrap di HP kecil */
-      gap: 10px;
-      padding: 14px 16px;
+      gap: 12px;
+      padding: 14px 20px;
       background: linear-gradient(135deg, var(--accent-light), var(--bg2));
       border-bottom: 1px solid var(--border);
     }
@@ -1145,30 +1139,11 @@
       .hero-floats   { display: none; }
       .payment-options { grid-template-columns: 1fr 1fr; }
       .modal-wide { max-width: 100%; }
-      /* Checkout form pada HP: padding lebih kecil */
-      .checkout-form-col { padding: 16px 16px 20px; }
-      .checkout-summary-col { padding: 16px 16px 20px; }
-      /* QRIS: pastikan tidak overflow */
-      .qris-qr-area  { padding: 16px 16px 12px; }
-      .qris-header   { padding: 20px 20px 16px; }
-      .qris-upload-section { padding: 0 16px 20px; }
-      .qris-footer   { padding: 12px 16px 20px; }
-      /* hero stats pada HP kecil */
-      .hero-stats { width: 100%; max-width: 100%; }
     }
-
     @media (max-width: 380px) {
       .logo { font-size: 1.35rem; }
       .hero h1 { font-size: 1.9rem; }
       .hero-stats { max-width: 100%; }
-      /* QR frame tambah kecil */
-      .qris-qr-frame { width: 100%; border-radius: 14px; padding: 10px; }
-      /* Checkout padding minimal */
-      .checkout-form-col { padding: 14px 14px 18px; }
-      /* bundle chips biar wrap rapi */
-      .bundle-item-chip { font-size: 0.74rem; padding: 6px 10px; }
-      /* modal overlay padding lebih kecil */
-      .modal-overlay { padding: 10px; }
     }
   </style>
 </head>
