@@ -29,6 +29,7 @@
   </script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1877,104 +1878,262 @@ function renderLog(){
 }
 function clearLog(){ activityLog=[]; saveLog(); renderLog(); }
 
-/* ══ EXPORT EXCEL — SEMUA DATA ══ */
+/* ══ EXPORT EXCEL — DATA PEMBELI (TANPA CANCEL) ══ */
 async function exportExcel(){
-  if(typeof XLSX==='undefined'){ showToast('Library Excel belum siap, coba lagi.'); return; }
+  if(typeof ExcelJS==='undefined'){ showToast('Library Excel belum siap, coba lagi.'); return; }
   var btn=document.getElementById('btnExportXl');
   btn.classList.add('loading');
   btn.textContent='⏳ Mengambil data…';
 
   try{
-    /* ── Fetch SEMUA orders dari Firestore (tanpa filter tanggal) ── */
+    /* ── Fetch semua orders dari Firestore ── */
     var snap = await db.collection('orders').orderBy('timestamp','desc').get();
-    var orders = [];
-    snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id}, doc.data())); });
+    var allFetched = [];
+    snap.forEach(function(doc){ allFetched.push(Object.assign({_docId:doc.id}, doc.data())); });
+
+    /* ── Filter: hanya yang BUKAN dibatalkan ── */
+    var CANCEL_STATUSES = ['DIBATALKAN','CANCELLED','CANCEL','BATAL','DITOLAK'];
+    var orders = allFetched.filter(function(o){
+      var s = (o.status||'').toUpperCase().trim();
+      return CANCEL_STATUSES.indexOf(s) === -1;
+    });
 
     if(!orders.length){ showToast('Belum ada data pesanan.'); return; }
 
     var printDate = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
     var fileDate  = new Date().toISOString().slice(0,10);
 
-    /* ════════════════════════════════════════
-       SHEET 1 — REKAP SEMUA PEMBELIAN
-       Satu baris per pesanan, ringkas & rapi
-    ════════════════════════════════════════ */
-    var s1 = [];
-    s1.push(['REKAP SEMUA PEMBELIAN — MINBITE']);
-    s1.push(['Dicetak: '+printDate,'','','','','','','','','','','']);
-    s1.push([]);
-    s1.push([
-      'No','Tanggal','ID Pesanan','Nama','Kelas','No. WA',
-      'Item Dibeli','Total Item','Subtotal (Rp)','Diskon (Rp)','Total (Rp)',
-      'Waktu Ambil','Metode Bayar','Status'
-    ]);
+    /* ════ HELPER STYLES ════ */
+    var BRAND   = 'FFE8773A'; // orange MinBite
+    var BRAND_D = 'FFC95F22'; // orange gelap
+    var WHITE   = 'FFFFFFFF';
+    var DARK    = 'FF1C1916';
+    var ROW_ALT = 'FFFFF8F3'; // krem muda buat baris selang-seling
+    var TOTAL_BG= 'FFFFF0E6';
+    var BORDER_CLR = 'FFD9C0A8';
 
-    var grandTotal=0, grandQty=0;
+    function styleTitle(ws, titleRow, lastCol){
+      ws.mergeCells(titleRow, 1, titleRow, lastCol);
+      var cell = ws.getCell(titleRow, 1);
+      cell.value = cell.value;
+      cell.font = {name:'Arial', bold:true, size:14, color:{argb:WHITE}};
+      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:BRAND}};
+      cell.alignment = {horizontal:'center', vertical:'middle'};
+      ws.getRow(titleRow).height = 32;
+    }
+
+    function styleSubtitle(ws, row, lastCol){
+      ws.mergeCells(row, 1, row, lastCol);
+      var cell = ws.getCell(row, 1);
+      cell.font = {name:'Arial', italic:true, size:9, color:{argb:'FF8B6A50'}};
+      cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFFFF4EE'}};
+      cell.alignment = {horizontal:'left', vertical:'middle'};
+      ws.getRow(row).height = 18;
+    }
+
+    function styleHeaders(ws, headerRow){
+      var row = ws.getRow(headerRow);
+      row.eachCell(function(cell){
+        cell.font = {name:'Arial', bold:true, size:10, color:{argb:WHITE}};
+        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:BRAND_D}};
+        cell.alignment = {horizontal:'center', vertical:'middle', wrapText:true};
+        cell.border = {
+          top:{style:'thin',color:{argb:BRAND_D}},
+          bottom:{style:'medium',color:{argb:BRAND}},
+          left:{style:'thin',color:{argb:BRAND_D}},
+          right:{style:'thin',color:{argb:BRAND_D}}
+        };
+      });
+      row.height = 26;
+    }
+
+    function styleDataRow(ws, rowNum, isAlt, numCols){
+      var row = ws.getRow(rowNum);
+      var bg = isAlt ? ROW_ALT : WHITE;
+      row.eachCell({includeEmpty:true}, function(cell, colNum){
+        if(colNum > numCols) return;
+        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:bg.replace('#','')}};
+        cell.font = {name:'Arial', size:9};
+        cell.border = {
+          top:{style:'hair',color:{argb:BORDER_CLR}},
+          bottom:{style:'hair',color:{argb:BORDER_CLR}},
+          left:{style:'hair',color:{argb:BORDER_CLR}},
+          right:{style:'hair',color:{argb:BORDER_CLR}}
+        };
+        cell.alignment = {vertical:'middle'};
+      });
+      row.height = 18;
+    }
+
+    function styleTotalRow(ws, rowNum, numCols){
+      var row = ws.getRow(rowNum);
+      row.eachCell({includeEmpty:true}, function(cell, colNum){
+        if(colNum > numCols) return;
+        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:TOTAL_BG}};
+        cell.font = {name:'Arial', bold:true, size:10, color:{argb:BRAND_D}};
+        cell.border = {
+          top:{style:'medium',color:{argb:BRAND}},
+          bottom:{style:'medium',color:{argb:BRAND}},
+          left:{style:'thin',color:{argb:BRAND_D}},
+          right:{style:'thin',color:{argb:BRAND_D}}
+        };
+        cell.alignment = {vertical:'middle'};
+      });
+      row.height = 22;
+    }
+
+    var rpFmt = '#,##0';
+
+    /* ──────────────────────────────────────────────────────
+       SHEET 1 — REKAP PEMBELIAN  (1 baris per pesanan)
+    ────────────────────────────────────────────────────── */
+    var wb = new ExcelJS.Workbook();
+    wb.creator = 'MinBite Admin';
+    wb.created = new Date();
+
+    var ws1 = wb.addWorksheet('Rekap Pembelian', {
+      views:[{state:'frozen', ySplit:3, activeCell:'A4'}],
+      pageSetup:{paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1}
+    });
+
+    ws1.columns = [
+      {key:'no',     width:5},
+      {key:'tgl',    width:13},
+      {key:'id',     width:18},
+      {key:'nama',   width:24},
+      {key:'kelas',  width:16},
+      {key:'wa',     width:17},
+      {key:'items',  width:38},
+      {key:'qty',    width:11},
+      {key:'sub',    width:16},
+      {key:'disc',   width:14},
+      {key:'total',  width:16},
+      {key:'pickup', width:13},
+      {key:'bayar',  width:13},
+      {key:'status', width:13}
+    ];
+
+    ws1.addRow(['REKAP PEMBELIAN — MINBITE (Tanpa Order Dibatalkan)']);
+    ws1.addRow(['Dicetak: '+printDate+'   |   Total Pembeli: '+orders.length+' pesanan']);
+    ws1.addRow([
+      'No','Tanggal','ID Pesanan','Nama Pembeli','Kelas / Jurusan','No. WhatsApp',
+      'Item yang Dibeli','Total Qty','Subtotal (Rp)','Diskon (Rp)','Total Bayar (Rp)',
+      'Jam Ambil','Metode Bayar','Status'
+    ]);
+    styleTitle(ws1, 1, 14);
+    styleSubtitle(ws1, 2, 14);
+    styleHeaders(ws1, 3);
+
+    var grandTotal=0, grandQty=0, dataStartRow1=4;
     orders.forEach(function(o,i){
       var items   = o.items||[];
-      var itemStr = items.map(function(it){ return it.name+' ×'+it.qty; }).join(', ');
+      var itemStr = items.map(function(it){ return it.name+' \u00d7'+it.qty; }).join(', ');
       var qtySum  = items.reduce(function(s,it){ return s+Number(it.qty||0); },0);
+      var sub     = Number(o.subtotal||0);
+      var disc    = Number(o.discount||0);
       var total   = Number(o.total||0);
-      grandTotal += total;
-      grandQty   += qtySum;
-      s1.push([
+      grandTotal += total; grandQty += qtySum;
+      var r = ws1.addRow([
         i+1,
         o.date||'',
         o.id||o._docId||'',
         o.name||'',
-        (o.kelas||'')+(o.jurusan?' / '+(o.jurusan):''),
+        (o.kelas||'')+(o.jurusan?' / '+o.jurusan:''),
         o.phone||'',
         itemStr,
         qtySum,
-        Number(o.subtotal||0),
-        Number(o.discount||0),
-        total,
+        sub, disc, total,
         o.pickup||'',
-        (o.payment||o.metodePembayaran||'cash').toUpperCase(),
+        (o.payment||o.metodePembayaran||'CASH').toUpperCase(),
         o.status||'MENUNGGU'
       ]);
+      styleDataRow(ws1, r.number, i%2===1, 14);
+      /* center columns */
+      [1,2,8,12,13,14].forEach(function(c){ r.getCell(c).alignment={horizontal:'center',vertical:'middle'}; });
+      /* number format */
+      [9,10,11].forEach(function(c){
+        r.getCell(c).numFmt = rpFmt;
+        r.getCell(c).alignment = {horizontal:'right',vertical:'middle'};
+      });
+      r.getCell(8).alignment = {horizontal:'center',vertical:'middle'};
+      /* status color */
+      var sc = o.status||'';
+      if(sc==='SELESAI')      r.getCell(14).font={name:'Arial',size:9,bold:true,color:{argb:'FF3ECF7A'}};
+      else if(sc==='MENUNGGU') r.getCell(14).font={name:'Arial',size:9,bold:true,color:{argb:'FFF5C842'}};
+      else if(sc==='DIPROSES') r.getCell(14).font={name:'Arial',size:9,bold:true,color:{argb:'FF5B9CF6'}};
+      else if(sc==='SIAP DIAMBIL') r.getCell(14).font={name:'Arial',size:9,bold:true,color:{argb:'FFE8773A'}};
     });
-    s1.push([]);
-    s1.push(['','','','','','','TOTAL',grandQty,'','',grandTotal,'','','']);
 
-    /* ════════════════════════════════════════
-       SHEET 2 — DETAIL ITEM PER PESANAN
-       Satu baris per item agar mudah dianalisa
-    ════════════════════════════════════════ */
-    var s2 = [];
-    s2.push(['DETAIL ITEM PER PESANAN — MINBITE']);
-    s2.push(['Dicetak: '+printDate,'','','','','','','']);
-    s2.push([]);
-    s2.push(['No','Tanggal','ID Pesanan','Nama Pembeli','Nama Item','Qty','Harga Satuan (Rp)','Subtotal Item (Rp)','Status Pesanan']);
+    /* baris total */
+    var totalRow1 = ws1.addRow(['','','','','','','GRAND TOTAL', grandQty,'','',grandTotal,'','','']);
+    styleTotalRow(ws1, totalRow1.number, 14);
+    totalRow1.getCell(7).alignment={horizontal:'right',vertical:'middle'};
+    totalRow1.getCell(8).alignment={horizontal:'center',vertical:'middle'};
+    totalRow1.getCell(11).numFmt=rpFmt;
+    totalRow1.getCell(11).alignment={horizontal:'right',vertical:'middle'};
 
-    var rowNum=1;
+    /* ──────────────────────────────────────────────────────
+       SHEET 2 — DETAIL ITEM PER PESANAN  (1 baris per item)
+    ────────────────────────────────────────────────────── */
+    var ws2 = wb.addWorksheet('Detail Item', {
+      views:[{state:'frozen', ySplit:3, activeCell:'A4'}],
+      pageSetup:{paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1}
+    });
+
+    ws2.columns = [
+      {key:'no',    width:5},
+      {key:'tgl',   width:13},
+      {key:'id',    width:18},
+      {key:'nama',  width:24},
+      {key:'item',  width:28},
+      {key:'qty',   width:8},
+      {key:'harga', width:18},
+      {key:'subtot',width:18},
+      {key:'status',width:14}
+    ];
+
+    ws2.addRow(['DETAIL ITEM PER PESANAN — MINBITE (Tanpa Order Dibatalkan)']);
+    ws2.addRow(['Dicetak: '+printDate]);
+    ws2.addRow(['No','Tanggal','ID Pesanan','Nama Pembeli','Nama Item','Qty','Harga Satuan (Rp)','Subtotal Item (Rp)','Status Pesanan']);
+    styleTitle(ws2, 1, 9);
+    styleSubtitle(ws2, 2, 9);
+    styleHeaders(ws2, 3);
+
+    var rowNum2=0;
     orders.forEach(function(o){
       var items=o.items||[];
       if(!items.length){
-        s2.push([rowNum++,o.date||'',o.id||o._docId,'','-',0,0,0,o.status||'']);
+        var r=ws2.addRow([++rowNum2, o.date||'', o.id||o._docId||'', o.name||'', '-', 0, 0, 0, o.status||'']);
+        styleDataRow(ws2, r.number, rowNum2%2===0, 9);
         return;
       }
       items.forEach(function(it){
-        var harga  = Number(it.price||0);
-        var qty    = Number(it.qty||0);
-        s2.push([
-          rowNum++,
-          o.date||'',
-          o.id||o._docId||'',
-          o.name||'',
-          it.name||'',
-          qty,
-          harga,
-          harga*qty,
-          o.status||'MENUNGGU'
+        var harga=Number(it.price||0), qty=Number(it.qty||0);
+        var r=ws2.addRow([
+          ++rowNum2, o.date||'', o.id||o._docId||'', o.name||'',
+          it.name||'', qty, harga, harga*qty, o.status||'MENUNGGU'
         ]);
+        styleDataRow(ws2, r.number, rowNum2%2===0, 9);
+        [1,2,6].forEach(function(c){ r.getCell(c).alignment={horizontal:'center',vertical:'middle'}; });
+        [7,8].forEach(function(c){ r.getCell(c).numFmt=rpFmt; r.getCell(c).alignment={horizontal:'right',vertical:'middle'}; });
       });
     });
 
-    /* ════════════════════════════════════════
+    /* ──────────────────────────────────────────────────────
        SHEET 3 — REKAP PRODUK TERLARIS
-       Berapa total terjual per nama produk
-    ════════════════════════════════════════ */
+    ────────────────────────────────────────────────────── */
+    var ws3 = wb.addWorksheet('Rekap Produk', {
+      views:[{state:'frozen', ySplit:3, activeCell:'A4'}]
+    });
+
+    ws3.columns = [
+      {key:'no',    width:5},
+      {key:'nama',  width:30},
+      {key:'qty',   width:20},
+      {key:'ord',   width:18},
+      {key:'rev',   width:24}
+    ];
+
     var prodMap={};
     orders.forEach(function(o){
       (o.items||[]).forEach(function(it){
@@ -1985,51 +2144,45 @@ async function exportExcel(){
         prodMap[n].orders += 1;
       });
     });
-
-    var s3=[];
-    s3.push(['REKAP PRODUK TERLARIS — MINBITE']);
-    s3.push(['Dicetak: '+printDate,'','','']);
-    s3.push([]);
-    s3.push(['No','Nama Produk','Total Terjual (Qty)','Total Pesanan','Total Pendapatan (Rp)']);
     var prodList=Object.keys(prodMap).sort(function(a,b){ return prodMap[b].qty-prodMap[a].qty; });
+    var grandRevProd=prodList.reduce(function(s,n){return s+prodMap[n].rev;},0);
+    var grandQtyProd=prodList.reduce(function(s,n){return s+prodMap[n].qty;},0);
+
+    ws3.addRow(['REKAP PRODUK TERLARIS — MINBITE (Tanpa Order Dibatalkan)']);
+    ws3.addRow(['Dicetak: '+printDate]);
+    ws3.addRow(['No','Nama Produk','Total Terjual (Qty)','Jumlah Pesanan','Total Pendapatan (Rp)']);
+    styleTitle(ws3, 1, 5);
+    styleSubtitle(ws3, 2, 5);
+    styleHeaders(ws3, 3);
+
     prodList.forEach(function(n,i){
-      s3.push([i+1, n, prodMap[n].qty, prodMap[n].orders, prodMap[n].rev]);
+      var r=ws3.addRow([i+1, n, prodMap[n].qty, prodMap[n].orders, prodMap[n].rev]);
+      styleDataRow(ws3, r.number, i%2===1, 5);
+      r.getCell(1).alignment={horizontal:'center',vertical:'middle'};
+      r.getCell(3).alignment={horizontal:'center',vertical:'middle'};
+      r.getCell(4).alignment={horizontal:'center',vertical:'middle'};
+      r.getCell(5).numFmt=rpFmt; r.getCell(5).alignment={horizontal:'right',vertical:'middle'};
     });
-    s3.push([]);
-    s3.push(['','GRAND TOTAL',
-      prodList.reduce(function(s,n){return s+prodMap[n].qty;},0),
-      orders.length,
-      grandTotal
-    ]);
+    var totRow3=ws3.addRow(['','GRAND TOTAL', grandQtyProd, orders.length, grandRevProd]);
+    styleTotalRow(ws3, totRow3.number, 5);
+    totRow3.getCell(2).alignment={horizontal:'right',vertical:'middle'};
+    totRow3.getCell(3).alignment={horizontal:'center',vertical:'middle'};
+    totRow3.getCell(4).alignment={horizontal:'center',vertical:'middle'};
+    totRow3.getCell(5).numFmt=rpFmt; totRow3.getCell(5).alignment={horizontal:'right',vertical:'middle'};
 
-    /* ── Build workbook ── */
-    var wb = XLSX.utils.book_new();
+    /* ── Download ── */
+    var buffer = await wb.xlsx.writeBuffer();
+    var blob   = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var url    = URL.createObjectURL(blob);
+    var a      = document.createElement('a');
+    a.href     = url;
+    a.download = 'minbite-data-pembeli-'+fileDate+'.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
 
-    var ws1 = XLSX.utils.aoa_to_sheet(s1);
-    ws1['!cols'] = [
-      {wch:5},{wch:12},{wch:16},{wch:22},{wch:14},{wch:16},
-      {wch:36},{wch:12},{wch:14},{wch:12},{wch:14},
-      {wch:12},{wch:14},{wch:12}
-    ];
-    /* Freeze baris header (baris ke-4) */
-    ws1['!freeze'] = {xSplit:0, ySplit:4};
-    XLSX.utils.book_append_sheet(wb, ws1, 'Rekap Pembelian');
-
-    var ws2 = XLSX.utils.aoa_to_sheet(s2);
-    ws2['!cols'] = [
-      {wch:5},{wch:12},{wch:16},{wch:22},{wch:24},
-      {wch:7},{wch:18},{wch:18},{wch:14}
-    ];
-    ws2['!freeze'] = {xSplit:0, ySplit:4};
-    XLSX.utils.book_append_sheet(wb, ws2, 'Detail Item');
-
-    var ws3 = XLSX.utils.aoa_to_sheet(s3);
-    ws3['!cols'] = [{wch:5},{wch:28},{wch:20},{wch:16},{wch:22}];
-    XLSX.utils.book_append_sheet(wb, ws3, 'Rekap Produk');
-
-    XLSX.writeFile(wb, 'minbite-semua-data-'+fileDate+'.xlsx');
-    showToast('✅ Excel berhasil diunduh! '+orders.length+' pesanan.');
-    addLog('status','Export Excel: '+orders.length+' pesanan (semua data).');
+    showToast('✅ Excel berhasil diunduh! '+orders.length+' pesanan (cancel dikecualikan).');
+    addLog('status','Export Excel: '+orders.length+' pesanan pembeli ('+
+      (allFetched.length-orders.length)+' cancel dikecualikan).');
 
   } catch(err){
     console.error(err);
