@@ -173,6 +173,10 @@
     .btn-export { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface); color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all var(--t); white-space: nowrap; }
     .btn-export:hover { border-color: var(--green); color: var(--green); }
     .btn-export svg { width: 11px; height: 11px; }
+    .btn-export-xl { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px solid rgba(62,207,122,0.4); border-radius: var(--radius-sm); background: rgba(62,207,122,0.08); color: var(--green); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all var(--t); white-space: nowrap; }
+    .btn-export-xl:hover { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 4px 14px rgba(62,207,122,0.3); }
+    .btn-export-xl svg { width: 11px; height: 11px; }
+    .btn-export-xl.loading { opacity: 0.6; cursor: wait; }
 
     /* ═══ STICKY SCAN BAR ═══ */
     .scan-sticky-bar {
@@ -656,69 +660,11 @@
     @keyframes toastIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes toastOut { to{opacity:0;transform:translateY(-5px)} }
 
-    /* ═══ FINANCIAL SUMMARY ═══ */
-    .fin-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 18px; }
-    .fin-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 15px 13px; position: relative; overflow: hidden; transition: all var(--t); }
-    .fin-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .fin-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0; }
-    .fin-income .fin-accent { background: linear-gradient(90deg, var(--green), transparent); }
-    .fin-expense .fin-accent { background: linear-gradient(90deg, var(--red), transparent); }
-    .fin-profit .fin-accent { background: linear-gradient(90deg, var(--accent), transparent); }
-    .fin-label { font-size: 0.6rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-    .fin-value { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800; word-break: break-all; line-height: 1.2; }
-    .fin-income .fin-value { color: var(--green); }
-    .fin-expense .fin-value { color: var(--red); }
-    .fin-profit .fin-value { color: var(--accent); }
-    .fin-sub { font-size: 0.6rem; color: var(--text3); margin-top: 4px; }
-    .fin-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .fin-income .fin-icon { background: var(--green-bg); color: var(--green); }
-    .fin-expense .fin-icon { background: var(--red-bg); color: var(--red); }
-    .fin-profit .fin-icon { background: var(--accent-lt); color: var(--accent); }
-    .fin-icon svg { width: 12px; height: 12px; }
-
-    /* ═══ EXPENSE SECTION ═══ */
-    .expense-section { margin-top: 14px; }
-    .expense-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
-    .expense-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; }
-    .exp-field { display: flex; flex-direction: column; gap: 5px; }
-    .exp-label { font-size: 0.6rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.09em; }
-    .exp-input, .exp-select { padding: 8px 11px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.83rem; outline: none; transition: all var(--t); }
-    .exp-input:focus, .exp-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-lt); }
-    .exp-input::placeholder { color: var(--text3); }
-    .exp-select option { background: var(--bg3); }
-    .expense-list { display: flex; flex-direction: column; gap: 6px; }
-    .expense-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; display: flex; align-items: center; gap: 10px; transition: all var(--t); }
-    .expense-item:hover { border-color: var(--border2); }
-    .exp-cat-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
-    .exp-cat-bahan { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
-    .exp-cat-operasional { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-    .exp-cat-lainnya { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-    .exp-cat-peralatan { background: rgba(91,156,246,0.1); color: #9b8ef5; border: 1px solid rgba(155,142,245,0.22); }
-    .exp-desc { flex: 1; font-size: 0.82rem; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .exp-date { font-size: 0.68rem; color: var(--text3); flex-shrink: 0; }
-    .exp-amount { font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--red); flex-shrink: 0; white-space: nowrap; }
-    .exp-del { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--t); flex-shrink: 0; }
-    .exp-del:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
-    .exp-del svg { width: 10px; height: 10px; }
-    .expense-empty { padding: 28px; text-align: center; color: var(--text3); font-size: 0.8rem; }
-    .exp-summary-bar { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-    .exp-sum-item { display: flex; flex-direction: column; gap: 2px; }
-    .exp-sum-label { font-size: 0.58rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
-    .exp-sum-val { font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; }
-    .exp-date-filter { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .exp-date-input { padding: 5px 9px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); font-size: 0.75rem; font-family: 'DM Sans', sans-serif; outline: none; transition: all var(--t); }
-    .exp-date-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-lt); }
-    .btn-export-xl { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border: 1px solid var(--green-border); border-radius: var(--radius-sm); background: var(--green-bg); color: var(--green); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all var(--t); white-space: nowrap; }
-    .btn-export-xl:hover { background: var(--green); color: #fff; box-shadow: 0 4px 14px rgba(62,207,122,0.3); }
-    .btn-export-xl svg { width: 12px; height: 12px; }
-
     /* ═══ RESPONSIVE ═══ */
     @media (max-width: 900px) {
-      .fin-grid { grid-template-columns: repeat(3,1fr); }
       .stats-grid { grid-template-columns: repeat(3,1fr); }
       .bottom-grid { grid-template-columns: 1fr; }
       .promo-add-row { grid-template-columns: 1fr 1fr; }
-      .expense-form-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 700px) {
       .page { padding: 14px 12px 96px; }
@@ -795,31 +741,6 @@
 <!-- ══════ PAGE ══════ -->
 <div class="page">
 
-  <!-- FINANCIAL SUMMARY -->
-  <div class="fin-grid">
-    <div class="fin-card fin-income">
-      <div class="fin-accent"></div>
-      <div class="fin-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-      <div class="fin-label">Total Pemasukan</div>
-      <div class="fin-value" id="finIncome">Rp0</div>
-      <div class="fin-sub" id="finIncomeCount">0 pesanan selesai</div>
-    </div>
-    <div class="fin-card fin-expense">
-      <div class="fin-accent"></div>
-      <div class="fin-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
-      <div class="fin-label">Total Pengeluaran</div>
-      <div class="fin-value" id="finExpense">Rp0</div>
-      <div class="fin-sub" id="finExpenseCount">0 transaksi</div>
-    </div>
-    <div class="fin-card fin-profit">
-      <div class="fin-accent"></div>
-      <div class="fin-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-      <div class="fin-label">Laba Bersih</div>
-      <div class="fin-value" id="finProfit">Rp0</div>
-      <div class="fin-sub" id="finProfitNote">Pemasukan − Pengeluaran</div>
-    </div>
-  </div>
-
   <!-- STATS -->
   <div class="stats-grid">
     <div class="stat-card s-pending">
@@ -883,9 +804,13 @@
         📲 QRIS <span id="qrisVerifyCount" style="display:none;background:var(--amber);color:white;border-radius:100px;padding:1px 6px;font-size:0.58rem;margin-left:2px">0</span>
       </button>
     </div>
-    <button class="btn-export-xl" onclick="exportExcel()">
+    <button class="btn-export" onclick="exportCSV()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      CSV
+    </button>
+    <button class="btn-export-xl" id="btnExportXl" onclick="exportExcel()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Export Excel
+      Export Excel Semua Data
     </button>
   </div>
 
@@ -956,91 +881,6 @@
           </button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- PENGELUARAN SECTION -->
-  <div class="divider"><div class="divider-line"></div><div class="divider-text">Keuangan</div><div class="divider-line"></div></div>
-  <div class="expense-section">
-    <div class="section-hd" style="margin-bottom:12px">
-      <div class="section-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15" style="color:var(--red)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
-        Catatan Pengeluaran
-        <span class="section-count" id="expenseCountBadge" style="background:rgba(245,81,81,0.1);color:var(--red);border-color:rgba(245,81,81,0.22)">0</span>
-      </div>
-      <button class="btn-export-xl" onclick="exportExcel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Laporan Excel
-      </button>
-    </div>
-
-    <!-- Filter & Summary Bar -->
-    <div class="exp-summary-bar">
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div class="exp-sum-item">
-          <span class="exp-sum-label">Pembelian Bahan</span>
-          <span class="exp-sum-val" id="expSumBahan" style="color:var(--blue)">Rp0</span>
-        </div>
-        <div class="exp-sum-item">
-          <span class="exp-sum-label">Operasional</span>
-          <span class="exp-sum-val" id="expSumOps" style="color:var(--amber)">Rp0</span>
-        </div>
-        <div class="exp-sum-item">
-          <span class="exp-sum-label">Peralatan</span>
-          <span class="exp-sum-val" id="expSumPeralatan" style="color:#9b8ef5">Rp0</span>
-        </div>
-        <div class="exp-sum-item">
-          <span class="exp-sum-label">Lainnya</span>
-          <span class="exp-sum-val" id="expSumLain" style="color:var(--green)">Rp0</span>
-        </div>
-      </div>
-      <div class="exp-date-filter">
-        <span style="font-size:0.68rem;color:var(--text3)">Filter tanggal:</span>
-        <input type="date" class="exp-date-input" id="expFilterDate" onchange="renderExpenses()"/>
-        <button class="btn btn-secondary" onclick="document.getElementById('expFilterDate').value='';renderExpenses();" style="padding:4px 9px;font-size:0.66rem">Reset</button>
-      </div>
-    </div>
-
-    <!-- Add Expense Form -->
-    <div class="expense-form">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--text2);margin-bottom:11px;display:flex;align-items:center;gap:6px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11" style="color:var(--accent)"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Tambah Pengeluaran
-      </div>
-      <div class="expense-form-grid">
-        <div class="exp-field">
-          <label class="exp-label">Tanggal</label>
-          <input type="date" class="exp-input" id="expDate"/>
-        </div>
-        <div class="exp-field">
-          <label class="exp-label">Kategori</label>
-          <select class="exp-select" id="expCategory">
-            <option value="bahan">Pembelian Bahan</option>
-            <option value="operasional">Operasional</option>
-            <option value="peralatan">Peralatan</option>
-            <option value="lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="exp-field">
-          <label class="exp-label">Keterangan</label>
-          <input type="text" class="exp-input" id="expDesc" placeholder="cth. Beli oreo, gula…" onkeydown="if(event.key==='Enter')addExpense()"/>
-        </div>
-        <div class="exp-field">
-          <label class="exp-label">Jumlah (Rp)</label>
-          <input type="number" class="exp-input" id="expAmount" placeholder="0" min="0" onkeydown="if(event.key==='Enter')addExpense()"/>
-        </div>
-        <div class="exp-field" style="grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:2px">
-          <button class="btn btn-save" onclick="addExpense()" style="padding:8px 18px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Simpan Pengeluaran
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Expense List -->
-    <div class="expense-list" id="expenseList">
-      <div class="expense-empty">Belum ada catatan pengeluaran.</div>
     </div>
   </div>
 
@@ -2036,6 +1876,169 @@ function renderLog(){
   }).join('');
 }
 function clearLog(){ activityLog=[]; saveLog(); renderLog(); }
+
+/* ══ EXPORT EXCEL — SEMUA DATA ══ */
+async function exportExcel(){
+  if(typeof XLSX==='undefined'){ showToast('Library Excel belum siap, coba lagi.'); return; }
+  var btn=document.getElementById('btnExportXl');
+  btn.classList.add('loading');
+  btn.textContent='⏳ Mengambil data…';
+
+  try{
+    /* ── Fetch SEMUA orders dari Firestore (tanpa filter tanggal) ── */
+    var snap = await db.collection('orders').orderBy('timestamp','desc').get();
+    var orders = [];
+    snap.forEach(function(doc){ orders.push(Object.assign({_docId:doc.id}, doc.data())); });
+
+    if(!orders.length){ showToast('Belum ada data pesanan.'); return; }
+
+    var printDate = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+    var fileDate  = new Date().toISOString().slice(0,10);
+
+    /* ════════════════════════════════════════
+       SHEET 1 — REKAP SEMUA PEMBELIAN
+       Satu baris per pesanan, ringkas & rapi
+    ════════════════════════════════════════ */
+    var s1 = [];
+    s1.push(['REKAP SEMUA PEMBELIAN — MINBITE']);
+    s1.push(['Dicetak: '+printDate,'','','','','','','','','','','']);
+    s1.push([]);
+    s1.push([
+      'No','Tanggal','ID Pesanan','Nama','Kelas','No. WA',
+      'Item Dibeli','Total Item','Subtotal (Rp)','Diskon (Rp)','Total (Rp)',
+      'Waktu Ambil','Metode Bayar','Status'
+    ]);
+
+    var grandTotal=0, grandQty=0;
+    orders.forEach(function(o,i){
+      var items   = o.items||[];
+      var itemStr = items.map(function(it){ return it.name+' ×'+it.qty; }).join(', ');
+      var qtySum  = items.reduce(function(s,it){ return s+Number(it.qty||0); },0);
+      var total   = Number(o.total||0);
+      grandTotal += total;
+      grandQty   += qtySum;
+      s1.push([
+        i+1,
+        o.date||'',
+        o.id||o._docId||'',
+        o.name||'',
+        (o.kelas||'')+(o.jurusan?' / '+(o.jurusan):''),
+        o.phone||'',
+        itemStr,
+        qtySum,
+        Number(o.subtotal||0),
+        Number(o.discount||0),
+        total,
+        o.pickup||'',
+        (o.payment||o.metodePembayaran||'cash').toUpperCase(),
+        o.status||'MENUNGGU'
+      ]);
+    });
+    s1.push([]);
+    s1.push(['','','','','','','TOTAL',grandQty,'','',grandTotal,'','','']);
+
+    /* ════════════════════════════════════════
+       SHEET 2 — DETAIL ITEM PER PESANAN
+       Satu baris per item agar mudah dianalisa
+    ════════════════════════════════════════ */
+    var s2 = [];
+    s2.push(['DETAIL ITEM PER PESANAN — MINBITE']);
+    s2.push(['Dicetak: '+printDate,'','','','','','','']);
+    s2.push([]);
+    s2.push(['No','Tanggal','ID Pesanan','Nama Pembeli','Nama Item','Qty','Harga Satuan (Rp)','Subtotal Item (Rp)','Status Pesanan']);
+
+    var rowNum=1;
+    orders.forEach(function(o){
+      var items=o.items||[];
+      if(!items.length){
+        s2.push([rowNum++,o.date||'',o.id||o._docId,'','-',0,0,0,o.status||'']);
+        return;
+      }
+      items.forEach(function(it){
+        var harga  = Number(it.price||0);
+        var qty    = Number(it.qty||0);
+        s2.push([
+          rowNum++,
+          o.date||'',
+          o.id||o._docId||'',
+          o.name||'',
+          it.name||'',
+          qty,
+          harga,
+          harga*qty,
+          o.status||'MENUNGGU'
+        ]);
+      });
+    });
+
+    /* ════════════════════════════════════════
+       SHEET 3 — REKAP PRODUK TERLARIS
+       Berapa total terjual per nama produk
+    ════════════════════════════════════════ */
+    var prodMap={};
+    orders.forEach(function(o){
+      (o.items||[]).forEach(function(it){
+        var n=it.name||'Unknown';
+        if(!prodMap[n]) prodMap[n]={qty:0,rev:0,orders:0};
+        prodMap[n].qty    += Number(it.qty||0);
+        prodMap[n].rev    += Number(it.price||0)*Number(it.qty||0);
+        prodMap[n].orders += 1;
+      });
+    });
+
+    var s3=[];
+    s3.push(['REKAP PRODUK TERLARIS — MINBITE']);
+    s3.push(['Dicetak: '+printDate,'','','']);
+    s3.push([]);
+    s3.push(['No','Nama Produk','Total Terjual (Qty)','Total Pesanan','Total Pendapatan (Rp)']);
+    var prodList=Object.keys(prodMap).sort(function(a,b){ return prodMap[b].qty-prodMap[a].qty; });
+    prodList.forEach(function(n,i){
+      s3.push([i+1, n, prodMap[n].qty, prodMap[n].orders, prodMap[n].rev]);
+    });
+    s3.push([]);
+    s3.push(['','GRAND TOTAL',
+      prodList.reduce(function(s,n){return s+prodMap[n].qty;},0),
+      orders.length,
+      grandTotal
+    ]);
+
+    /* ── Build workbook ── */
+    var wb = XLSX.utils.book_new();
+
+    var ws1 = XLSX.utils.aoa_to_sheet(s1);
+    ws1['!cols'] = [
+      {wch:5},{wch:12},{wch:16},{wch:22},{wch:14},{wch:16},
+      {wch:36},{wch:12},{wch:14},{wch:12},{wch:14},
+      {wch:12},{wch:14},{wch:12}
+    ];
+    /* Freeze baris header (baris ke-4) */
+    ws1['!freeze'] = {xSplit:0, ySplit:4};
+    XLSX.utils.book_append_sheet(wb, ws1, 'Rekap Pembelian');
+
+    var ws2 = XLSX.utils.aoa_to_sheet(s2);
+    ws2['!cols'] = [
+      {wch:5},{wch:12},{wch:16},{wch:22},{wch:24},
+      {wch:7},{wch:18},{wch:18},{wch:14}
+    ];
+    ws2['!freeze'] = {xSplit:0, ySplit:4};
+    XLSX.utils.book_append_sheet(wb, ws2, 'Detail Item');
+
+    var ws3 = XLSX.utils.aoa_to_sheet(s3);
+    ws3['!cols'] = [{wch:5},{wch:28},{wch:20},{wch:16},{wch:22}];
+    XLSX.utils.book_append_sheet(wb, ws3, 'Rekap Produk');
+
+    XLSX.writeFile(wb, 'minbite-semua-data-'+fileDate+'.xlsx');
+    showToast('✅ Excel berhasil diunduh! '+orders.length+' pesanan.');
+    addLog('status','Export Excel: '+orders.length+' pesanan (semua data).');
+
+  } catch(err){
+    console.error(err);
+    showToast('Gagal export. Coba lagi.');
+  } finally {
+    btn.classList.remove('loading');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export Excel Semua Data';
+  }
+}
 
 /* ══ EXPORT CSV ══ */
 function exportCSV(){
