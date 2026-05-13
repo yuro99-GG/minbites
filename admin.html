@@ -1905,65 +1905,82 @@ async function exportExcel(){
     var fileDate  = new Date().toISOString().slice(0,10);
 
     /* ════ HELPER STYLES ════ */
-    var BRAND   = 'FFE8773A'; // orange MinBite
-    var BRAND_D = 'FFC95F22'; // orange gelap
+    var BRAND   = 'FFE8773A';
+    var BRAND_D = 'FFC95F22';
     var WHITE   = 'FFFFFFFF';
-    var DARK    = 'FF1C1916';
-    var ROW_ALT = 'FFFFF8F3'; // krem muda buat baris selang-seling
-    var TOTAL_BG= 'FFFFF0E6';
-    var BORDER_CLR = 'FFD9C0A8';
+    var ROW_ALT = 'FFFFF8F3';
+    var TOTAL_BG= 'FFFDE8D8';
+    var BDR_INNER = 'FFB8967A';   // border dalam — cukup gelap biar keliatan
+    var BDR_OUTER = 'FF7A4F2E';   // border luar / tepi tabel — lebih gelap
+
+    function bdr(style, clr){ return {style:style, color:{argb:clr}}; }
 
     function styleTitle(ws, titleRow, lastCol){
       ws.mergeCells(titleRow, 1, titleRow, lastCol);
       var cell = ws.getCell(titleRow, 1);
-      cell.value = cell.value;
       cell.font = {name:'Arial', bold:true, size:14, color:{argb:WHITE}};
       cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:BRAND}};
       cell.alignment = {horizontal:'center', vertical:'middle'};
+      cell.border = {
+        top:   bdr('medium', BDR_OUTER),
+        bottom:bdr('medium', BDR_OUTER),
+        left:  bdr('medium', BDR_OUTER),
+        right: bdr('medium', BDR_OUTER)
+      };
       ws.getRow(titleRow).height = 32;
     }
 
     function styleSubtitle(ws, row, lastCol){
       ws.mergeCells(row, 1, row, lastCol);
       var cell = ws.getCell(row, 1);
-      cell.font = {name:'Arial', italic:true, size:9, color:{argb:'FF8B6A50'}};
+      cell.font = {name:'Arial', italic:true, size:9, color:{argb:'FF7A4F2E'}};
       cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFFFF4EE'}};
       cell.alignment = {horizontal:'left', vertical:'middle'};
+      cell.border = {
+        left: bdr('medium', BDR_OUTER),
+        right:bdr('medium', BDR_OUTER),
+        bottom:bdr('thin', BDR_INNER)
+      };
       ws.getRow(row).height = 18;
     }
 
-    function styleHeaders(ws, headerRow){
+    function styleHeaders(ws, headerRow, numCols){
       var row = ws.getRow(headerRow);
-      row.eachCell(function(cell){
+      row.eachCell({includeEmpty:true}, function(cell, colNum){
+        if(colNum > numCols) return;
         cell.font = {name:'Arial', bold:true, size:10, color:{argb:WHITE}};
         cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:BRAND_D}};
         cell.alignment = {horizontal:'center', vertical:'middle', wrapText:true};
+        var isFirst = colNum === 1;
+        var isLast  = colNum === numCols;
         cell.border = {
-          top:{style:'thin',color:{argb:BRAND_D}},
-          bottom:{style:'medium',color:{argb:BRAND}},
-          left:{style:'thin',color:{argb:BRAND_D}},
-          right:{style:'thin',color:{argb:BRAND_D}}
+          top:   bdr('medium', BDR_OUTER),
+          bottom:bdr('medium', BDR_OUTER),
+          left:  isFirst ? bdr('medium', BDR_OUTER) : bdr('thin', WHITE),
+          right: isLast  ? bdr('medium', BDR_OUTER) : bdr('thin', WHITE)
         };
       });
-      row.height = 26;
+      row.height = 28;
     }
 
-    function styleDataRow(ws, rowNum, isAlt, numCols){
+    function styleDataRow(ws, rowNum, isAlt, numCols, isLastRow){
       var row = ws.getRow(rowNum);
       var bg = isAlt ? ROW_ALT : WHITE;
       row.eachCell({includeEmpty:true}, function(cell, colNum){
         if(colNum > numCols) return;
-        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:bg.replace('#','')}};
+        cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:bg}};
         cell.font = {name:'Arial', size:9};
+        var isFirst = colNum === 1;
+        var isLast  = colNum === numCols;
         cell.border = {
-          top:{style:'hair',color:{argb:BORDER_CLR}},
-          bottom:{style:'hair',color:{argb:BORDER_CLR}},
-          left:{style:'hair',color:{argb:BORDER_CLR}},
-          right:{style:'hair',color:{argb:BORDER_CLR}}
+          top:   bdr('thin', BDR_INNER),
+          bottom:isLastRow ? bdr('medium', BDR_OUTER) : bdr('thin', BDR_INNER),
+          left:  isFirst ? bdr('medium', BDR_OUTER) : bdr('thin', BDR_INNER),
+          right: isLast  ? bdr('medium', BDR_OUTER) : bdr('thin', BDR_INNER)
         };
         cell.alignment = {vertical:'middle'};
       });
-      row.height = 18;
+      row.height = 19;
     }
 
     function styleTotalRow(ws, rowNum, numCols){
@@ -1972,15 +1989,17 @@ async function exportExcel(){
         if(colNum > numCols) return;
         cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:TOTAL_BG}};
         cell.font = {name:'Arial', bold:true, size:10, color:{argb:BRAND_D}};
+        var isFirst = colNum === 1;
+        var isLast  = colNum === numCols;
         cell.border = {
-          top:{style:'medium',color:{argb:BRAND}},
-          bottom:{style:'medium',color:{argb:BRAND}},
-          left:{style:'thin',color:{argb:BRAND_D}},
-          right:{style:'thin',color:{argb:BRAND_D}}
+          top:   bdr('medium', BDR_OUTER),
+          bottom:bdr('medium', BDR_OUTER),
+          left:  isFirst ? bdr('medium', BDR_OUTER) : bdr('thin', BDR_INNER),
+          right: isLast  ? bdr('medium', BDR_OUTER) : bdr('thin', BDR_INNER)
         };
         cell.alignment = {vertical:'middle'};
       });
-      row.height = 22;
+      row.height = 23;
     }
 
     var rpFmt = '#,##0';
@@ -2023,7 +2042,7 @@ async function exportExcel(){
     ]);
     styleTitle(ws1, 1, 14);
     styleSubtitle(ws1, 2, 14);
-    styleHeaders(ws1, 3);
+    styleHeaders(ws1, 3, 14);
 
     var grandTotal=0, grandQty=0, dataStartRow1=4;
     orders.forEach(function(o,i){
@@ -2048,7 +2067,7 @@ async function exportExcel(){
         (o.payment||o.metodePembayaran||'CASH').toUpperCase(),
         o.status||'MENUNGGU'
       ]);
-      styleDataRow(ws1, r.number, i%2===1, 14);
+      styleDataRow(ws1, r.number, i%2===1, 14, i===orders.length-1);
       /* center columns */
       [1,2,8,12,13,14].forEach(function(c){ r.getCell(c).alignment={horizontal:'center',vertical:'middle'}; });
       /* number format */
@@ -2098,14 +2117,15 @@ async function exportExcel(){
     ws2.addRow(['No','Tanggal','ID Pesanan','Nama Pembeli','Nama Item','Qty','Harga Satuan (Rp)','Subtotal Item (Rp)','Status Pesanan']);
     styleTitle(ws2, 1, 9);
     styleSubtitle(ws2, 2, 9);
-    styleHeaders(ws2, 3);
+    styleHeaders(ws2, 3, 9);
 
     var rowNum2=0;
+    var totalItems2 = orders.reduce(function(s,o){ return s + Math.max((o.items||[]).length,1); },0);
     orders.forEach(function(o){
       var items=o.items||[];
       if(!items.length){
         var r=ws2.addRow([++rowNum2, o.date||'', o.id||o._docId||'', o.name||'', '-', 0, 0, 0, o.status||'']);
-        styleDataRow(ws2, r.number, rowNum2%2===0, 9);
+        styleDataRow(ws2, r.number, rowNum2%2===0, 9, rowNum2===totalItems2);
         return;
       }
       items.forEach(function(it){
@@ -2114,7 +2134,7 @@ async function exportExcel(){
           ++rowNum2, o.date||'', o.id||o._docId||'', o.name||'',
           it.name||'', qty, harga, harga*qty, o.status||'MENUNGGU'
         ]);
-        styleDataRow(ws2, r.number, rowNum2%2===0, 9);
+        styleDataRow(ws2, r.number, rowNum2%2===0, 9, rowNum2===totalItems2);
         [1,2,6].forEach(function(c){ r.getCell(c).alignment={horizontal:'center',vertical:'middle'}; });
         [7,8].forEach(function(c){ r.getCell(c).numFmt=rpFmt; r.getCell(c).alignment={horizontal:'right',vertical:'middle'}; });
       });
@@ -2154,11 +2174,11 @@ async function exportExcel(){
     ws3.addRow(['No','Nama Produk','Total Terjual (Qty)','Jumlah Pesanan','Total Pendapatan (Rp)']);
     styleTitle(ws3, 1, 5);
     styleSubtitle(ws3, 2, 5);
-    styleHeaders(ws3, 3);
+    styleHeaders(ws3, 3, 5);
 
     prodList.forEach(function(n,i){
       var r=ws3.addRow([i+1, n, prodMap[n].qty, prodMap[n].orders, prodMap[n].rev]);
-      styleDataRow(ws3, r.number, i%2===1, 5);
+      styleDataRow(ws3, r.number, i%2===1, 5, i===prodList.length-1);
       r.getCell(1).alignment={horizontal:'center',vertical:'middle'};
       r.getCell(3).alignment={horizontal:'center',vertical:'middle'};
       r.getCell(4).alignment={horizontal:'center',vertical:'middle'};
