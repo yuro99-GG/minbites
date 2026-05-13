@@ -1016,6 +1016,98 @@
     .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.65s linear infinite; display: inline-block; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ═══════════════════════════
+       FEATURED GRID (bundle only)
+    ═══════════════════════════ */
+    .featured-grid {
+      display: flex !important;
+      flex-direction: column;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .bundle-featured-card {
+      border: 2px solid var(--border2) !important;
+      box-shadow: 0 12px 48px var(--accent-glow), 0 4px 16px var(--shadow-md) !important;
+      position: relative;
+    }
+
+    .bundle-featured-img {
+      height: 280px !important;
+    }
+
+    /* Bundle contents bar */
+    .bundle-contents-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--accent-light), var(--bg2));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bundle-item-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text2);
+      box-shadow: 0 2px 8px var(--shadow-sm);
+    }
+
+    .bundle-balls-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .bundle-ball {
+      display: block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #5a3a1a, #2a1a08);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 3px rgba(255,255,255,0.15);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .bundle-ball::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 3px;
+      width: 4px; height: 3px;
+      background: rgba(255,255,255,0.35);
+      border-radius: 50%;
+      transform: rotate(-30deg);
+    }
+
+    .bundle-plus {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .badge-save {
+      position: absolute;
+      top: 12px; left: 12px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      z-index: 3;
+    }
+
+    /* Tweak hero floats for bundle theme */
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -1106,16 +1198,16 @@
       <div class="blob blob-3"></div>
     </div>
     <div class="hero-floats">
-      <span class="hero-float" style="top:30%">🍪</span>
+      <span class="hero-float" style="top:30%">🍫</span>
       <span class="hero-float" style="top:50%">🧋</span>
-      <span class="hero-float" style="top:20%">⭐</span>
-      <span class="hero-float" style="top:60%">🎁</span>
+      <span class="hero-float" style="top:20%">🎁</span>
+      <span class="hero-float" style="top:60%">⭐</span>
       <span class="hero-float" style="top:40%">✨</span>
-      <span class="hero-float" style="top:35%">🍫</span>
+      <span class="hero-float" style="top:35%">🍪</span>
     </div>
-    <div class="hero-pill"><div class="hero-pill-dot"></div>Menu Bazzar Terbaik</div>
-    <h1>Cemilan <em>enak</em>,<br>harga ramah 🍪</h1>
-    <p class="hero-sub">Pesan sekarang, ambil saat bazzar. Segarkan harimu dengan pilihan terbaik MinBite — fresh setiap hari!</p>
+    <div class="hero-pill"><div class="hero-pill-dot"></div>Bundle Spesial Hari Ini 🎁</div>
+    <h1>Hemat lebih,<br><em>nikmati lebih</em> 🍫</h1>
+    <p class="hero-sub">Bundle eksklusif MinBite — 4 Bola Oreo Susu + Thai Tea segar dalam satu paket. Pesan sekarang, ambil di bazzar!</p>
     <div class="hero-divider"></div>
     <div class="hero-actions">
       <button class="btn-hero-primary" onclick="document.querySelector('.products-section').scrollIntoView({behavior:'smooth'})">
@@ -1129,12 +1221,12 @@
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
-        <div class="hero-stat-num">3</div>
-        <div class="hero-stat-label">Menu Pilihan</div>
+        <div class="hero-stat-num">1</div>
+        <div class="hero-stat-label">Paket Bundle</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-num">Rp4rb</div>
-        <div class="hero-stat-label">Mulai dari</div>
+        <div class="hero-stat-num">Rp12rb</div>
+        <div class="hero-stat-label">Harga Bundling</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-num">12–16</div>
@@ -1146,40 +1238,55 @@
   <!-- ══ PRODUCTS ══ -->
   <section class="products-section">
     <div class="section-header">
-      <div class="section-title">Menu Hari Ini</div>
+      <div class="section-title">Paket Bundle Eksklusif</div>
       <div class="section-line"></div>
-      <div class="section-count">3 item tersedia</div>
+      <div class="section-count">1 paket tersedia hari ini</div>
     </div>
 
     <div class="category-tabs">
       <button class="cat-tab active" onclick="filterCat('all',this)">
-        <span class="cat-tab-icon">🍱</span> Semua <span class="cat-count">3</span>
-      </button>
-      <button class="cat-tab" onclick="filterCat('makanan',this)">
-        <span class="cat-tab-icon">🍡</span> Makanan <span class="cat-count">1</span>
-      </button>
-      <button class="cat-tab" onclick="filterCat('minuman',this)">
-        <span class="cat-tab-icon">🧋</span> Minuman <span class="cat-count">1</span>
-      </button>
-      <button class="cat-tab" onclick="filterCat('bundle',this)">
         <span class="cat-tab-icon">🎁</span> Bundle <span class="cat-count">1</span>
       </button>
     </div>
 
-    <div class="products-grid" id="productsGrid">
+    <div class="products-grid featured-grid" id="productsGrid">
 
-      <!-- PRODUCT 0: Bola Oreo Susu -->
-      <div class="product-card" data-cat="makanan">
-        <span class="product-badge badge-favorit">⭐ Favorit</span>
-        <div class="product-image-wrap oreo-bg" onclick="openDetail(0)">
+      <!-- BUNDLE FEATURED CARD -->
+      <div class="product-card bundle-featured-card" data-cat="bundle">
+        <span class="product-badge badge-bundle" style="top:12px;right:12px;left:auto">🎁 Bundle Spesial</span>
+        <span class="product-badge badge-save" style="top:12px;left:12px;right:auto;background:linear-gradient(135deg,#2a9d8f,#218a80);color:white;border:none">💸 Hemat Rp1.000</span>
+
+        <div class="product-image-wrap bundle-bg bundle-featured-img" onclick="openDetail(0)">
           <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <img src="bola.jpg" alt="Bola Oreo Susu" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
+          <img src="bundle.jpg" alt="Bundle MinBite" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
         </div>
+
+        <!-- Isi bundle visual -->
+        <div class="bundle-contents-bar">
+          <div class="bundle-item-chip">
+            <div class="bundle-balls-row">
+              <span class="bundle-ball"></span>
+              <span class="bundle-ball"></span>
+              <span class="bundle-ball"></span>
+              <span class="bundle-ball"></span>
+            </div>
+            <span>4 Bola Oreo Susu</span>
+          </div>
+          <div class="bundle-plus">+</div>
+          <div class="bundle-item-chip">
+            <span style="font-size:1.1rem">🧋</span>
+            <span>1 Thai Tea</span>
+          </div>
+        </div>
+
         <div class="product-info">
-          <div class="product-name">Bola Oreo Susu</div>
-          <div class="product-desc">Lima bola cokelat lembut bertabur susu bubuk, gurih manis di setiap gigitan.</div>
+          <div class="product-name">Bundle MinBite</div>
+          <div class="product-desc">4 Bola Oreo Susu gurih manis + 1 Thai Tea segar — semua dalam satu paket. Lebih hemat <strong style="color:var(--accent)">Rp1.000</strong> dari harga satuan!</div>
           <div class="product-footer">
-            <div class="product-price">Rp7.000</div>
+            <div>
+              <div style="font-size:0.7rem;color:var(--text3);text-decoration:line-through;font-weight:500">Rp13.000</div>
+              <div class="product-price">Rp12.000</div>
+            </div>
             <div class="product-actions">
               <div class="qty-control">
                 <button class="qty-btn" onclick="changeQty(0,-1)">−</button>
@@ -1192,58 +1299,22 @@
         </div>
       </div>
 
-      <!-- PRODUCT 1: Thai Tea -->
-      <div class="product-card" data-cat="minuman">
-        <span class="product-badge badge-seger">🧊 Seger</span>
-        <div class="product-image-wrap tea-bg" onclick="openDetail(1)">
-          <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <img src="thai.jpg" alt="Thai Tea" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
-        </div>
-        <div class="product-info">
-          <div class="product-name">Thai Tea</div>
-          <div class="product-desc">Teh khas Thailand berbalut krim lembut dan es batu, segar dan menyegarkan.</div>
-          <div class="product-footer">
-            <div class="product-price">Rp4.000</div>
-            <div class="product-actions">
-              <div class="qty-control">
-                <button class="qty-btn" onclick="changeQty(1,-1)">−</button>
-                <span class="qty-display" id="qty-1">1</span>
-                <button class="qty-btn" onclick="changeQty(1,1)">+</button>
-              </div>
-              <button class="btn-addcart" onclick="addToCart(1)">+ Keranjang</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PRODUCT 2: Bundle -->
-      <div class="product-card" data-cat="bundle">
-        <span class="product-badge badge-bundle">🎁 Bundle</span>
-        <div class="product-image-wrap bundle-bg" onclick="openDetail(2)">
-          <div class="img-hover-overlay"><span>👀 Lihat Detail</span></div>
-          <img src="bundle.jpg" alt="Bundle MinBite" style="width:100%;height:100%;object-fit:cover;border-radius:0" onerror="this.style.display='none'"/>
-        </div>
-        <div class="product-info">
-          <div class="product-name">Bundle MinBite</div>
-          <div class="product-desc">1 Bola Oreo Susu + 1 Thai Tea — hemat <strong style="color:var(--accent)">Rp1.000</strong> dari harga satuan!</div>
-          <div class="product-footer">
-            <div class="product-price">Rp10.000</div>
-            <div class="product-actions">
-              <div class="qty-control">
-                <button class="qty-btn" onclick="changeQty(2,-1)">−</button>
-                <span class="qty-display" id="qty-2">1</span>
-                <button class="qty-btn" onclick="changeQty(2,1)">+</button>
-              </div>
-              <button class="btn-addcart" onclick="addToCart(2)">+ Keranjang</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </section>
 
-  <!-- ══ PRODUCT DETAIL SHEET ══ -->
+    <!-- Bundle trust bar -->
+    <div style="max-width:560px;margin:20px auto 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:100px;padding:8px 16px;font-size:0.74rem;font-weight:600;color:var(--text2);box-shadow:0 2px 8px var(--shadow-sm)">
+        🕐 <span>Ambil jam 12–16</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:100px;padding:8px 16px;font-size:0.74rem;font-weight:600;color:var(--text2);box-shadow:0 2px 8px var(--shadow-sm)">
+        🎯 <span>Fresh setiap hari</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:100px;padding:8px 16px;font-size:0.74rem;font-weight:600;color:var(--text2);box-shadow:0 2px 8px var(--shadow-sm)">
+        💰 <span>Bayar di tempat / QRIS</span>
+      </div>
+    </div>
+
+  </section>
   <div class="detail-overlay" id="detailOverlay" onclick="handleDetailOverlayClick(event)">
     <div class="detail-sheet" id="detailSheet">
       <div class="detail-handle"></div>
@@ -1592,27 +1663,15 @@
     // ════════════════════════════════
     const PRODUCTS = [
       {
-        id: 'bola-oreo', name: 'Bola Oreo Susu', price: 7000,
-        thumb: '🍫', badge: '⭐ Favorit', badgeClass: 'badge-favorit',
-        imgBg: 'oreo-bg', imgSrc: 'bola.jpg',
-        desc: 'Lima bola cokelat lembut bertabur susu bubuk, gurih manis di setiap gigitan. Dibuat fresh setiap hari!'
-      },
-      {
-        id: 'thai-tea', name: 'Thai Tea', price: 4000,
-        thumb: '🧋', badge: '🧊 Segar', badgeClass: 'badge-seger',
-        imgBg: 'tea-bg', imgSrc: 'thai.jpg',
-        desc: 'Teh khas Thailand berbalut krim lembut dan es batu. Manis, creamy, dan super segar!'
-      },
-      {
-        id: 'bundle', name: 'Bundle MinBite', price: 10000,
-        thumb: '🎁', badge: '🎁 Bundle', badgeClass: 'badge-bundle',
+        id: 'bundle', name: 'Bundle MinBite', price: 12000,
+        thumb: '🎁', badge: '🎁 Bundle Spesial', badgeClass: 'badge-bundle',
         imgBg: 'bundle-bg', imgSrc: 'bundle.jpg',
-        desc: '1 Bola Oreo Susu + 1 Thai Tea dalam satu paket hemat. Lebih irit Rp1.000 dari harga satuan!'
+        desc: '4 Bola Oreo Susu gurih manis + 1 Thai Tea segar dalam satu paket hemat. Lebih irit Rp1.000 dari harga satuan!'
       }
     ];
 
     let cart           = [];
-    let productQtys    = [1, 1, 1];
+    let productQtys    = [1];
     let currentOrderId = null;
     let pendingOrderData = null; // holds data while waiting for QRIS confirm
     let detailIdx      = null;
@@ -1673,7 +1732,7 @@
       badge.className = 'detail-badge ' + p.badgeClass;
       const imgArea = document.getElementById('detailImgArea');
       imgArea.className = 'detail-img-area ' + p.imgBg;
-      document.getElementById('detailSvg').innerHTML = `<img src="${p.imgSrc}" alt="${p.name}" style="width:200px;height:160px;object-fit:cover;border-radius:12px" onerror="this.style.display='none'"/>`;
+      document.getElementById('detailSvg').innerHTML = `<img src="${p.imgSrc}" alt="${p.name}" style="width:240px;height:180px;object-fit:cover;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2)" onerror="this.style.display='none'"/>`;
       document.getElementById('detailName').textContent  = p.name;
       document.getElementById('detailDesc').textContent  = p.desc;
       document.getElementById('detailPrice').textContent = fmt(p.price);
