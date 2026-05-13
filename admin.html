@@ -122,7 +122,49 @@
     .btn-hdr { display: flex; align-items: center; gap: 5px; padding: 5px 11px; border: 1px solid var(--border2); border-radius: 100px; background: var(--bg3); color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.71rem; font-weight: 500; cursor: pointer; transition: all var(--t); flex-shrink: 0; }
     .btn-hdr:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
     .btn-hdr svg { width: 11px; height: 11px; }
-    .btn-hdr.sound-on { border-color: var(--green); color: var(--green); }
+    .btn-hdr.tg-on { border-color: #2CA5E0; color: #2CA5E0; background: rgba(44,165,224,0.1); }
+
+    /* ─── Telegram Settings Modal ─── */
+    .tg-modal-overlay {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .tg-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .tg-modal {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--radius-xl); padding: 28px 26px 24px;
+      width: 100%; max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(10px); transition: transform 0.2s;
+    }
+    .tg-modal-overlay.open .tg-modal { transform: translateY(0); }
+    .tg-modal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .tg-modal-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(44,165,224,0.15); color: #2CA5E0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tg-modal-icon svg { width: 18px; height: 18px; }
+    .tg-modal-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+    .tg-modal-sub { font-size: 0.72rem; color: var(--text3); margin-top: 1px; }
+    .tg-field { margin-bottom: 14px; }
+    .tg-label { display: block; font-size: 0.67rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .tg-input { width: 100%; padding: 10px 13px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.87rem; outline: none; transition: all var(--t); }
+    .tg-input:focus { border-color: #2CA5E0; box-shadow: 0 0 0 3px rgba(44,165,224,0.15); }
+    .tg-input::placeholder { color: var(--text3); }
+    .tg-hint { font-size: 0.68rem; color: var(--text3); margin-top: 5px; line-height: 1.5; }
+    .tg-hint a { color: #2CA5E0; text-decoration: none; }
+    .tg-status { display: flex; align-items: center; gap: 7px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500; margin-bottom: 16px; }
+    .tg-status.active { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+    .tg-status.inactive { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+    .tg-status.testing { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
+    .tg-status svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .tg-btn-row { display: flex; gap: 8px; }
+    .tg-btn { flex: 1; padding: 10px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all var(--t); border: 1px solid transparent; }
+    .tg-btn-save { background: #2CA5E0; color: #fff; }
+    .tg-btn-save:hover { background: #1a8cc7; }
+    .tg-btn-test { background: var(--bg3); border-color: var(--border2); color: var(--text2); }
+    .tg-btn-test:hover { border-color: var(--amber); color: var(--amber); }
+    .tg-btn-clear { background: var(--bg3); border-color: var(--border2); color: var(--text3); }
+    .tg-btn-clear:hover { border-color: var(--red); color: var(--red); }
     .btn-logout { display: flex; align-items: center; gap: 5px; padding: 5px 11px; border: 1px solid var(--border2); border-radius: 100px; background: var(--bg3); color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.71rem; font-weight: 500; cursor: pointer; transition: all var(--t); }
     .btn-logout:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
     .btn-logout svg { width: 11px; height: 11px; }
@@ -726,6 +768,10 @@
         <span id="clockText">--:--</span>
       </div>
       <div class="live-pill"><div class="live-dot"></div><span id="refreshCountdown">Live</span></div>
+      <button class="btn-hdr" id="btnTelegram" onclick="openTgModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.5 2L2 9.5l7 2.5 2.5 7L21.5 2z"/><path d="M9 12l3 3 5-7"/></svg>
+        <span id="tgLabel">Telegram</span>
+      </button>
       <button class="btn-hdr" id="btnSound" onclick="toggleSound()">
         <svg id="soundIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         <svg id="soundIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
@@ -1094,6 +1140,44 @@
 
 <div id="toast-container"></div>
 
+<!-- ══ TELEGRAM SETTINGS MODAL ══ -->
+<div id="tgModal" class="tg-modal-overlay" onclick="if(event.target===this)closeTgModal()">
+  <div class="tg-modal">
+    <div class="tg-modal-head">
+      <div class="tg-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.5 2L2 9.5l7 2.5 2.5 7L21.5 2z"/><path d="M9 12l3 3 5-7"/></svg>
+      </div>
+      <div>
+        <div class="tg-modal-title">Notifikasi Telegram</div>
+        <div class="tg-modal-sub">Kirim notif otomatis ke bot setiap order baru masuk</div>
+      </div>
+    </div>
+
+    <div id="tgStatusBar" class="tg-status inactive">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="tgStatusText">Belum dikonfigurasi</span>
+    </div>
+
+    <div class="tg-field">
+      <label class="tg-label">Bot Token</label>
+      <input class="tg-input" id="tgTokenInput" type="password" placeholder="123456789:ABCDefGhijklmno..."/>
+      <div class="tg-hint">Dapatkan dari <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → /newbot → salin token-nya</div>
+    </div>
+
+    <div class="tg-field">
+      <label class="tg-label">Chat ID</label>
+      <input class="tg-input" id="tgChatInput" type="text" placeholder="-100xxxxxxxxxx atau @username"/>
+      <div class="tg-hint">Chat ID kamu / grup. Kirim pesan ke bot lalu buka <a href="https://api.telegram.org/bot{TOKEN}/getUpdates" target="_blank">getUpdates</a> untuk lihat chat_id</div>
+    </div>
+
+    <div class="tg-btn-row">
+      <button class="tg-btn tg-btn-test" onclick="testTelegram()">🧪 Tes Kirim</button>
+      <button class="tg-btn tg-btn-save" onclick="saveTgSettings()">Simpan</button>
+      <button class="tg-btn tg-btn-clear" onclick="clearTgSettings()">Hapus</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ══ AUTH ══ */
 var _a=[27,28,2,10],_b=[27,28,2,10,28,17,7,29,9,79],_c="pixel";
@@ -1219,6 +1303,7 @@ async function fetchOrders(){
       if(!isFirst&&!knownOrderIds.has(id)){
         addLog('status','Pesanan baru masuk: <strong>'+escHtml(id)+'</strong> — '+escHtml(o.name||''));
         if(soundEnabled) playNotifSound();
+        sendTelegramNotif(o);
       }
       knownOrderIds.add(id);
     });
@@ -2274,6 +2359,132 @@ function showToast(msg){
 /* ══ HELPERS ══ */
 function fmtRp(n){return 'Rp'+Number(n||0).toLocaleString('id-ID');}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ══ TELEGRAM ══ */
+var tgToken = localStorage.getItem('tg_token')||'';
+var tgChat  = localStorage.getItem('tg_chat') ||'';
+
+function updateTgHeaderBtn(){
+  var btn = document.getElementById('btnTelegram');
+  var lbl = document.getElementById('tgLabel');
+  if(tgToken && tgChat){
+    btn.classList.add('tg-on');
+    lbl.textContent = '🔔 Telegram';
+  } else {
+    btn.classList.remove('tg-on');
+    lbl.textContent = 'Telegram';
+  }
+}
+
+function openTgModal(){
+  document.getElementById('tgTokenInput').value = tgToken;
+  document.getElementById('tgChatInput').value  = tgChat;
+  updateTgStatusBar();
+  document.getElementById('tgModal').classList.add('open');
+}
+function closeTgModal(){ document.getElementById('tgModal').classList.remove('open'); }
+
+function updateTgStatusBar(){
+  var bar  = document.getElementById('tgStatusBar');
+  var text = document.getElementById('tgStatusText');
+  bar.className = 'tg-status';
+  if(tgToken && tgChat){
+    bar.classList.add('active');
+    text.textContent = '✓ Aktif — notif akan dikirim ke Telegram setiap order masuk';
+  } else {
+    bar.classList.add('inactive');
+    text.textContent = 'Belum dikonfigurasi — isi bot token & chat ID di bawah';
+  }
+}
+
+function saveTgSettings(){
+  var t = document.getElementById('tgTokenInput').value.trim();
+  var c = document.getElementById('tgChatInput').value.trim();
+  if(!t || !c){ showToast('Isi token dan chat ID dulu ya!'); return; }
+  tgToken = t; tgChat = c;
+  localStorage.setItem('tg_token', t);
+  localStorage.setItem('tg_chat',  c);
+  updateTgStatusBar();
+  updateTgHeaderBtn();
+  showToast('✅ Pengaturan Telegram disimpan!');
+}
+
+function clearTgSettings(){
+  if(!confirm('Hapus pengaturan Telegram?')) return;
+  tgToken=''; tgChat='';
+  localStorage.removeItem('tg_token');
+  localStorage.removeItem('tg_chat');
+  document.getElementById('tgTokenInput').value='';
+  document.getElementById('tgChatInput').value='';
+  updateTgStatusBar();
+  updateTgHeaderBtn();
+  showToast('Pengaturan Telegram dihapus.');
+}
+
+async function _tgSend(msg){
+  if(!tgToken||!tgChat) return;
+  try{
+    await fetch('https://api.telegram.org/bot'+tgToken+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:tgChat, text:msg, parse_mode:'HTML'})
+    });
+  } catch(e){ console.warn('Telegram notif gagal:', e); }
+}
+
+function sendTelegramNotif(o){
+  if(!tgToken||!tgChat) return;
+  var id    = o.id||o._docId||'?';
+  var nama  = o.name||'—';
+  var kelas = (o.kelas||'')+(o.jurusan?' / '+o.jurusan:'') || '—';
+  var items = (o.items||[]).map(function(it){ return '  • '+it.name+' ×'+it.qty+' = '+fmtRp((it.price||0)*(it.qty||1)); }).join('\n');
+  var total = fmtRp(o.total||0);
+  var pickup= o.pickup||'—';
+  var pay   = (o.payment||'CASH').toUpperCase();
+  var msg =
+    '🛎 <b>ORDER BARU MASUK!</b>\n\n'+
+    '🧾 <b>'+id+'</b>\n'+
+    '👤 '+nama+' — '+kelas+'\n'+
+    '📦 Item:\n'+items+'\n\n'+
+    '💰 Total: <b>'+total+'</b>\n'+
+    '⏰ Jam Ambil: <b>'+pickup+'</b>\n'+
+    '💳 Bayar: '+pay+'\n\n'+
+    '⚡️ MinBite Admin';
+  _tgSend(msg);
+}
+
+async function testTelegram(){
+  var t = document.getElementById('tgTokenInput').value.trim();
+  var c = document.getElementById('tgChatInput').value.trim();
+  if(!t||!c){ showToast('Isi token & chat ID dulu!'); return; }
+  var bar  = document.getElementById('tgStatusBar');
+  var text = document.getElementById('tgStatusText');
+  bar.className='tg-status testing';
+  text.textContent='Mengirim pesan tes…';
+  try{
+    var res = await fetch('https://api.telegram.org/bot'+t+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:c, text:'✅ <b>MinBite Telegram terhubung!</b>\n\nNotifikasi order baru akan dikirim ke sini secara otomatis.', parse_mode:'HTML'})
+    });
+    var data = await res.json();
+    if(data.ok){
+      bar.className='tg-status active';
+      text.textContent='✓ Berhasil! Cek Telegram kamu.';
+      showToast('✅ Pesan tes berhasil dikirim!');
+    } else {
+      bar.className='tg-status inactive';
+      text.textContent='❌ Gagal: '+(data.description||'Token/Chat ID salah');
+      showToast('❌ '+(data.description||'Gagal kirim'));
+    }
+  } catch(e){
+    bar.className='tg-status inactive';
+    text.textContent='❌ Gagal konek ke Telegram';
+    showToast('Gagal konek ke Telegram');
+  }
+}
+
+updateTgHeaderBtn();
 
 /* ══ INIT ══ */
 fetchOrders();
