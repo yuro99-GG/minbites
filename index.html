@@ -1428,6 +1428,13 @@
               <button type="button" class="selector-btn" onclick="selectJurusan(this,'MP')">MP</button>
               <button type="button" class="selector-btn" onclick="selectJurusan(this,'AK')">AK</button>
             </div>
+
+            <!-- Sub-selector nomor kelas -->
+            <div id="jurusanNomorGroup" style="display:none;margin-top:10px">
+              <div style="font-size:0.67rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:7px" id="jurusanNomorLabel">Pilih kelas</div>
+              <div class="btn-selector" id="jurusanNomorButtons"></div>
+            </div>
+
             <input type="hidden" id="fCatatan"/>
           </div>
 
@@ -1760,7 +1767,39 @@
     function selectJurusan(btn, val) {
       document.querySelectorAll('#jurusanSelectorGroup .selector-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      document.getElementById('jurusanSelectorGroup').classList.remove('error');
+
+      // Reset nilai & sub-selector
+      document.getElementById('fCatatan').value = '';
+      const nomorGroup = document.getElementById('jurusanNomorGroup');
+      const nomorBtns  = document.getElementById('jurusanNomorButtons');
+      const nomorLabel = document.getElementById('jurusanNomorLabel');
+
+      const maxNomor = val === 'TKJ' ? 4 : 3;
+      nomorLabel.textContent = 'Pilih kelas ' + val;
+      nomorBtns.innerHTML = '';
+      for (let i = 1; i <= maxNomor; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'selector-btn';
+        b.textContent = val + ' ' + i;
+        b.onclick = (function(jurusan, nomor, el) {
+          return function() { selectJurusanNomor(el, jurusan + ' ' + nomor); };
+        })(val, i, b);
+        nomorBtns.appendChild(b);
+      }
+      nomorGroup.style.display = 'block';
+      // Animasi masuk
+      nomorGroup.style.animation = 'none';
+      nomorGroup.offsetHeight; // reflow
+      nomorGroup.style.animation = 'fadeCard 0.25s ease';
+    }
+
+    function selectJurusanNomor(btn, val) {
+      document.querySelectorAll('#jurusanNomorButtons .selector-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       document.getElementById('fCatatan').value = val;
+      document.getElementById('jurusanNomorButtons').classList.remove('error');
     }
 
     function addFromDetail() {
@@ -1971,8 +2010,21 @@
       const normHP = validateHP(hp);
       if (!normHP) { highlightError('fHP', 'Format nomor HP tidak valid — gunakan 08xxxx (10–13 digit)'); return; }
 
-      // Validasi alamat
+      // Validasi alamat (kelas)
       if (!alamat) { document.getElementById('kelasSelectorGroup').classList.add('error'); showToast('Pilih kelas terlebih dahulu'); return; }
+
+      // Validasi jurusan + nomor
+      if (!catatan) {
+        const jurusanPilih = document.querySelector('#jurusanSelectorGroup .selector-btn.active');
+        if (!jurusanPilih) {
+          document.getElementById('jurusanSelectorGroup').classList.add('error');
+          showToast('Pilih jurusan terlebih dahulu');
+        } else {
+          document.getElementById('jurusanNomorButtons').classList.add('error');
+          showToast('Pilih nomor kelas ' + jurusanPilih.textContent);
+        }
+        return;
+      }
 
       // Loading state
       const btn = document.getElementById('btnSubmit');
