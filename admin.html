@@ -1303,7 +1303,8 @@ async function fetchOrders(){
       if(!isFirst&&!knownOrderIds.has(id)){
         addLog('status','Pesanan baru masuk: <strong>'+escHtml(id)+'</strong> — '+escHtml(o.name||''));
         if(soundEnabled) playNotifSound();
-        sendTelegramNotif(o);
+        /* Hanya kirim TG dari admin.html jika order.html belum kirim duluan */
+        if(!o.tg_notif_sent){ sendTelegramNotif(o); }
       }
       knownOrderIds.add(id);
     });
@@ -2404,9 +2405,16 @@ function saveTgSettings(){
   tgToken = t; tgChat = c;
   localStorage.setItem('tg_token', t);
   localStorage.setItem('tg_chat',  c);
+  /* Simpan ke Firestore agar order.html bisa kirim notif meskipun admin.html tutup */
+  if(db){
+    db.collection('settings').doc('telegram').set({ token: t, chatId: c })
+      .then(function(){ showToast('✅ Pengaturan Telegram disimpan!'); })
+      .catch(function(e){ console.warn('Gagal simpan TG ke Firestore:', e); showToast('✅ Disimpan (lokal). Gagal sync ke server.'); });
+  } else {
+    showToast('✅ Pengaturan Telegram disimpan!');
+  }
   updateTgStatusBar();
   updateTgHeaderBtn();
-  showToast('✅ Pengaturan Telegram disimpan!');
 }
 
 function clearTgSettings(){
@@ -2416,6 +2424,8 @@ function clearTgSettings(){
   localStorage.removeItem('tg_chat');
   document.getElementById('tgTokenInput').value='';
   document.getElementById('tgChatInput').value='';
+  /* Hapus dari Firestore juga */
+  if(db){ db.collection('settings').doc('telegram').delete().catch(function(){}); }
   updateTgStatusBar();
   updateTgHeaderBtn();
   showToast('Pengaturan Telegram dihapus.');
