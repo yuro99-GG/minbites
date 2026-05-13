@@ -362,6 +362,51 @@
     /* DIVIDER */
     .sec-divider { height: 1px; background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 5px, transparent 5px, transparent 10px); }
 
+    /* ═══ NOTIF PERMISSION BANNER ═══ */
+    #notifBanner {
+      display: none; align-items: center; gap: 10px;
+      background: var(--amber-bg); border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm); padding: 11px 14px; margin-bottom: 14px;
+      animation: fadeSlideUp 0.35s ease both;
+    }
+    #notifBanner.show { display: flex; }
+    .notif-banner-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .notif-banner-text { flex: 1; font-size: 0.78rem; color: var(--amber); font-weight: 600; line-height: 1.4; }
+    .notif-banner-text span { display: block; font-size: 0.7rem; font-weight: 400; color: var(--text3); margin-top: 1px; }
+    .notif-banner-btn {
+      padding: 5px 12px; background: var(--amber); color: white;
+      border: none; border-radius: 100px; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+      transition: all var(--t);
+    }
+    .notif-banner-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .notif-banner-close {
+      width: 22px; height: 22px; border: none; background: none;
+      color: var(--text3); font-size: 1rem; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; border-radius: 50%;
+      transition: background var(--t); flex-shrink: 0; padding: 0;
+    }
+    .notif-banner-close:hover { background: var(--border); }
+
+    /* ═══ ORDER CREATED TOAST (big) ═══ */
+    @keyframes createdToastIn { from{opacity:0;transform:translateY(20px) scale(0.94)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes createdToastOut { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(0.92) translateY(10px)} }
+    #orderCreatedToast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 9999; pointer-events: none; width: calc(100% - 32px); max-width: 400px;
+    }
+    .created-toast-inner {
+      background: var(--surface); border: 1.5px solid var(--green-border);
+      border-radius: var(--radius); box-shadow: var(--shadow-lg);
+      padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+      animation: createdToastIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .created-toast-inner.out { animation: createdToastOut 0.3s ease forwards; }
+    .ct-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--green-bg); border: 1.5px solid var(--green-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem; }
+    .ct-body { flex: 1; }
+    .ct-title { font-size: 0.88rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .ct-sub { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
+
     /* PAYMENT */
     .payment-section { padding: 16px 24px 18px; border-bottom: 1px solid var(--border); }
     .sec-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 12px; }
@@ -934,6 +979,61 @@
 
   var prevStatus = null, prevPayStatus = null;
 
+  /* ══ TELEGRAM NOTIF FROM ORDER PAGE ══
+     Dibaca dari Firestore supaya bisa kirim meski admin.html tutup.
+     Flag tg_notif_sent di Firestore mencegah notif dobel dengan admin.html. */
+  var _tgNotifAttempted = false;
+
+  async function sendTelegramFromOrderPage(data) {
+    if (_tgNotifAttempted) return;
+    _tgNotifAttempted = true;
+
+    /* Jika sudah pernah terkirim (oleh admin.html atau order.html sebelumnya), skip */
+    if (data.tg_notif_sent) return;
+
+    try {
+      var snap = await db.collection('settings').doc('telegram').get();
+      if (!snap.exists) return;
+      var cfg   = snap.data();
+      var token = cfg.token  || '';
+      var chat  = cfg.chatId || '';
+      if (!token || !chat) return;
+
+      var id     = data.id || data.orderId || getOrderId() || '?';
+      var nama   = data.name || data.nama || '—';
+      var kelas  = (data.kelas || '') + (data.jurusan ? ' / ' + data.jurusan : '') || '—';
+      var items  = (data.items || []).map(function(it) {
+        return '  • ' + it.name + ' ×' + it.qty + ' = Rp' + Number((it.price||0)*(it.qty||1)).toLocaleString('id-ID');
+      }).join('\n');
+      var total  = 'Rp' + Number(data.total || 0).toLocaleString('id-ID');
+      var pickup = data.pickup || '—';
+      var pay    = (data.payment || data.metodePembayaran || 'CASH').toUpperCase();
+
+      var msg =
+        '🛎 <b>ORDER BARU MASUK!</b>\n\n' +
+        '🧾 <b>' + id + '</b>\n' +
+        '👤 ' + nama + ' — ' + kelas + '\n' +
+        '📦 Item:\n' + (items || '  —') + '\n\n' +
+        '💰 Total: <b>' + total + '</b>\n' +
+        '⏰ Jam Ambil: <b>' + pickup + '</b>\n' +
+        '💳 Bayar: ' + pay + '\n\n' +
+        '⚡️ MinBite (via order page)';
+
+      var res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat, text: msg, parse_mode: 'HTML' })
+      });
+      var json = await res.json();
+      if (json.ok) {
+        /* Tandai sudah terkirim supaya admin.html tidak kirim lagi */
+        db.collection('orders').doc(getOrderId()).update({ tg_notif_sent: true }).catch(function(){});
+      }
+    } catch(e) {
+      console.warn('TG notif dari order.html gagal:', e);
+    }
+  }
+
   function renderOrder(data) {
     document.getElementById('stateLoading').style.display = 'none';
     document.getElementById('stateError').style.display = 'none';
@@ -957,6 +1057,12 @@
         if (raw === 'SIAP DIAMBIL') setTimeout(function() { document.getElementById('secSiap').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
       }
     }
+
+    /* ── Kirim Telegram saat order pertama kali terdeteksi (status MENUNGGU = baru dibuat) ── */
+    if (prevStatus === null && raw === 'MENUNGGU' && db) {
+      sendTelegramFromOrderPage(data);
+    }
+
     prevStatus = raw; prevPayStatus = paySt;
 
     // Header
