@@ -1886,8 +1886,9 @@ async function exportExcel(){
   btn.textContent='⏳ Mengambil data…';
 
   try{
-    /* ── Fetch semua orders dari Firestore ── */
-    var snap = await db.collection('orders').orderBy('timestamp','desc').get();
+    /* ── Fetch orders HARI INI dari Firestore (sama seperti tampilan admin) ── */
+    var today = new Date().toISOString().slice(0,10);
+    var snap = await db.collection('orders').where('date','==',today).get();
     var allFetched = [];
     snap.forEach(function(doc){ allFetched.push(Object.assign({_docId:doc.id}, doc.data())); });
 
@@ -2013,7 +2014,7 @@ async function exportExcel(){
       {key:'status', width:13}
     ];
 
-    ws1.addRow(['REKAP PEMBELIAN — MINBITE (Tanpa Order Dibatalkan)']);
+    ws1.addRow(['REKAP PEMBELIAN HARI INI — MINBITE (Tanpa Order Dibatalkan)']);
     ws1.addRow(['Dicetak: '+printDate+'   |   Total Pembeli: '+orders.length+' pesanan']);
     ws1.addRow([
       'No','Tanggal','ID Pesanan','Nama Pembeli','Kelas / Jurusan','No. WhatsApp',
@@ -2092,7 +2093,7 @@ async function exportExcel(){
       {key:'status',width:14}
     ];
 
-    ws2.addRow(['DETAIL ITEM PER PESANAN — MINBITE (Tanpa Order Dibatalkan)']);
+    ws2.addRow(['DETAIL ITEM HARI INI — MINBITE (Tanpa Order Dibatalkan)']);
     ws2.addRow(['Dicetak: '+printDate]);
     ws2.addRow(['No','Tanggal','ID Pesanan','Nama Pembeli','Nama Item','Qty','Harga Satuan (Rp)','Subtotal Item (Rp)','Status Pesanan']);
     styleTitle(ws2, 1, 9);
@@ -2148,7 +2149,7 @@ async function exportExcel(){
     var grandRevProd=prodList.reduce(function(s,n){return s+prodMap[n].rev;},0);
     var grandQtyProd=prodList.reduce(function(s,n){return s+prodMap[n].qty;},0);
 
-    ws3.addRow(['REKAP PRODUK TERLARIS — MINBITE (Tanpa Order Dibatalkan)']);
+    ws3.addRow(['REKAP PRODUK HARI INI — MINBITE (Tanpa Order Dibatalkan)']);
     ws3.addRow(['Dicetak: '+printDate]);
     ws3.addRow(['No','Nama Produk','Total Terjual (Qty)','Jumlah Pesanan','Total Pendapatan (Rp)']);
     styleTitle(ws3, 1, 5);
@@ -2176,7 +2177,7 @@ async function exportExcel(){
     var url    = URL.createObjectURL(blob);
     var a      = document.createElement('a');
     a.href     = url;
-    a.download = 'minbite-data-pembeli-'+fileDate+'.xlsx';
+    a.download = 'minbite-data-pembeli-'+today+'.xlsx';
     a.click();
     URL.revokeObjectURL(url);
 
